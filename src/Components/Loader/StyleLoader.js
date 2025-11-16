@@ -12,7 +12,7 @@ export const StyleLoader = styled.div`
   width: 100%;
   height: 100%;
   position: fixed;
-  z-index: 11111111111;
+  z-index: 999999999999999999999999999999999999999999999;
   .loader {
     --d: 22px;
     width: 4px;

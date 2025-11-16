@@ -7,6 +7,7 @@ import FastfoodIcon from '@mui/icons-material/Fastfood';
 import CategoryIcon from '@mui/icons-material/Category';
 import Person2Icon from '@mui/icons-material/Person2';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { useTransition } from 'react';
 
 export const SIDEBAR_LINKS = [
@@ -18,13 +19,6 @@ export const SIDEBAR_LINKS = [
   },
 
   {
-    title: 'customer',
-    path: '/customer',
-    key: 'customer',
-    icon: <Person2Icon />,
-    guard: { section: 'headerDashboard', action: 'customer' },
-  },
-  {
     title: 'foods',
     path: '/foods',
     key: 'foods',
@@ -35,6 +29,12 @@ export const SIDEBAR_LINKS = [
     path: '/categories',
     key: 'categories',
     icon: <CategoryIcon />,
+  },
+  {
+    title: 'Customers',
+    path: '/customer',
+    key: 'customers',
+    icon: <PeopleAltIcon />,
   },
 
   {

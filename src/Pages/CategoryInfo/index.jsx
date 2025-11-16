@@ -1,5 +1,9 @@
 import { gql } from '@apollo/client';
-import { useLazyQuery, useQuery } from '@apollo/client/react/compiled';
+import {
+  useLazyQuery,
+  useMutation,
+  useQuery,
+} from '@apollo/client/react/compiled';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import FoodCard from '../../Components/FoodCard/FoodCards';
@@ -8,6 +12,8 @@ import HeaderDashborad from '../../Components/HeaderDashboard/index';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import AddIcon from '@mui/icons-material/Add';
 import FastfoodOutlinedIcon from '@mui/icons-material/FastfoodOutlined';
+import undefindImg from '../../assets/noFound.png';
+import { useTranslation } from 'react-i18next';
 
 const GET_FOODS_BY_CATEGORY = gql`
   query GetAllFoods($categories: [ID]) {
@@ -35,7 +41,6 @@ const GET_FOODS_BY_CATEGORY = gql`
     }
   }
 `;
-
 const GET_CATEOGRY_BY_ID = gql`
   query GetCategoryById($categoryId: ID!) {
     getCategoryById(categoryId: $categoryId) {
@@ -47,10 +52,38 @@ const GET_CATEOGRY_BY_ID = gql`
     }
   }
 `;
+const CREATE_CARD = gql`
+  mutation CreateCartItem($data: CartItemInput!) {
+    createCartItem(data: $data) {
+      payload {
+        _id
+        quantity
+        price
+        discount
+        user
+        food {
+          _id
+          shortName
+          name
+          image
+          description
+          price
+          discount
+          likes
+          isFavorite
+        }
+      }
+    }
+  }
+`;
 import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
 import GuardComponent from '../../Components/CheckRole/CheckRole';
+import { StyleCategoryInfo } from './StyleCategoryInfo';
+import FoodQuontity from '../../Components/FoodQuontity';
+import ToastExample from '../../Components/Toast';
 
 function CategoryInfo() {
+  const { t } = useTranslation();
   const location = useLocation();
   const localToken = JSON.parse(localStorage.getItem('authStore') || '');
   const token = localToken?.state?.token;
@@ -59,6 +92,9 @@ function CategoryInfo() {
   const categoryId = params.get('id');
   const navigate = useNavigate('');
   const [role, setRole] = useState('');
+  const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
+  const [selectedFood, setSelectedFood] = useState(null);
+  const [openQuontity, setOpenQuontity] = useState(false);
 
   useEffect(() => {
     const a = JSON.parse(localStorage.getItem('authStore') || '');
@@ -81,6 +117,7 @@ function CategoryInfo() {
   const [fetchCategoryById, { data, loading, error }] = useLazyQuery(
     GET_FOODS_BY_CATEGORY
   );
+  const [createCard, { data: createCardData }] = useMutation(CREATE_CARD);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -106,6 +143,25 @@ function CategoryInfo() {
     }
   }, [data]);
 
+  const handleAddToCart = (food) => {
+    setSelectedFood(food);
+    setOpenQuontity(true);
+  };
+  const handleConfirmQuontity = (quontity) => {
+    createCard({
+      variables: {
+        data: {
+          food: selectedFood,
+          quantity: quontity,
+        },
+      },
+    });
+
+    setOpenQuontity(false);
+    setSelectedFood(null);
+    setOpenToastForAddCard(true);
+  };
+
   return (
     <HeaderDashborad>
       <Container maxWidth="xl">
@@ -122,7 +178,7 @@ function CategoryInfo() {
             variant="outlined"
             startIcon={<ArrowBackIosNewOutlinedIcon />}
           >
-            Goo back
+            {t('gooBack')}
           </Button>
           {categoryCard.length > 0 ? (
             <></>
@@ -133,7 +189,7 @@ function CategoryInfo() {
                 startIcon={<AddIcon />}
                 variant="outlined"
               >
-                Create Food
+                {t('createFood')}
               </Button>
             </GuardComponent>
           )}
@@ -148,24 +204,34 @@ function CategoryInfo() {
         >
           {categoryCard.length > 0 ? (
             categoryCard.map((category) => (
-              <FoodCard key={category._id} isSpeacial={true} food={category} />
+              <FoodCard
+                handleAddToCart={handleAddToCart}
+                key={category._id}
+                isSpeacial={true}
+                food={category}
+              />
             ))
           ) : (
-            <div style={{ marginTop: 15 }} className="error">
-              <h1
-                style={{
-                  color: 'red',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 5,
-                }}
-              >
-                Bu Categoryada umuman Ovqat yoq
-                <ErrorOutlineIcon fontSize="large" />
-              </h1>
-            </div>
+            <StyleCategoryInfo>
+              <div style={{ marginTop: 15 }} className="error">
+                <div className="img-with">
+                  <img id="undefind" src={undefindImg} alt="Undefined Image" />
+                </div>
+              </div>
+            </StyleCategoryInfo>
           )}
         </div>
+        <ToastExample
+          status="success"
+          title={t('addedNewCartFood')}
+          open={openToastForAddCard}
+          setOpen={setOpenToastForAddCard}
+        ></ToastExample>
+        <FoodQuontity
+          onConfirm={handleConfirmQuontity}
+          open={openQuontity}
+          setOpen={setOpenQuontity}
+        ></FoodQuontity>
       </Container>
     </HeaderDashborad>
   );

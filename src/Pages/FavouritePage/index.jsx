@@ -4,9 +4,14 @@ import Loader from '../../Components/Loader';
 import HeaderDashborad from '../../Components/HeaderDashboard';
 import { Container } from '@mui/material';
 import OrderSearch from '../../Components/OrderSearch';
+import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert/index';
 import { gql } from '@apollo/client';
-import { useLazyQuery, useQuery } from '@apollo/client/react';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 import FoodCard from '../../Components/FoodCard/FoodCards';
+import ToastExample from '../../Components/Toast';
+import undefindImg from '../../assets/noFound.png';
+import FoodQuontity from '../../Components/FoodQuontity';
+import { useTranslation } from 'react-i18next';
 const GET_ALL_FAVOURITE_FOODS = gql`
   query GetFavoriteFoods {
     getFavoriteFoods {
@@ -29,32 +34,119 @@ const GET_ALL_FAVOURITE_FOODS = gql`
     }
   }
 `;
+const DELETE_FOOD_FROM_FAVOURITES = gql`
+  mutation RemoveFoodFromFavorites($foodId: ID!) {
+    removeFoodFromFavorites(foodId: $foodId) {
+      payload {
+        _id
+        shortName
+        name
+        image
+        description
+        price
+        discount
+        likes
+        isFavorite
+      }
+    }
+  }
+`;
+const CREATE_CARD = gql`
+  mutation CreateCartItem($data: CartItemInput!) {
+    createCartItem(data: $data) {
+      payload {
+        _id
+        quantity
+        price
+        discount
+        user
+        food {
+          _id
+          shortName
+          name
+          image
+          description
+          price
+          discount
+          likes
+          isFavorite
+        }
+      }
+    }
+  }
+`;
 function FavouriteFood() {
-  const [load, setLoad] = useState(false);
   const [foods, setFoods] = useState([]);
-  const [isDeleted, setIsDeleted] = useState(false);
+  const { t } = useTranslation();
+  const [openQuontity, setOpenQuontity] = useState(false);
+  const [clickedDelete, setClickedDelete] = useState(false);
+  const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
+  const [selectedFood, setSelectedFood] = useState(null);
   const [openToast, setOpenToast] = useState(false);
   const [allFoodsForSearch, setAllFoodsForSearch] = useState([]);
+  const [createCard, { data: createCardData }] = useMutation(CREATE_CARD);
+  const [deleteFoodById, { data: deleteFavData, error: deleteFoodError }] =
+    useMutation(DELETE_FOOD_FROM_FAVOURITES);
+  const [deletedFoodId, setId] = useState(null);
 
-  const [getAllFavouriteFoods, { data, error }] = useLazyQuery(
-    GET_ALL_FAVOURITE_FOODS
-  );
+  const [getAllFavouriteFoods, { data, loading, error, refetch }] =
+    useLazyQuery(GET_ALL_FAVOURITE_FOODS);
 
   useEffect(() => {
-    setLoad(true);
-    getAllFavouriteFoods();
     if (data?.getFavoriteFoods?.payload) {
-      setFoods(data?.getFavoriteFoods?.payload);
-      setLoad(false);
+      setFoods(data.getFavoriteFoods.payload);
+      setAllFoodsForSearch(data.getFavoriteFoods.payload);
     }
-    setAllFoodsForSearch(data?.getFavoriteFoods?.payload);
   }, [data]);
+
+  useEffect(() => {
+    getAllFavouriteFoods();
+  }, []);
+
+  const handleClickDeleteFood = (clickedFoodId) => {
+    setId(clickedFoodId);
+    setClickedDelete(true);
+  };
+  const handleClickDelete = async () => {
+    try {
+      setClickedDelete(true);
+      await deleteFoodById({
+        variables: { foodId: deletedFoodId },
+      });
+
+      setOpenToast(true);
+      refetch();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const handleAddToCart = (food) => {
+    setSelectedFood(food);
+    setOpenQuontity(true);
+  };
+  const handleConfirmQuontity = (quontity) => {
+    createCard({
+      variables: {
+        data: {
+          food: selectedFood,
+          quantity: quontity,
+        },
+      },
+    });
+
+    setOpenQuontity(false);
+    setSelectedFood(null);
+    setOpenToastForAddCard(true);
+  };
+
   return (
     <HeaderDashborad>
-      <Loader load={load}></Loader>
+      <Loader load={loading}></Loader>
       <StyleFoods className="foods">
         <Container maxWidth="xl">
           <OrderSearch
+            refetchItem={getAllFavouriteFoods}
             setFoods={setFoods}
             allFoods={allFoodsForSearch}
             action="foods"
@@ -70,34 +162,49 @@ function FavouriteFood() {
           </div>
           <div className="food-cards">
             <div className="food-cards-nav">
-              {foods?.map((food) => (
-                <FoodCard
-                  isFavourite={true}
-                  //   handleClickDeleteFood={handleClickDeleteFood}
-                  //   handleClickAddToCard={handleClickAddToCard}
-                  key={food._id}
-                  food={food}
-                />
-              ))}
+              {foods.length ? (
+                foods.map((food) => (
+                  <FoodCard
+                    isFavourite={true}
+                    handleClickDeleteFood={handleClickDeleteFood}
+                    handleAddToCart={handleAddToCart}
+                    key={food._id}
+                    food={food}
+                  />
+                ))
+              ) : (
+                <div className="img-with">
+                  <img id="undefind" src={undefindImg} alt="Undefined Image" />
+                </div>
+              )}
             </div>
           </div>
         </Container>
       </StyleFoods>
-      {/* <ToastExample
-        status={favouriteError?.errors?.length ? 'error' : 'succsess'}
-        title={
-          favouriteError?.errors?.length
-            ? favouriteError?.errors[0]?.message
-            : "Yangi Food qo'shildi!"
-        }
-        open={openToast}
-        setOpen={setOpenToast}
-      /> */}
-      {/* <DeleteFoodModalAlert
+      {deleteFoodError?.errors?.length && (
+        <ToastExample
+          status={'succsess'}
+          title={'Food is deleted!'}
+          open={openToast}
+          setOpen={setOpenToast}
+        />
+      )}
+      <ToastExample
+        status="success"
+        title={t('addedNewCartFood')}
+        open={openToastForAddCard}
+        setOpen={setOpenToastForAddCard}
+      ></ToastExample>
+      <DeleteFoodModalAlert
+        onConfirm={handleClickDelete}
         open={clickedDelete}
         setOpen={setClickedDelete}
-        setIsDeleted={setIsDeleted}
-      /> */}
+      />
+      <FoodQuontity
+        onConfirm={handleConfirmQuontity}
+        open={openQuontity}
+        setOpen={setOpenQuontity}
+      ></FoodQuontity>
     </HeaderDashborad>
   );
 }

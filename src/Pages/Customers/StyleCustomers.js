@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const StyleOrders = styled.div`
+export const StyleCustomers = styled.div`
   width: 100%;
 
   .orders-nav {

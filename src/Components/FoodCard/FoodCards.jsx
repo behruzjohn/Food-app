@@ -75,7 +75,19 @@ function FoodCard({
               <p>{t('edit')}</p>
             </div>
           </GuardComponent>
-          <GuardComponent role={role} section="foodFavourite" action="delete">
+          {isFavourite ? (
+            <div className="btn">
+              <Button
+                onClick={() => handleClickDeleteFood(food?._id)}
+                id="delete"
+                variant="contained"
+                color="error"
+              >
+                <DeleteIcon fontSize="small" />
+              </Button>
+              <p>{t('delete')}</p>
+            </div>
+          ) : (
             <GuardComponent role={role} section="foodCard" action="delete">
               <div className="btn">
                 <Button
@@ -89,7 +101,8 @@ function FoodCard({
                 <p>{t('delete')}</p>
               </div>
             </GuardComponent>
-          </GuardComponent>
+          )}
+
           <GuardComponent role={role} section="foodCard" action="addFavourite">
             {isFavourite ? (
               <></>

@@ -9,12 +9,13 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { Controller, useForm } from 'react-hook-form';
 import { MuiTelInput } from 'mui-tel-input';
 import { StyleForgotPassword } from './StyleForgotPassword';
-// import { StyleContainer } from '../../../../ContainerCss';
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
 import { useState } from 'react';
 import { StyleContainer } from '../../../ContainerCss';
 import { useNavigate } from 'react-router-dom';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const FORGOT_PASSWORD = gql`
   mutation ChangeUserPasswordById($data: UpdateUserPasswordInput!) {
@@ -34,6 +35,7 @@ const FORGOT_PASSWORD = gql`
 `;
 function ForgotPasswordPage() {
   const navigate = useNavigate('');
+  const [isHide, setIsHide] = useState(false);
   const [changePassword, { data, loading, error }] =
     useMutation(FORGOT_PASSWORD);
   const [succsesMessage, setSuccsesMessage] = useState('');
@@ -63,6 +65,9 @@ function ForgotPasswordPage() {
       console.log(error);
     }
   };
+  function handleClickShowPassword() {
+    setIsHide((prev) => !prev);
+  }
 
   return (
     <StyleForgotPassword className="signIn">
@@ -88,7 +93,7 @@ function ForgotPasswordPage() {
                     render={({ field, fieldState: { error } }) => (
                       <TextField
                         {...field}
-                        type="password"
+                        type={isHide ? 'text' : 'password'}
                         error={Boolean(error)}
                         id="outlined-controlled"
                         helperText={error?.message}
@@ -125,6 +130,23 @@ function ForgotPasswordPage() {
                           startAdornment: (
                             <InputAdornment position="start">
                               <LockOpenIcon />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment
+                              style={{ cursor: 'pointer' }}
+                              position="end"
+                            >
+                              <IconButton
+                                onClick={handleClickShowPassword}
+                                edge="end"
+                              >
+                                {isHide ? (
+                                  <VisibilityOffIcon />
+                                ) : (
+                                  <VisibilityIcon />
+                                )}
+                              </IconButton>
                             </InputAdornment>
                           ),
                         }}

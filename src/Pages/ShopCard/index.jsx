@@ -7,6 +7,9 @@ import OrderSearch from '../../Components/OrderSearch';
 import { gql } from '@apollo/client';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react';
 import FoodCard from '../../Components/FoodCard/FoodCards';
+import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
+import undefindImg from '../../assets/nocart.png';
+import { useTranslation } from 'react-i18next';
 const GET_CARD_FOOD = gql`
   query GetCartItemsByUserId {
     getCartItemsByUserId {
@@ -34,15 +37,30 @@ const GET_CARD_FOOD = gql`
     }
   }
 `;
+const DELETE_CART_ITEM = gql`
+  mutation DeleteCartItem($food: ID) {
+    deleteCartItem(food: $food) {
+      payload {
+        _id
+        quantity
+        price
+        discount
+        user
+      }
+    }
+  }
+`;
 function ShopCart() {
-  const [load, setLoad] = useState(false);
+  const { t } = useTranslation();
   const [foods, setFoods] = useState([]);
-  const [allFoodsForSearch, setAllFoodsForSearch] = useState([]);
-
-  const [getCardFood, { data, error }] = useLazyQuery(GET_CARD_FOOD);
+  const [clickedDelete, setClickedDelete] = useState(false);
+  const [deletedFoodId, setId] = useState(null);
+  const [openToast, setOpenToast] = useState(false);
+  const { data, error, loading, refetch } = useQuery(GET_CARD_FOOD);
+  const [deleteCart, { data: deleteData, error: deleteFoodError }] =
+    useMutation(DELETE_CART_ITEM);
 
   useEffect(() => {
-    getCardFood();
     if (data?.getCartItemsByUserId?.payload?.items) {
       setFoods(
         data.getCartItemsByUserId.payload.items.map((item) => ({
@@ -59,62 +77,82 @@ function ShopCart() {
     }
   }, [data]);
 
-  useEffect(() => {
-    getCardFood();
-  }, []);
+  const handleClickDeleteFood = (clickedFoodId) => {
+    setId(clickedFoodId);
+    setClickedDelete(true);
+  };
+
+  const handleClickDelete = async () => {
+    try {
+      await deleteCart({
+        variables: { foodId: deletedFoodId },
+      });
+
+      setOpenToast(true);
+      refetch();
+      setClickedDelete(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
   return (
     <HeaderDashborad>
-      <Loader load={load}></Loader>
+      <Loader load={loading}></Loader>
       <StyleFoods className="foods">
         <Container maxWidth="xl">
           <OrderSearch
             quontityLen={data?.getCartItemsByUserId?.payload?.items.length}
             setFoods={setFoods}
-            allFoods={allFoodsForSearch}
             action="foods"
+            refetchItem={refetch}
           />
           <div className="foods-header">
             <div>
-              <h2>Cart Foods</h2>
-              <p>Here is your menu summary with graph view</p>
+              <h2>{t('cartFood')}</h2>
+              <p>{t('cartDescription')}</p>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 15 }}>
               <h3>
-                Total Price: {data?.getCartItemsByUserId?.payload?.totalPrice}
+                {t('totalPrice')}
+                {data?.getCartItemsByUserId?.payload?.totalPrice}
               </h3>
             </div>
           </div>
           <div className="food-cards">
             <div className="food-cards-nav">
-              {foods?.map((food) => (
-                <FoodCard
-                  isFoodCard={true}
-                  // handleClickDeleteFood={handleClickDeleteFood}
-                  //   handleClickAddToCard={handleClickAddToCard}
-                  key={food._id}
-                  food={food}
-                />
-              ))}
+              {foods.length ? (
+                foods?.map((food) => (
+                  <FoodCard
+                    isFavourite={true}
+                    isFoodCard={true}
+                    handleClickDeleteFood={handleClickDeleteFood}
+                    key={food._id}
+                    food={food}
+                  />
+                ))
+              ) : (
+                <div className="img-with">
+                  <img id="undefind" src={undefindImg} alt="Undefined Image" />
+                </div>
+              )}
             </div>
           </div>
         </Container>
       </StyleFoods>
-      {/* <ToastExample
-        status={favouriteError?.errors?.length ? 'error' : 'succsess'}
-        title={
-          favouriteError?.errors?.length
-            ? favouriteError?.errors[0]?.message
-            : "Yangi Food qo'shildi!"
-        }
-        open={openToast}
-        setOpen={setOpenToast}
-      /> */}
-      {/* <DeleteFoodModalAlert
+      {deleteFoodError?.errors?.length && (
+        <ToastExample
+          status={'succsess'}
+          title={t('foodIsDeleted')}
+          open={openToast}
+          setOpen={setOpenToast}
+        />
+      )}
+      <DeleteFoodModalAlert
         open={clickedDelete}
         setOpen={setClickedDelete}
-        setIsDeleted={setIsDeleted}
-      /> */}
+        onConfirm={handleClickDelete}
+      />
     </HeaderDashborad>
   );
 }

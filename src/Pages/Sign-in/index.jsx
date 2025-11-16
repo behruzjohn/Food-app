@@ -1,6 +1,7 @@
 import {
   Autocomplete,
   Button,
+  IconButton,
   Input,
   InputAdornment,
   TextField,
@@ -17,11 +18,14 @@ import { useEffect, useState } from 'react';
 import { MuiTelInput } from 'mui-tel-input';
 import Loader from '../../Components/Loader/index';
 import { useUserStore } from '../../../store';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 const options = ['user', 'admin'];
 function SignIn() {
   const [load, setLoad] = useState(false);
   const navigate = useNavigate('');
   const [signInFetchEror, setSignInFetchEror] = useState('');
+  const [isHide, setHide] = useState(false);
 
   const setUserRole = useUserStore((state) => state.setUserRole);
   const setToken = useUserStore((state) => state.setToken);
@@ -82,6 +86,11 @@ function SignIn() {
       setSignInFetchEror(err.message || 'Something went wrong');
     }
   };
+
+  function handleClickShowPassword() {
+    setHide((prev) => !prev);
+  }
+
   return (
     <>
       <Loader load={load}></Loader>
@@ -113,12 +122,12 @@ function SignIn() {
                           renderInput={(params) => (
                             <TextField
                               {...params}
+                              error={Boolean(error)}
                               label="User type"
-                              error={!!error}
                               helperText={error?.message}
                             />
                           )}
-                          sx={{ width: 320, mb: 2 }}
+                          sx={{ width: 320 }}
                         />
                       )}
                     />
@@ -153,7 +162,7 @@ function SignIn() {
                       render={({ field, fieldState: { error } }) => (
                         <TextField
                           {...field}
-                          type="password"
+                          type={!isHide ? 'password' : 'text'}
                           error={Boolean(error)}
                           id="outlined-controlled"
                           helperText={error?.message}
@@ -162,6 +171,23 @@ function SignIn() {
                             startAdornment: (
                               <InputAdornment position="start">
                                 <LockOpenIcon />
+                              </InputAdornment>
+                            ),
+                            endAdornment: (
+                              <InputAdornment
+                                style={{ cursor: 'pointer' }}
+                                position="end"
+                              >
+                                <IconButton
+                                  onClick={handleClickShowPassword}
+                                  edge="end"
+                                >
+                                  {isHide ? (
+                                    <VisibilityOffIcon />
+                                  ) : (
+                                    <VisibilityIcon />
+                                  )}
+                                </IconButton>
                               </InputAdornment>
                             ),
                           }}

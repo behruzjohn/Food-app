@@ -165,6 +165,10 @@ function Foods() {
       setLoad(false);
     }
   }, [data]);
+  useEffect(() => {
+    setLoad(true);
+    refetch();
+  }, []);
 
   useEffect(() => {
     const a = JSON.parse(localStorage.getItem('authStore') || '');
@@ -187,12 +191,14 @@ function Foods() {
         },
       },
     });
+
     console.log(favouriteError?.errors[0]?.message);
   };
 
   const handleAddToCart = (food) => {
+    setOpenQuontity(false);
     setSelectedFood(food);
-    setOpenQuontity(true);
+    setTimeout(() => setOpenQuontity(true), 0);
   };
   const handleConfirmQuontity = (quontity) => {
     createCard({
@@ -262,10 +268,11 @@ function Foods() {
 
   return (
     <HeaderDashborad>
-      <Loader load={load}></Loader>
+      <Loader load={loading}></Loader>
       <StyleFoods className="foods">
         <Container maxWidth="xl">
           <OrderSearch
+            refetchItem={refetch}
             setFoods={setFoods}
             allFoods={allFoodsForSearch}
             action="foods"
@@ -305,7 +312,7 @@ function Foods() {
         </Container>
       </StyleFoods>
       <ToastExample
-        status={favouriteError?.errors?.length ? 'error' : 'succsess'}
+        status={favouriteError?.errors?.length ? 'error' : 'success'}
         title={
           favouriteError?.errors?.length
             ? favouriteError?.errors[0]?.message

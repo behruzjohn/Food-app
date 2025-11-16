@@ -72,7 +72,13 @@ const GET_ALL_FAVOURITE_FOODS = gql`
   }
 `;
 
-function OrderSearch({ quontityLen, setFoods, allFoodsForSearch, action }) {
+function OrderSearch({
+  quontityLen,
+  setFoods,
+  allFoodsForSearch,
+  action,
+  refetchItem,
+}) {
   const { t } = useTranslation();
   const [searchInput, setSearchInput] = useState('');
   const { lang, setLang } = useLang();
@@ -110,12 +116,11 @@ function OrderSearch({ quontityLen, setFoods, allFoodsForSearch, action }) {
         searchInput === null ||
         searchInput === undefined
       ) {
+        refetchItem();
         setFoods(allFoodsForSearch || []);
       } else {
         getSearchedFood({ variables: { name: searchInput } });
       }
-    } else if (action === 'category') {
-      console.log('category');
     }
   }, [searchInput, action]);
 
@@ -159,19 +164,23 @@ function OrderSearch({ quontityLen, setFoods, allFoodsForSearch, action }) {
   return (
     <StyleOrders>
       <div className="orders-search">
-        <TextField
-          onChange={(e) => changedInput(e)}
-          type="text"
-          placeholder={t('searchPlaceHolder')}
-          style={{ backgroundColor: 'white' }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-        />
+        <div style={{ width: '900px', marginRight: 12 }}>
+          {action !== 'category' && (
+            <TextField
+              onChange={(e) => changedInput(e)}
+              type="text"
+              placeholder={t('searchPlaceHolder')}
+              style={{ backgroundColor: 'white', width: '100%' }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Search />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          )}
+        </div>
 
         <div className="profile">
           <GuardComponent role={role} section="foodFavourite" action="icon">
@@ -184,7 +193,7 @@ function OrderSearch({ quontityLen, setFoods, allFoodsForSearch, action }) {
               {quontityLen > 0 && <span className="badge">{quontityLen}</span>}
             </div>
           </GuardComponent>
-          <FormControl className='selectId'>
+          <FormControl className="selectId">
             <InputLabel id="lang-select-label">Lang</InputLabel>
             <Select
               className="select"

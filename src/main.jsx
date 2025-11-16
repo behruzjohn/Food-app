@@ -21,6 +21,7 @@ import FavouriteFood from './Pages/FavouritePage/index.jsx';
 import FoodCard from './Pages/ShopCard/index.jsx';
 import ShopCart from './Pages/ShopCard/index.jsx';
 import './i18n.js';
+import Customers from './Pages/Customers/index.jsx';
 
 createRoot(document.getElementById('root')).render(
   <ApolloProvider client={clientAppollo}>
@@ -31,7 +32,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="sign-in" element={<SignIn />} />
         <Route path="sign-up" element={<SignUp />} />
         <Route path="/forgotPass" element={<ForgotPasswordPage />} />
-        <Route path="/customer" element={<Customer />} />
+        <Route path="/customer" element={<Customers />} />
         <Route path="/foods" element={<Foods />} />
         <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/categoriesById" element={<CategoryInfo />} />

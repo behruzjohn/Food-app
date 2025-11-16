@@ -77,6 +77,7 @@ function CategoriesPage() {
   useEffect(() => {
     if (data?.getAllCategories?.payload) {
       setCategories(data.getAllCategories.payload);
+      setAllCategoriesForSearch(data?.getAllFoods?.payload);
     }
   }, [data]);
 
@@ -145,11 +146,7 @@ function CategoriesPage() {
       <Container maxWidth="xl">
         <div className="categories">
           <div className="categories-nav">
-            <OrderSearch
-              setCategories={setCategories}
-              allCategoriesForSearch={allCategoriesForSearch}
-              action="category"
-            ></OrderSearch>
+            <OrderSearch action="category"></OrderSearch>
             <div style={{ marginTop: 30 }} className="category-nav">
               <header
                 style={{

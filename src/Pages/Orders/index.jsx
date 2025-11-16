@@ -22,14 +22,20 @@ import { StyleOrders } from './StyleOrders';
 import OrderSearch from '../../Components/OrderSearch/index';
 import AddOrder from '../../Components/AddOrder/index';
 import { gql } from '@apollo/client';
-import { useMutation, useQuery } from '@apollo/client/react';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
 import CheckToken from '../../Components/CheckToken';
 import ToastExample from '../../Components/Toast';
 import { useTranslation } from 'react-i18next';
+import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
+import BlenderOutlinedIcon from '@mui/icons-material/BlenderOutlined';
+import noOrder from '../../assets/noRemove.png';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+import PendingActionsOutlinedIcon from '@mui/icons-material/PendingActionsOutlined';
+import Loader from '../../Components/Loader';
 const CREATE_ORDER = gql`
-  mutation CreateOrder($address: [Float!]!) {
-    createOrder(order: { address: $address }) {
+  mutation CreateOrder($order: OrderInput) {
+    createOrder(order: $order) {
       payload {
         _id
         totalPrice
@@ -37,38 +43,18 @@ const CREATE_ORDER = gql`
         address
         createdAt
         updatedAt
+        createdBy {
+          _id
+          name
+          phone
+          role
+        }
         orderItems {
           _id
           quantity
           price
           discount
           user
-          food {
-            _id
-            shortName
-            name
-            image
-            description
-            price
-            discount
-            likes
-            isFavorite
-            category {
-              _id
-              name
-              image
-            }
-          }
-        }
-        createdBy {
-          _id
-          name
-          phone
-          role
-          photo
-          telegramId
-          createdAt
-          updatedAt
         }
       }
     }
@@ -98,42 +84,111 @@ const GET_ORDER = gql`
     }
   }
 `;
+const UPDATE_ORDER_STATUS = gql`
+  mutation UpdateOrderStatusById($orderId: ID, $status: String) {
+    updateOrderStatusById(orderId: $orderId, status: $status) {
+      payload {
+        _id
+        totalPrice
+        status
+        address
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
 function OrdersPg() {
   const [openAddOrder, setOpen] = useState(false);
+  const [oreder, setOrder] = useState([]);
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [openToastForOrderListError, setOpenToastForOrderListError] =
     useState(false);
   const [fetchAddOrder, { data, loading, error }] = useMutation(CREATE_ORDER);
-
-  const {
-    data: orderData,
-    loading: orderLoading,
-    error: orderError,
-  } = useQuery(GET_ORDER);
+  const [updateStatus, { data: statusData, loading: loadUptade }] =
+    useMutation(UPDATE_ORDER_STATUS);
+  const [
+    getOrders,
+    { data: orderData, loading: orderLoading, error: orderError },
+  ] = useLazyQuery(GET_ORDER);
 
   useEffect(() => {
-    if (orderData) {
-      console.log(orderData.getOrders.payload);
-    }
-  }, [orderData]);
+    const localToken = JSON.parse(localStorage.getItem('authStore')) || '';
+    const token = localToken?.state?.token;
+    getOrders({
+      variables: {
+        page: 1,
+        limit: 10,
+        statuses: 'All',
+      },
+      context: {
+        headers: { authorization: `Bearer ${token}` },
+      },
+    });
+  }, []);
 
   const open = Boolean(anchorEl);
+
   CheckToken();
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleClickStatus = async (status) => {
+    setAnchorEl(null);
+
+    try {
+      const localToken = JSON.parse(localStorage.getItem('authStore')) || '';
+      const token = localToken?.state?.token;
+
+      // status update
+      await updateStatus({
+        variables: {
+          orderId: selectedOrderId,
+          status: status,
+        },
+        context: {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
+      });
+
+      await getOrders({
+        variables: {
+          page: 1,
+          limit: 10,
+          statuses: 'All',
+        },
+        context: {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
+      });
+    } catch (err) {
+      console.log('Update status error:', err);
+      setOpenToastForOrderListError(true);
+    }
   };
 
-  CheckToken();
   const handleAddOrder = async (formData) => {
     try {
       const localToken = JSON.parse(localStorage.getItem('authStore')) || '';
       const token = localToken?.state?.token;
       await fetchAddOrder({
         variables: {
-          address: [Number(formData.lat), Number(formData.lng)],
+          order: {
+            address: [Number(formData.lat), Number(formData.lng)],
+          },
         },
+        context: {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
+      });
+
+      const { data: refreshedOrders } = await getOrders({
         context: {
           headers: {
             authorization: `Bearer ${token}`,
@@ -146,13 +201,15 @@ function OrdersPg() {
       }
     }
   };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  useEffect(() => {
+    if (orderData?.getOrders?.payload) {
+      setOrder(orderData.getOrders.payload);
+    }
+  }, [orderData]);
 
   return (
     <HeaderDashborad>
+      <Loader load={loading || loadUptade}></Loader>
       <AddOrder
         open={openAddOrder}
         setOpen={setOpen}
@@ -176,75 +233,118 @@ function OrdersPg() {
 
           <div className="orders-list">
             <div className="orders-list-nav">
-              <table>
-                <thead>
-                  <tr>
-                    <th>{t('orderId')}</th>
-                    <th>{t('data')}</th>
-                    <th>{t('customerName')}</th>
-                    <th>{t('location')}</th>
-                    <th>{t('amount')}</th>
-                    <th>{t('statusOrder')}</th>
-                    <th>{t('actions')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>#555231</td>
-                    <td>26 March 2020, 12:42 AM</td>
-                    <td>Mikasa Ackerman</td>
-                    <td>Corner Street 5th London</td>
-                    <td>$164.52</td>
-                    <td>
-                      <Button size="small" variant="contained">
-                        {t('newOrder')}
-                      </Button>
-                    </td>
-                    <td>
-                      <MoreHoriz
-                        onClick={handleClick}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <Menu
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        PaperProps={{
-                          elevation: 3,
-                          sx: {
-                            mt: 1.5,
-                            borderRadius: '16px',
-                            minWidth: 180,
-                            p: 1,
-                          },
-                        }}
-                        transformOrigin={{
-                          horizontal: 'right',
-                          vertical: 'top',
-                        }}
-                        anchorOrigin={{
-                          horizontal: 'right',
-                          vertical: 'bottom',
-                        }}
-                      >
-                        <MenuItem onClick={handleClose}>
-                          <ListItemIcon>
-                            <CheckCircleOutline color="success" />
-                          </ListItemIcon>
-                          <ListItemText primary={t('acceptOrder')} />
-                        </MenuItem>
+              {orderData?.getOrders?.payload && (
+                <table>
+                  <thead>
+                    <tr>
+                      <th>{t('orderId')}</th>
+                      <th>{t('data')}</th>
+                      <th>{t('customerName')}</th>
+                      <th>{t('location')}</th>
+                      <th>{t('amount')}</th>
+                      <th>{t('statusOrder')}</th>
+                      <th>{t('actions')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {oreder.map((orderItem, orderIndex) => {
+                      console.log(orderItem, 'ds');
 
-                        <MenuItem onClick={handleClose}>
-                          <ListItemIcon>
-                            <CancelOutlined color="error" />
-                          </ListItemIcon>
-                          <ListItemText primary={t('rejectOrder')} />
-                        </MenuItem>
-                      </Menu>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                      return (
+                        <tr key={orderIndex}>
+                          <td>#{orderIndex}</td>
+                          <td>
+                            {orderItem?.createdAt
+                              ? new Date(
+                                  orderItem.createdAt
+                                ).toLocaleDateString()
+                              : '-'}
+                          </td>
+                          <td>{orderItem?.createdBy?.name || 'No name'}</td>
+                          <td>{orderItem?.address}</td>
+                          <td>{orderItem?.totalPrice}</td>
+                          <td>
+                            <Button size="small" variant="contained">
+                              {orderItem?.status}
+                            </Button>
+                          </td>
+                          <td>
+                            <MoreHoriz
+                              onClick={(e) => {
+                                setSelectedOrderId(orderItem._id);
+                                setAnchorEl(e.currentTarget);
+                              }}
+                              style={{ cursor: 'pointer' }}
+                            />
+                            <Menu
+                              anchorEl={anchorEl}
+                              open={open}
+                              onClose={() => setAnchorEl(null)}
+                              PaperProps={{
+                                elevation: 3,
+                                sx: {
+                                  mt: 1.5,
+                                  borderRadius: '16px',
+                                  minWidth: 180,
+                                  p: 1,
+                                },
+                              }}
+                              transformOrigin={{
+                                horizontal: 'right',
+                                vertical: 'top',
+                              }}
+                              anchorOrigin={{
+                                horizontal: 'right',
+                                vertical: 'bottom',
+                              }}
+                            >
+                              <MenuItem
+                                onClick={() => handleClickStatus('pending')}
+                              >
+                                <ListItemIcon>
+                                  <PendingActionsOutlinedIcon color="primary" />
+                                </ListItemIcon>
+                                <ListItemText primary={t('pending')} />
+                              </MenuItem>
+
+                              <MenuItem
+                                onClick={() => handleClickStatus('cooking')}
+                              >
+                                <ListItemIcon>
+                                  <BlenderOutlinedIcon color="error" />
+                                </ListItemIcon>
+                                <ListItemText primary={t('cooking')} />
+                              </MenuItem>
+                              <MenuItem
+                                onClick={() => handleClickStatus('delivering')}
+                              >
+                                <ListItemIcon>
+                                  <LocalShippingOutlinedIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={t('deleviring')} />
+                              </MenuItem>
+                              <MenuItem
+                                onClick={() => handleClickStatus('received')}
+                              >
+                                <ListItemIcon>
+                                  <TaskAltOutlinedIcon color="success" />
+                                </ListItemIcon>
+                                <ListItemText primary={t('received')} />
+                              </MenuItem>
+                            </Menu>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+
+              {!orderData?.getOrders?.payload && (
+                <div className="img-with">
+                  <img id="undefind" src={noOrder} alt="No Order Image" />
+                </div>
+              )}
             </div>
           </div>
         </div>
