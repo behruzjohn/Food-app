@@ -23,7 +23,7 @@ export const StyleOrders = styled.div`
   }
   .shop {
     position: relative;
-    
+
     display: inline-block;
   }
 

@@ -11,6 +11,8 @@ import CategoryCard from '../../Components/CategegoryCard/CategoryCard';
 import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
 import CheckToken from '../../Components/CheckToken';
 import GuardComponent from '../../Components/CheckRole/CheckRole';
+import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
 const GET_ALL_CATEGORIES = gql`
   query GetAllCategories {
     getAllCategories {
@@ -49,6 +51,7 @@ const DELETE_CATEGORY = gql`
 
 function CategoriesPage() {
   const [createCategory] = useMutation(CREATE_CATEGORIES);
+  const { f } = useTranslation();
   const [categoires, setCategories] = useState([]);
   const [allCategoriesForSearch, setAllCategoriesForSearch] = useState();
   const [openCategories, setOpenCategories] = useState(false);
@@ -156,8 +159,8 @@ function CategoriesPage() {
                 }}
               >
                 <div>
-                  <h2>Category Page</h2>
-                  <p>Find Categoires for you</p>
+                  <h2>{t('categoryPg')}</h2>
+                  <p>{t('categoryDescription')}</p>
                 </div>
                 <GuardComponent
                   role={role}
@@ -170,7 +173,7 @@ function CategoriesPage() {
                     variant="contained"
                     startIcon={<AddCircleOutlineIcon />}
                   >
-                    Add Categories
+                    {t('addCategory')}
                   </Button>
                 </GuardComponent>
               </header>

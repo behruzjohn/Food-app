@@ -26,6 +26,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
 import CheckToken from '../../Components/CheckToken';
 import ToastExample from '../../Components/Toast';
+import { useTranslation } from 'react-i18next';
 const CREATE_ORDER = gql`
   mutation CreateOrder($address: [Float!]!) {
     createOrder(order: { address: $address }) {
@@ -99,6 +100,7 @@ const GET_ORDER = gql`
 `;
 function OrdersPg() {
   const [openAddOrder, setOpen] = useState(false);
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState(null);
   const [openToastForOrderListError, setOpenToastForOrderListError] =
     useState(false);
@@ -162,12 +164,12 @@ function OrdersPg() {
 
           <div className="main-header">
             <div className="order-header-text">
-              <h2>Your Orders</h2>
-              <p>This is your order list data</p>
+              <h2>{t('orderTitle')}</h2>
+              <p>{t('orderDescription')}</p>
             </div>
             <div className="order-header-btns">
               <Button onClick={() => setOpen(true)} variant="contained">
-                Add Order
+                {t('addOrder')}
               </Button>
             </div>
           </div>
@@ -177,13 +179,13 @@ function OrdersPg() {
               <table>
                 <thead>
                   <tr>
-                    <th>Order ID</th>
-                    <th>Date</th>
-                    <th>Customer Name</th>
-                    <th>Location</th>
-                    <th>Amount</th>
-                    <th>Status Order</th>
-                    <th>Actions</th>
+                    <th>{t('orderId')}</th>
+                    <th>{t('data')}</th>
+                    <th>{t('customerName')}</th>
+                    <th>{t('location')}</th>
+                    <th>{t('amount')}</th>
+                    <th>{t('statusOrder')}</th>
+                    <th>{t('actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -195,7 +197,7 @@ function OrdersPg() {
                     <td>$164.52</td>
                     <td>
                       <Button size="small" variant="contained">
-                        New Order
+                        {t('newOrder')}
                       </Button>
                     </td>
                     <td>
@@ -229,14 +231,14 @@ function OrdersPg() {
                           <ListItemIcon>
                             <CheckCircleOutline color="success" />
                           </ListItemIcon>
-                          <ListItemText primary="Accept Order" />
+                          <ListItemText primary={t('acceptOrder')} />
                         </MenuItem>
 
                         <MenuItem onClick={handleClose}>
                           <ListItemIcon>
                             <CancelOutlined color="error" />
                           </ListItemIcon>
-                          <ListItemText primary="Reject Order" />
+                          <ListItemText primary={t('rejectOrder')} />
                         </MenuItem>
                       </Menu>
                     </td>

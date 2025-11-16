@@ -8,6 +8,7 @@ import defulatFoodImg from '../../assets/23.png';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { useEffect, useState } from 'react';
 import GuardComponent from '../CheckRole/CheckRole';
+import { useTranslation } from 'react-i18next';
 
 function FoodCard({
   isFoodCard,
@@ -19,6 +20,7 @@ function FoodCard({
   handleClickDeleteFood,
   handleClickEditFood,
 }) {
+  const { t } = useTranslation();
   const [role, setRole] = useState('');
 
   useEffect(() => {
@@ -55,7 +57,7 @@ function FoodCard({
         </p>
         <p>{food?.description}</p>
         <p>
-          <strong>Price:</strong>
+          <strong>{t('price')}</strong>
           {food?.price}
         </p>
 
@@ -70,7 +72,7 @@ function FoodCard({
               >
                 <EditSquareIcon fontSize="small" />
               </Button>
-              <p>Edit</p>
+              <p>{t('edit')}</p>
             </div>
           </GuardComponent>
           <GuardComponent role={role} section="foodFavourite" action="delete">
@@ -84,7 +86,7 @@ function FoodCard({
                 >
                   <DeleteIcon fontSize="small" />
                 </Button>
-                <p>Delete</p>
+                <p>{t('delete')}</p>
               </div>
             </GuardComponent>
           </GuardComponent>
@@ -101,7 +103,7 @@ function FoodCard({
                 >
                   <AddShoppingCartIcon fontSize="small" />
                 </Button>
-                <p>Add Favourite</p>
+                <p>{t('addFavourite')}</p>
               </div>
             )}
           </GuardComponent>
@@ -118,7 +120,7 @@ function FoodCard({
                 >
                   <AddShoppingCartIcon fontSize="small" />
                 </Button>
-                <p>Add to Card</p>
+                <p>{t('addToCard')}</p>
               </div>
             )}
           </GuardComponent>

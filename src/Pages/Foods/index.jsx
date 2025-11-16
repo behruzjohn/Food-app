@@ -14,6 +14,7 @@ import ToastExample from '../../Components/Toast';
 import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
 import GuardComponent from '../../Components/CheckRole/CheckRole';
 import FoodQuontity from '../../Components/FoodQuontity';
+import { useTranslation } from 'react-i18next';
 const GET_ALL_FOODS = gql`
   query GetAllFoods {
     getAllFoods {
@@ -126,6 +127,8 @@ const CREATE_CARD = gql`
   }
 `;
 function Foods() {
+  const { t } = useTranslation();
+
   const [open, setOpen] = useState(false);
   const [load, setLoad] = useState(false);
   const [foods, setFoods] = useState([]);
@@ -269,8 +272,8 @@ function Foods() {
           />
           <div className="foods-header">
             <div>
-              <h2>Foods</h2>
-              <p>Here is your menu summary with graph view</p>
+              <h2>{t('foodsName')}</h2>
+              <p>{t('foodsDescription')}</p>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 15 }}>
               <GuardComponent role={role} section="newMenu" action="create">
@@ -280,7 +283,7 @@ function Foods() {
                   variant="contained"
                   startIcon={<PersonAddIcon />}
                 >
-                  New Menu
+                  {t('newMenu')}
                 </Button>
               </GuardComponent>
             </div>
@@ -306,7 +309,7 @@ function Foods() {
         title={
           favouriteError?.errors?.length
             ? favouriteError?.errors[0]?.message
-            : "Yangi Food qo'shildi!"
+            : t('addedNewFood')
         }
         open={openToast}
         setOpen={setOpenToast}
@@ -329,7 +332,7 @@ function Foods() {
       ></FoodQuontity>
       <ToastExample
         status="success"
-        title={"Muvofoqiyatli Card ga qo'shildi"}
+        title={t('addedNewCartFood')}
         open={openToastForAddCard}
         setOpen={setOpenToastForAddCard}
       ></ToastExample>

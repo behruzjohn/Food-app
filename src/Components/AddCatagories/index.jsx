@@ -10,29 +10,31 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
-const CREATE_CATAGORIES = gql`
-  mutation CreateCategory($name: String!, $image: String!) {
-    createCategory(category: { name: $name, image: $image }) {
-      payload {
-        _id
-        name
-        image
-      }
-    }
-  }
-`;
+import { useTranslation } from 'react-i18next';
+// const CREATE_CATAGORIES = gql`
+//   mutation CreateCategory($name: String!, $image: String!) {
+//     createCategory(category: { name: $name, image: $image }) {
+//       payload {
+//         _id
+//         name
+//         image
+//       }
+//     }
+//   }
+// `;
 
 function AddCatagories({ open, setOpen, onAdd }) {
-  const [fetchCatagories, { data, loading, error }] =
-    useMutation(CREATE_CATAGORIES);
-  const handleAdd = async () => {
-    await fetchCatagories({
-      variables: {
-        name: 'Fast Food',
-        image: 'https://example.com/image.png',
-      },
-    });
-  };
+  const { t } = useTranslation();
+  // const [fetchCatagories, { data, loading, error }] =
+  //   useMutation(CREATE_CATAGORIES);
+  // const handleAdd = async () => {
+  //   await fetchCatagories({
+  //     variables: {
+  //       name: 'Fast Food',
+  //       image: 'https://example.com/image.png',
+  //     },
+  //   });
+  // };
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -64,7 +66,7 @@ function AddCatagories({ open, setOpen, onAdd }) {
               name="name"
               control={control}
               rules={{
-                required: { value: true, message: 'Food name is required' },
+                required: { value: true, message: 'Category name is required' },
               }}
               render={({ field, fieldState: { error } }) => (
                 <TextField
@@ -72,7 +74,7 @@ function AddCatagories({ open, setOpen, onAdd }) {
                   error={Boolean(error)}
                   helperText={error?.message}
                   margin="dense"
-                  label="Category name"
+                  label={t('categoryNamePlaceHolder')}
                   fullWidth
                 />
               )}
@@ -81,22 +83,28 @@ function AddCatagories({ open, setOpen, onAdd }) {
             <Controller
               name="image"
               control={control}
+              rules={{
+                required: {
+                  value: true,
+                  message: t('categoryImageReq'),
+                },
+              }}
               render={({ field, fieldState: { error } }) => (
                 <TextField
                   {...field}
                   error={Boolean(error)}
                   helperText={error?.message}
                   margin="dense"
-                  label="Category Image Url"
+                  label={t('categoryImgUrl')}
                   fullWidth
                 />
               )}
             ></Controller>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleClose}>{t('cancel')}</Button>
             <Button type="submit" variant="contained" color="success">
-              Add
+              {t('add')}
             </Button>
           </DialogActions>
         </form>

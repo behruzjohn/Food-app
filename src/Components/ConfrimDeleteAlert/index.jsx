@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import { useTranslation } from 'react-i18next';
 
 const style = {
   position: 'absolute',
@@ -21,6 +22,7 @@ export default function DeleteFoodModalAlert({
   setIsDeleted,
   onConfirm,
 }) {
+  const { t } = useTranslation();
   const handleClose = () => setOpen(false);
 
   function handleConfirm() {
@@ -49,11 +51,10 @@ export default function DeleteFoodModalAlert({
             }}
             className="nav"
           >
-            <h2>Are you sure?</h2>
+            <h2>{t('areYouSure')}</h2>
             <p>
-              Are you sure want to delete this item? This action
-              <br />
-              cannot be undone.
+              {t('areYouDescription')}
+              {t('areYouDescription2')}
             </p>
             <div style={{ display: 'flex', gap: 15 }} className="btns">
               <Button
@@ -61,7 +62,7 @@ export default function DeleteFoodModalAlert({
                 style={{ width: 120 }}
                 variant="outlined"
               >
-                Cancel
+                {t('cancel')}
               </Button>
               <Button
                 onClick={() => handleConfirm()}
@@ -69,7 +70,7 @@ export default function DeleteFoodModalAlert({
                 color="error"
                 variant="contained"
               >
-                Delete
+                {t('delete')}
               </Button>
             </div>
           </div>

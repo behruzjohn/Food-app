@@ -10,7 +10,9 @@ import {
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { gql } from '@apollo/client';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react';
+import { useLazyQuery } from '@apollo/client/react';
+import { useTranslation } from 'react-i18next';
+
 import Loader from '../Loader';
 const GET_ALL_CATAGORIES = gql`
   query GetAllCategories {
@@ -41,6 +43,7 @@ const GET_FOOD_BY_ID = gql`
   }
 `;
 function AddFood({ open, setOpen, onAdd, editedFoodId }) {
+  const { t } = useTranslation();
   const [getFoodById, { datas, load, err }] = useLazyQuery(GET_FOOD_BY_ID);
   useEffect(() => {
     if (editedFoodId) {
@@ -99,7 +102,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add New Food</DialogTitle>
+        <DialogTitle>{t('addNewFood')}</DialogTitle>
         <form
           style={{ zIndex: 9999999999999 }}
           onSubmit={handleSubmit(onSubmit)}
@@ -109,7 +112,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
               name="name"
               control={control}
               rules={{
-                required: { message: 'Food name is required' },
+                required: { message: t('foodNameReq') },
               }}
               render={({ field, fieldState: { error } }) => (
                 <TextField
@@ -118,7 +121,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
                   error={Boolean(error)}
                   helperText={error?.message}
                   margin="dense"
-                  label="Food Name"
+                  label={t('foodName')}
                   fullWidth
                 />
               )}
@@ -127,7 +130,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
               name="shortName"
               control={control}
               rules={{
-                required: { message: 'Short name is required' },
+                required: { message: t('foodShortNameReq') },
               }}
               render={({ field, fieldState: { error } }) => (
                 <TextField
@@ -135,7 +138,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
                   error={Boolean(error)}
                   helperText={error?.message}
                   margin="dense"
-                  label="Food Short Name"
+                  label={t('foodShortName')}
                   fullWidth
                 />
               )}
@@ -144,7 +147,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
               name="category"
               control={control}
               rules={{
-                required: { message: 'Category is required' },
+                required: { message: t('categoryReq') },
               }}
               render={({ field, fieldState: { error } }) => (
                 <TextField
@@ -169,7 +172,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
               name="description"
               control={control}
               rules={{
-                required: { message: 'Description is required' },
+                required: { message: t('descriptionReq') },
               }}
               render={({ field, fieldState: { error } }) => (
                 <TextField
@@ -177,7 +180,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
                   error={Boolean(error)}
                   helperText={error?.message}
                   margin="dense"
-                  label="Desctiption"
+                  label={t('foodDescription')}
                   fullWidth
                 />
               )}
@@ -186,7 +189,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
               name="price"
               control={control}
               rules={{
-                required: { message: 'Food price is required' },
+                required: { message: t('foodPriceReq') },
               }}
               render={({ field, fieldState: { error } }) => (
                 <TextField
@@ -195,7 +198,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
                   error={Boolean(error)}
                   helperText={error?.message}
                   margin="dense"
-                  label="Food Price"
+                  label={t('foodPrice')}
                   fullWidth
                 />
               )}
@@ -204,7 +207,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
               name="discount"
               control={control}
               rules={{
-                required: { message: 'Food discount is required' },
+                required: { message: t('foodDiscount') },
               }}
               render={({ field, fieldState: { error } }) => (
                 <TextField
@@ -212,7 +215,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
                   error={Boolean(error)}
                   helperText={error?.message}
                   margin="dense"
-                  label="Food Discount"
+                  label={t('foodDiscount')}
                   fullWidth
                 />
               )}
@@ -221,7 +224,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
               name="image"
               control={control}
               rules={{
-                required: { message: 'Image  is required' },
+                required: { message: t('foodImgReq') },
               }}
               render={({ field, fieldState: { error } }) => (
                 <TextField
@@ -230,16 +233,16 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
                   error={Boolean(error)}
                   helperText={error?.message}
                   margin="dense"
-                  label="Food Image Url"
+                  label={t('foodImgUrl')}
                   fullWidth
                 />
               )}
             ></Controller>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleClose}>{t('cancel')}</Button>
             <Button type="submit" variant="contained" color="success">
-              Add
+              {t('add')}
             </Button>
           </DialogActions>
         </form>

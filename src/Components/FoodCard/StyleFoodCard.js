@@ -28,7 +28,7 @@ export const StyleFoodCard = styled.div`
   img {
     width: 150px;
     height: 150px;
-    border-radius: 50%;
+    border-radius: 20%;
     object-fit: cover;
     margin-bottom: 12px;
   }

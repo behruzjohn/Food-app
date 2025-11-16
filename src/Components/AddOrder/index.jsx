@@ -8,11 +8,11 @@ import {
   DialogTitle,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
-import { gql } from '@apollo/client';
-import maplibregl from 'maplibre-gl';
+import { useTranslation } from 'react-i18next';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 function AddOrder({ open, setOpen, onAdd }) {
+  const { t } = useTranslation();
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       address: '',
@@ -34,7 +34,7 @@ function AddOrder({ open, setOpen, onAdd }) {
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add New Order</DialogTitle>
+        <DialogTitle>{t('AddOrderTitle')}</DialogTitle>
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogContent>
             <Controller
@@ -44,7 +44,7 @@ function AddOrder({ open, setOpen, onAdd }) {
                 <TextField
                   {...field}
                   margin="dense"
-                  label="Enter your location"
+                  label={t('enterYourLocation')}
                   fullWidth
                 />
               )}
@@ -56,7 +56,7 @@ function AddOrder({ open, setOpen, onAdd }) {
                 <TextField
                   {...field}
                   margin="dense"
-                  label="Selected Lat"
+                  label={t('selectLat')}
                   fullWidth
                 />
               )}
@@ -68,16 +68,16 @@ function AddOrder({ open, setOpen, onAdd }) {
                 <TextField
                   {...field}
                   margin="dense"
-                  label="Selected Lng"
+                  label={t('selectLng')}
                   fullWidth
                 />
               )}
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleClose}>{t('cancel')}</Button>
             <Button type="submit" variant="contained" color="success">
-              Add
+              {t('add')}
             </Button>
           </DialogActions>
         </form>

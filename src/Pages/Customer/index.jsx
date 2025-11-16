@@ -22,12 +22,14 @@ import {
 import OrderSearch from '../../Components/OrderSearch/index';
 import { StyleCustomer } from './StyleCustomer';
 import EditSquareIcon from '@mui/icons-material/ModeEdit';
+import { useTranslation } from 'react-i18next';
 import DeleteIcon from '@mui/icons-material/Delete';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
 import CheckToken from '../../Components/CheckToken';
 
 function Customer() {
-  const options = ['All status', 'Finished status'];
+  const { t } = useTranslation();
+  const options = [t('allStatus'), t('finishedStatus')];
   const [openOption, setopenOption] = useState(null);
   const open = Boolean(openOption);
   CheckToken();
@@ -48,8 +50,8 @@ function Customer() {
 
           <div className="main-header">
             <div className="order-header-text">
-              <h2>Your Orders</h2>
-              <p>This is your order list data</p>
+              <h2>{t('customers')}</h2>
+              <p>{t('customerDescription')}</p>
             </div>
             <div className="order-header-btns">
               <Autocomplete
@@ -67,12 +69,12 @@ function Customer() {
               <table>
                 <thead>
                   <tr>
-                    <th>Customer Id</th>
-                    <th>Join Date</th>
-                    <th>Customer Name</th>
-                    <th>Location</th>
-                    <th>Total Spent</th>
-                    <th>Last Order</th>
+                    <th>{t('customerId')}</th>
+                    <th>{t('joinDate')}</th>
+                    <th>{t('customers')}</th>
+                    <th>{t('location')}</th>
+                    <th>{t('totalSpent')}</th>
+                    <th>{t('lastOrder')}</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -119,14 +121,14 @@ function Customer() {
                           <ListItemIcon>
                             <EditSquareIcon color="success" />
                           </ListItemIcon>
-                          <ListItemText primary="Edit order" />
+                          <ListItemText primary={t('editOrder')} />
                         </MenuItem>
 
                         <MenuItem onClick={handleClose}>
                           <ListItemIcon>
                             <DeleteIcon color="error" />
                           </ListItemIcon>
-                          <ListItemText primary="Delete order" />
+                          <ListItemText primary={t('deleteOrder')} />
                         </MenuItem>
                       </Menu>
                     </td>
