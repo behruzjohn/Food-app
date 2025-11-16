@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Menu,
   MenuItem,
@@ -22,8 +22,10 @@ import { StyleOrders } from './StyleOrders';
 import OrderSearch from '../../Components/OrderSearch/index';
 import AddOrder from '../../Components/AddOrder/index';
 import { gql } from '@apollo/client';
-import { useMutation } from '@apollo/client/react';
+import { useMutation, useQuery } from '@apollo/client/react';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
+import CheckToken from '../../Components/CheckToken';
+import ToastExample from '../../Components/Toast';
 const CREATE_ORDER = gql`
   mutation CreateOrder($address: [Float!]!) {
     createOrder(order: { address: $address }) {
@@ -71,18 +73,61 @@ const CREATE_ORDER = gql`
     }
   }
 `;
+const GET_ORDER = gql`
+  query GetOrders($statuses: String, $page: Int, $limit: Int) {
+    getOrders(statuses: $statuses, page: $page, limit: $limit) {
+      payload {
+        _id
+        totalPrice
+        status
+        address
+        createdAt
+        updatedAt
+        createdBy {
+          _id
+          name
+          phone
+          role
+          photo
+          telegramId
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  }
+`;
 function OrdersPg() {
   const [openAddOrder, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openToastForOrderListError, setOpenToastForOrderListError] =
+    useState(false);
   const [fetchAddOrder, { data, loading, error }] = useMutation(CREATE_ORDER);
+
+  const {
+    data: orderData,
+    loading: orderLoading,
+    error: orderError,
+  } = useQuery(GET_ORDER);
+
+  useEffect(() => {
+    if (orderData) {
+      console.log(orderData.getOrders.payload);
+    }
+  }, [orderData]);
+
   const open = Boolean(anchorEl);
+  CheckToken();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
+  CheckToken();
   const handleAddOrder = async (formData) => {
     try {
-      const token = localStorage.getItem('token') || '';
+      const localToken = JSON.parse(localStorage.getItem('authStore')) || '';
+      const token = localToken?.state?.token;
       await fetchAddOrder({
         variables: {
           address: [Number(formData.lat), Number(formData.lng)],
@@ -94,7 +139,9 @@ function OrdersPg() {
         },
       });
     } catch (error) {
-      console.error(error);
+      if (error) {
+        setOpenToastForOrderListError(true);
+      }
     }
   };
 
@@ -200,6 +247,12 @@ function OrdersPg() {
           </div>
         </div>
       </StyleOrders>
+      <ToastExample
+        status={'error'}
+        open={openToastForOrderListError}
+        setOpen={setOpenToastForOrderListError}
+        title={error ? error.message : ''}
+      ></ToastExample>
     </HeaderDashborad>
   );
 }

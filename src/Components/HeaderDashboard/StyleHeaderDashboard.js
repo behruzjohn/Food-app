@@ -9,11 +9,20 @@ export const StyledLayoutWrapper = styled.div`
     padding-left: 280px;
     background-color: #f3f3f7;
   }
+  @media (max-width: 800px) {
+    .content {
+      min-height: 100vh;
+      padding-block: 32px;
+      padding-left: 90px;
+      background-color: #f3f3f7;
+    }
+  }
 `;
 
 export const StyleHeaderDashboard = styled.div`
   position: fixed;
   width: 280px;
+  padding: 20px;
   height: 100%;
   z-index: 1111;
   background-color: #fff;
@@ -21,13 +30,25 @@ export const StyleHeaderDashboard = styled.div`
   .header-nav {
     padding: 30px;
   }
+  button {
+    margin-top: 27px;
+    width: 100%;
+  }
+  img {
+    cursor: pointer;
+    margin-left: 35px;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+  }
   .header-nav ul {
-    margin-top: 40px;
+    margin-top: 0px;
     display: flex;
     flex-direction: column;
     gap: 50px;
   }
   .header-nav ul li {
+    cursor: pointer;
     display: flex;
     align-items: center;
     list-style: none;
@@ -64,5 +85,24 @@ export const StyleHeaderDashboard = styled.div`
     margin-bottom: 55px;
     width: 100px;
     height: 90px;
+  }
+
+  @media (max-width: 800px) {
+    width: ${(props) => (props.openHeaderDashboard ? '280px' : '80px')};
+    padding: 0;
+    #span-title {
+      display: ${(props) => (props.openHeaderDashboard ? 'flex' : 'none')};
+    }
+    img {
+      width: ${(props) => (props.openHeaderDashboard ? '150px' : '65px')};
+      height: ${(props) => (props.openHeaderDashboard ? '150px' : '65px')};
+      margin-left: ${(props) => (props.openHeaderDashboard ? '35px' : '8px')};
+    }
+    button {
+      width: ${(props) => (props.openHeaderDashboard ? '220px' : '20px')};
+      height: 40px;
+      margin-left: ${(props) => (props.openHeaderDashboard ? '28px' : '5px')};
+      padding-left: 30px;
+    }
   }
 `;

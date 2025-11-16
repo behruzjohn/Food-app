@@ -4,7 +4,7 @@ import { StyleFoods } from './StyleFoods';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import FoodCard from '../../Components/FoodCard/FoodCards';
 import AddFood from '../../Components/AddFood/index';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { gql } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
@@ -12,6 +12,8 @@ import Loader from '../../Components/Loader/index';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
 import ToastExample from '../../Components/Toast';
 import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
+import GuardComponent from '../../Components/CheckRole/CheckRole';
+import FoodQuontity from '../../Components/FoodQuontity';
 const GET_ALL_FOODS = gql`
   query GetAllFoods {
     getAllFoods {
@@ -99,6 +101,30 @@ const DELETE_FOOD = gql`
     }
   }
 `;
+const CREATE_CARD = gql`
+  mutation CreateCartItem($data: CartItemInput!) {
+    createCartItem(data: $data) {
+      payload {
+        _id
+        quantity
+        price
+        discount
+        user
+        food {
+          _id
+          shortName
+          name
+          image
+          description
+          price
+          discount
+          likes
+          isFavorite
+        }
+      }
+    }
+  }
+`;
 function Foods() {
   const [open, setOpen] = useState(false);
   const [load, setLoad] = useState(false);
@@ -107,7 +133,15 @@ function Foods() {
   const [deletedFoodId, setDeletedFoodId] = useState(null);
   const [isDeleted, setIsDeleted] = useState(false);
   const [openToast, setOpenToast] = useState(false);
-  const [addToFavourites] = useMutation(ADD_FOOD_FAVOURITES);
+  const [role, setRole] = useState('');
+  const [openQuontity, setOpenQuontity] = useState(false);
+  const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
+  const [selectedFood, setSelectedFood] = useState(null);
+  const [editedFoodId, setEditedFoodId] = useState(null);
+  const [createCard, { data: createCardData }] = useMutation(CREATE_CARD);
+  const [addToFavourites, { data: favouriteData, error: favouriteError }] =
+    useMutation(ADD_FOOD_FAVOURITES);
+  const [allFoodsForSearch, setAllFoodsForSearch] = useState([]);
   const [
     deleteFood,
     {
@@ -124,12 +158,21 @@ function Foods() {
     setLoad(true);
     if (data?.getAllFoods?.payload) {
       setFoods(data?.getAllFoods?.payload);
+      setAllFoodsForSearch(data?.getAllFoods?.payload);
       setLoad(false);
     }
   }, [data]);
 
-  const handleClickAddToCard = (clickedFoodId) => {
-    const token = localStorage.getItem('token') || '';
+  useEffect(() => {
+    const a = JSON.parse(localStorage.getItem('authStore') || '');
+
+    setRole(a?.state?.role);
+  }, []);
+
+  const handleClickFavourite = (clickedFoodId) => {
+    const localToken = JSON.parse(localStorage.getItem('authStore') || '');
+    const token = localToken?.state?.token;
+
     setOpenToast(true);
     addToFavourites({
       variables: {
@@ -141,8 +184,32 @@ function Foods() {
         },
       },
     });
+    console.log(favouriteError?.errors[0]?.message);
   };
 
+  const handleAddToCart = (food) => {
+    setSelectedFood(food);
+    setOpenQuontity(true);
+  };
+  const handleConfirmQuontity = (quontity) => {
+    createCard({
+      variables: {
+        data: {
+          food: selectedFood,
+          quantity: quontity,
+        },
+      },
+    });
+
+    setOpenQuontity(false);
+    setSelectedFood(null);
+    setOpenToastForAddCard(true);
+  };
+
+  const handleClickEditFood = (foodId) => {
+    setEditedFoodId(foodId);
+    setOpen(true);
+  };
   const handleAddFood = async (formData) => {
     try {
       setLoad(true);
@@ -194,30 +261,38 @@ function Foods() {
     <HeaderDashborad>
       <Loader load={load}></Loader>
       <StyleFoods className="foods">
-        <Container maxWidth="lg">
-          <OrderSearch />
+        <Container maxWidth="xl">
+          <OrderSearch
+            setFoods={setFoods}
+            allFoods={allFoodsForSearch}
+            action="foods"
+          />
           <div className="foods-header">
             <div>
               <h2>Foods</h2>
               <p>Here is your menu summary with graph view</p>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 15 }}>
-              <Button
-                onClick={() => setOpen(true)}
-                color="success"
-                variant="contained"
-                startIcon={<PersonAddIcon />}
-              >
-                New Menu
-              </Button>
+              <GuardComponent role={role} section="newMenu" action="create">
+                <Button
+                  onClick={() => setOpen(true)}
+                  color="success"
+                  variant="contained"
+                  startIcon={<PersonAddIcon />}
+                >
+                  New Menu
+                </Button>
+              </GuardComponent>
             </div>
           </div>
           <div className="food-cards">
             <div className="food-cards-nav">
-              {foods.map((food) => (
+              {foods?.map((food) => (
                 <FoodCard
+                  handleClickEditFood={handleClickEditFood}
                   handleClickDeleteFood={handleClickDeleteFood}
-                  handleClickAddToCard={handleClickAddToCard}
+                  handleClickFavourite={handleClickFavourite}
+                  handleAddToCart={handleAddToCart}
                   key={food._id}
                   food={food}
                 />
@@ -227,16 +302,37 @@ function Foods() {
         </Container>
       </StyleFoods>
       <ToastExample
-        title="Yangi Food qo'shildi!"
+        status={favouriteError?.errors?.length ? 'error' : 'succsess'}
+        title={
+          favouriteError?.errors?.length
+            ? favouriteError?.errors[0]?.message
+            : "Yangi Food qo'shildi!"
+        }
         open={openToast}
         setOpen={setOpenToast}
       />
-      <AddFood open={open} setOpen={setOpen} onAdd={handleAddFood} />
+      <AddFood
+        editedFoodId={editedFoodId}
+        open={open}
+        setOpen={setOpen}
+        onAdd={handleAddFood}
+      />
       <DeleteFoodModalAlert
         open={clickedDelete}
         setOpen={setClickedDelete}
         setIsDeleted={setIsDeleted}
       />
+      <FoodQuontity
+        onConfirm={handleConfirmQuontity}
+        open={openQuontity}
+        setOpen={setOpenQuontity}
+      ></FoodQuontity>
+      <ToastExample
+        status="success"
+        title={"Muvofoqiyatli Card ga qo'shildi"}
+        open={openToastForAddCard}
+        setOpen={setOpenToastForAddCard}
+      ></ToastExample>
     </HeaderDashborad>
   );
 }

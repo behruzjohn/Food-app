@@ -5,7 +5,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import FoodCard from '../../Components/FoodCard/FoodCards';
 import { Button, Container } from '@mui/material';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
-import ErrorIcon from '@mui/icons-material/Error';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import AddIcon from '@mui/icons-material/Add';
+import FastfoodOutlinedIcon from '@mui/icons-material/FastfoodOutlined';
 
 const GET_FOODS_BY_CATEGORY = gql`
   query GetAllFoods($categories: [ID]) {
@@ -46,14 +48,24 @@ const GET_CATEOGRY_BY_ID = gql`
   }
 `;
 import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
+import GuardComponent from '../../Components/CheckRole/CheckRole';
 
 function CategoryInfo() {
   const location = useLocation();
-  const token = localStorage.getItem('token') || '';
+  const localToken = JSON.parse(localStorage.getItem('authStore') || '');
+  const token = localToken?.state?.token;
   const [categoryCard, setCategoryCard] = useState([]);
   const params = new URLSearchParams(location.search);
   const categoryId = params.get('id');
   const navigate = useNavigate('');
+  const [role, setRole] = useState('');
+
+  useEffect(() => {
+    const a = JSON.parse(localStorage.getItem('authStore') || '');
+    console.log(a?.state?.role);
+
+    setRole(a?.state?.role);
+  }, []);
 
   const { data: dataTitle, loading: LoadTitle } = useQuery(GET_CATEOGRY_BY_ID, {
     variables: {
@@ -96,20 +108,40 @@ function CategoryInfo() {
 
   return (
     <HeaderDashborad>
-      <Container maxWidth="lg">
-        <Button
-          onClick={() => navigate('/categories')}
-          variant="outlined"
-          startIcon={<ArrowBackIosNewOutlinedIcon />}
+      <Container maxWidth="xl">
+        <div
+          style={{
+            marginBottom: 20,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
         >
-          Goo back
-        </Button>
-        <h1>
-          Category
-          <span style={{ color: 'red' }}>
-            {dataTitle?.getCategoryById?.payload?.name}
-          </span>
-        </h1>
+          <Button
+            onClick={() => navigate('/categories')}
+            variant="outlined"
+            startIcon={<ArrowBackIosNewOutlinedIcon />}
+          >
+            Goo back
+          </Button>
+          {categoryCard.length > 0 ? (
+            <></>
+          ) : (
+            <GuardComponent role={role} section="addFood" action="addFood">
+              <Button
+                color="success"
+                startIcon={<AddIcon />}
+                variant="outlined"
+              >
+                Create Food
+              </Button>
+            </GuardComponent>
+          )}
+        </div>
+        <h2>
+          <strong>{' ' + dataTitle?.getCategoryById?.payload?.name}</strong>{' '}
+          <FastfoodOutlinedIcon />
+        </h2>
         <div
           style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}
           className="card"
@@ -119,7 +151,7 @@ function CategoryInfo() {
               <FoodCard key={category._id} isSpeacial={true} food={category} />
             ))
           ) : (
-            <div className="error">
+            <div style={{ marginTop: 15 }} className="error">
               <h1
                 style={{
                   color: 'red',
@@ -128,8 +160,8 @@ function CategoryInfo() {
                   gap: 5,
                 }}
               >
-                Bu Categoryada umuman Food yoq
-                <ErrorIcon fontSize="large" />
+                Bu Categoryada umuman Ovqat yoq
+                <ErrorOutlineIcon fontSize="large" />
               </h1>
             </div>
           )}

@@ -2,7 +2,14 @@ import styled from 'styled-components';
 
 export const StyleFoodCard = styled.div`
   margin-top: 20px;
-  background-color: ${(props) => (props.isSpeacial ? 'aqua' : '#fff')};
+  background-color: ${(props) =>
+    props.isSpeacial
+      ? 'aqua'
+      : props.isFavourite
+      ? '#ffeeba'
+      : props.isFoodCard
+      ? '#fbcce6'
+      : '#fff'};
   width: 270px;
   height: auto;
   border-radius: 16px;

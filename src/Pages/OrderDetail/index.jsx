@@ -5,11 +5,13 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import defualtImg from '../../assets/defualt-user.png';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
+import CheckToken from '../../Components/CheckToken';
 
 function OrderDetail() {
+  CheckToken();
   return (
     <HeaderDashborad>
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <StyleOrderDetail className="order-detail">
           <div className="order-detail-nav">
             <OrderSearch />

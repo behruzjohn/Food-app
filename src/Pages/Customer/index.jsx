@@ -24,11 +24,13 @@ import { StyleCustomer } from './StyleCustomer';
 import EditSquareIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
+import CheckToken from '../../Components/CheckToken';
 
 function Customer() {
   const options = ['All status', 'Finished status'];
   const [openOption, setopenOption] = useState(null);
   const open = Boolean(openOption);
+  CheckToken();
 
   const handleClick = (event) => {
     setopenOption(event.currentTarget);

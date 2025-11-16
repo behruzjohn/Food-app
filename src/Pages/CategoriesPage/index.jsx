@@ -9,6 +9,8 @@ import AddCatagories from '../../Components/AddCatagories/index';
 import ToastExample from '../../Components/Toast';
 import CategoryCard from '../../Components/CategegoryCard/CategoryCard';
 import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
+import CheckToken from '../../Components/CheckToken';
+import GuardComponent from '../../Components/CheckRole/CheckRole';
 const GET_ALL_CATEGORIES = gql`
   query GetAllCategories {
     getAllCategories {
@@ -48,12 +50,23 @@ const DELETE_CATEGORY = gql`
 function CategoriesPage() {
   const [createCategory] = useMutation(CREATE_CATEGORIES);
   const [categoires, setCategories] = useState([]);
+  const [allCategoriesForSearch, setAllCategoriesForSearch] = useState();
   const [openCategories, setOpenCategories] = useState(false);
   const [deletedCategoryId, setDeletedCategoryId] = useState('');
   const [openToastDelete, setOpenToastDelete] = useState(false);
   const [openToastC, setOpenToastC] = useState(false);
   const [clickedDelete, setClickedDelete] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [role, setRole] = useState('');
+
+  useEffect(() => {
+    const a = JSON.parse(localStorage.getItem('authStore') || '');
+    console.log(a?.state?.role);
+
+    setRole(a?.state?.role);
+  }, []);
+
+  CheckToken();
 
   const [fetchAllCategoires, { data, loading, error, refetch }] =
     useLazyQuery(GET_ALL_CATEGORIES);
@@ -76,7 +89,8 @@ function CategoriesPage() {
     try {
       setClickedDelete(false);
       setOpenToastC(true);
-      const token = localStorage.getItem('token') || '';
+      const localToken = JSON.parse(localStorage.getItem('authStore') || '');
+      const token = localToken?.state?.token;
       await createCategory({
         variables: {
           name: formData.name,
@@ -125,10 +139,14 @@ function CategoriesPage() {
   }, [isDeleted, deleteCategory, refetch]);
   return (
     <HeaderDashborad>
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <div className="categories">
           <div className="categories-nav">
-            <OrderSearch></OrderSearch>
+            <OrderSearch
+              setCategories={setCategories}
+              allCategoriesForSearch={allCategoriesForSearch}
+              action="category"
+            ></OrderSearch>
             <div style={{ marginTop: 30 }} className="category-nav">
               <header
                 style={{
@@ -141,14 +159,20 @@ function CategoriesPage() {
                   <h2>Category Page</h2>
                   <p>Find Categoires for you</p>
                 </div>
-                <Button
-                  onClick={() => setOpenCategories(true)}
-                  color="success"
-                  variant="contained"
-                  startIcon={<AddCircleOutlineIcon />}
+                <GuardComponent
+                  role={role}
+                  section="category"
+                  action="addCategory"
                 >
-                  Add Categories
-                </Button>
+                  <Button
+                    onClick={() => setOpenCategories(true)}
+                    color="success"
+                    variant="contained"
+                    startIcon={<AddCircleOutlineIcon />}
+                  >
+                    Add Categories
+                  </Button>
+                </GuardComponent>
               </header>
               <div
                 style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}

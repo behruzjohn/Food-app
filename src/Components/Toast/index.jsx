@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { Snackbar, Alert, Button } from '@mui/material';
 
-function ToastExample({ title, open, setOpen }) {
-  const handleClick = () => {
-    setOpen(true);
-  };
-
+function ToastExample({ status, title, open, setOpen }) {
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') return;
     setOpen(false);
@@ -19,7 +15,7 @@ function ToastExample({ title, open, setOpen }) {
         onClose={handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleClose} severity={status} sx={{ width: '100%' }}>
           {title}
         </Alert>
       </Snackbar>

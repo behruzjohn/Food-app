@@ -6,7 +6,8 @@ const httpLink = new HttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem('token');
+  const localToken = JSON.parse(localStorage.getItem('authStore')) || {};
+  const token = localToken?.state?.token;
   return {
     headers: {
       ...headers,

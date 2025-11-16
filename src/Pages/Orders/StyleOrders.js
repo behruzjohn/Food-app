@@ -12,8 +12,30 @@ export const StyleOrders = styled.div`
   }
   .orders-search input {
     background-color: #fff;
-    width: 900px;
     height: 10px;
+    width: 860px;
+  }
+  .select {
+    width: 68px;
+  }
+  .selectId {
+    margin-left: 10px;
+  }
+  .shop {
+    position: relative;
+    
+    display: inline-block;
+  }
+
+  .shop .badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: red;
+    color: white;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 50%;
   }
   .profile {
     display: flex;

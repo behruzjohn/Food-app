@@ -16,11 +16,15 @@ import { useLazyQuery } from '@apollo/client/react';
 import { useEffect, useState } from 'react';
 import { MuiTelInput } from 'mui-tel-input';
 import Loader from '../../Components/Loader/index';
+import { useUserStore } from '../../../store';
 const options = ['user', 'admin'];
 function SignIn() {
   const [load, setLoad] = useState(false);
   const navigate = useNavigate('');
   const [signInFetchEror, setSignInFetchEror] = useState('');
+
+  const setUserRole = useUserStore((state) => state.setUserRole);
+  const setToken = useUserStore((state) => state.setToken);
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -56,17 +60,24 @@ function SignIn() {
       });
       localStorage.setItem('userId', res?.data?.signIn?.user?._id);
       console.log(res?.data?.signIn?.user);
-      localStorage.setItem('role', res?.data?.signIn?.user?.role);
+      setUserRole(res?.data?.signIn?.user?.role);
 
       if (res?.data?.signIn?.token) {
-        localStorage.setItem('token', res.data.signIn.token);
-        localStorage.setItem('userName', res.data.signIn.user.name);
-        navigate('/dashboard');
+        setToken(res?.data?.signIn?.token);
+        localStorage.setItem('userName', res?.data?.signIn?.user?.name);
+        navigate('/order-list');
+      }
+      if (!formData.role) {
+        setSignInFetchEror('Please select a role');
+        setLoad(false);
+        return;
       }
       if (loading) {
         setLoad(false);
       }
     } catch (err) {
+      console.log(err);
+
       setLoad(false);
       setSignInFetchEror(err.message || 'Something went wrong');
     }

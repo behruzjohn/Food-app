@@ -56,7 +56,7 @@ export const StyleSignUp = styled.div`
     align-items: center;
     display: flex;
   }
-  @media (max-width: 480px) {
+  @media (max-width: 800px) {
     background-image: url(${signInBg});
     position: absolute;
     background-size: cover;

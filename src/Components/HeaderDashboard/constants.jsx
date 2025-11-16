@@ -5,37 +5,43 @@ import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import CategoryIcon from '@mui/icons-material/Category';
+import Person2Icon from '@mui/icons-material/Person2';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import { useTransition } from 'react';
 
 export const SIDEBAR_LINKS = [
   {
-    title: 'Order List',
+    title: 'orderList',
     path: '/order-list',
     key: 'order-list',
     icon: <FormatListBulletedIcon />,
   },
-  {
-    title: 'Order Detail',
-    path: '/order-detail',
-    key: 'order-detail',
-    icon: <CreditScoreIcon />,
-  },
 
   {
-    title: 'Customer',
+    title: 'customer',
     path: '/customer',
     key: 'customer',
-    icon: <SupportAgentIcon />,
+    icon: <Person2Icon />,
+    guard: { section: 'headerDashboard', action: 'customer' },
   },
   {
-    title: 'Foods',
+    title: 'foods',
     path: '/foods',
     key: 'foods',
     icon: <FastfoodIcon />,
   },
   {
-    title: 'Categories',
+    title: 'categories',
     path: '/categories',
     key: 'categories',
     icon: <CategoryIcon />,
+  },
+
+  {
+    title: 'favouriteFoods',
+    path: '/favourite',
+    key: 'favourite',
+    icon: <FavoriteIcon />,
+    guard: { section: 'headerDashboard', action: 'faovuriteLink' },
   },
 ];

@@ -1,11 +1,10 @@
 import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import SignIn from './Pages/Sign-in/index.jsx';
 import SignUp from './Pages/Sign-up/index.jsx';
 import MainLoginPage from './Pages/MainLoginPage/index.jsx';
-import Dashbord from './Components/Dashboard/index.jsx';
 import { ApolloProvider } from '@apollo/client/react';
 import ForgotPasswordPage from './Pages/ForgotPassword/index.jsx';
 import AddFood from './Components/AddFood/index.jsx';
@@ -18,37 +17,27 @@ import ReviewsPg from './Pages/CategoriesPage/index.jsx';
 import CategoriesPage from './Pages/CategoriesPage/index.jsx';
 import CategoryInfo from './Pages/CategoryInfo/index.jsx';
 import { clientAppollo } from '../src/client.js';
-function Main() {
-  const navigate = useNavigate();
+import FavouriteFood from './Pages/FavouritePage/index.jsx';
+import FoodCard from './Pages/ShopCard/index.jsx';
+import ShopCart from './Pages/ShopCard/index.jsx';
+import './i18n.js';
 
-  useEffect(() => {
-    const token = localStorage.getItem('token') || '';
-    if (!token) {
-      navigate('/sign-in');
-    }
-  }, []);
-
-  return (
-    <Routes>
-      <Route path="/" element={<MainLoginPage />} />
-      <Route path="sign-in" element={<SignIn />} />
-      <Route path="sign-up" element={<SignUp />} />
-      <Route path="/forgotPass" element={<ForgotPasswordPage />} />
-      <Route path="/order-list" element={<OrdersPg />} />
-      <Route path="/order-detail" element={<OrderDetail />} />
-      <Route path="/customer" element={<Customer />} />
-      <Route path="/reviews" element={<ReviewsPg />} />
-      <Route path="/foods" element={<Foods />} />
-      <Route path="/categories" element={<CategoriesPage />} />
-      <Route path="/categoriesById" element={<CategoryInfo />} />
-      <Route path="/dashboard" element={<Dashbord />} />
-    </Routes>
-  );
-}
 createRoot(document.getElementById('root')).render(
   <ApolloProvider client={clientAppollo}>
     <BrowserRouter>
-      <Main></Main>
+      <Routes>
+        <Route path="/" element={<OrdersPg />} />
+        <Route path="/order-list" element={<OrdersPg />} />
+        <Route path="sign-in" element={<SignIn />} />
+        <Route path="sign-up" element={<SignUp />} />
+        <Route path="/forgotPass" element={<ForgotPasswordPage />} />
+        <Route path="/customer" element={<Customer />} />
+        <Route path="/foods" element={<Foods />} />
+        <Route path="/categories" element={<CategoriesPage />} />
+        <Route path="/categoriesById" element={<CategoryInfo />} />
+        <Route path="/favourite" element={<FavouriteFood />} />
+        <Route path="/food-cart" element={<ShopCart />} />
+      </Routes>
     </BrowserRouter>
   </ApolloProvider>
 );

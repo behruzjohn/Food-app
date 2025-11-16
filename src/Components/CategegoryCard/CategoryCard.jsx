@@ -16,13 +16,21 @@ import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { StyleCategoryCardS } from './StyleCategory';
 import TheaterComedyIcon from '@mui/icons-material/TheaterComedy';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MoreHoriz } from '@mui/icons-material';
+import GuardComponent from '../CheckRole/CheckRole';
 
 function CategoryCard({ category, setDeletedCategoryId, setClickedDelete }) {
-  const options = ['All status', 'Finished status'];
   const [openOption, setopenOption] = useState(null);
   const open = Boolean(openOption);
+  const [role, setRole] = useState('');
+
+  useEffect(() => {
+    const a = JSON.parse(localStorage.getItem('authStore') || '');
+    console.log(a?.state?.role);
+
+    setRole(a?.state?.role);
+  }, []);
 
   const handleClick = (event) => {
     setopenOption(event.currentTarget);
@@ -49,46 +57,38 @@ function CategoryCard({ category, setDeletedCategoryId, setClickedDelete }) {
           <h4>{category?.name}</h4>
         </div>
       </div>
-      <MoreHoriz
-        onClick={handleClick}
-        style={{ cursor: 'pointer', position: 'relative', bottom: 34 }}
-      />
-      <Menu
-        anchorEl={openOption}
-        open={open}
-        onClose={handleClose}
-        PaperProps={{
-          elevation: 3,
-          sx: {
-            mt: 1.5,
-            borderRadius: '16px',
-            minWidth: 180,
-            p: 1,
-          },
-        }}
-        transformOrigin={{
-          horizontal: 'right',
-          vertical: 'top',
-        }}
-        anchorOrigin={{
-          horizontal: 'right',
-          vertical: 'bottom',
-        }}
-      >
-        <MenuItem id="menu" onClick={handleClose}>
-          <div className="btn">
-            <Button
+      <GuardComponent role={role} section="category" action="delete">
+        <MoreHoriz
+          style={{ cursor: 'pointer', position: 'relative', bottom: 34 }}
+          onClick={handleClick}
+        />
+        <Menu
+          anchorEl={openOption}
+          open={open}
+          onClose={handleClose}
+          PaperProps={{
+            elevation: 3,
+            sx: { mt: 1.5, borderRadius: '16px', minWidth: 50, p: 1 },
+          }}
+          transformOrigin={{
+            horizontal: 'right',
+            vertical: 'top',
+          }}
+          anchorOrigin={{
+            horizontal: 'right',
+            vertical: 'bottom',
+          }}
+        >
+          <MenuItem id="menu" onClick={handleClose}>
+            <DeleteIcon
+              style={{ color: 'red' }}
+              className="iconDelete"
               onClick={() => handleClickDelete(category?._id)}
-              id="delete"
-              variant="contained"
-              color="error"
-            >
-              <DeleteIcon fontSize="small" />
-            </Button>
-            <p>Delete</p>
-          </div>
-        </MenuItem>
-      </Menu>
+              fontSize="small"
+            />
+          </MenuItem>
+        </Menu>
+      </GuardComponent>
     </StyleCategoryCardS>
   );
 }
