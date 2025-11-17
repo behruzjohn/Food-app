@@ -81,6 +81,7 @@ import GuardComponent from '../../Components/CheckRole/CheckRole';
 import { StyleCategoryInfo } from './StyleCategoryInfo';
 import FoodQuontity from '../../Components/FoodQuontity';
 import ToastExample from '../../Components/Toast';
+import { StyleCategoryInfoo } from './StyleInfo';
 
 function CategoryInfo() {
   const { t } = useTranslation();
@@ -165,73 +166,67 @@ function CategoryInfo() {
   return (
     <HeaderDashborad>
       <Container maxWidth="xl">
-        <div
-          style={{
-            marginBottom: 20,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Button
-            onClick={() => navigate('/categories')}
-            variant="outlined"
-            startIcon={<ArrowBackIosNewOutlinedIcon />}
+        <StyleCategoryInfo>
+          <div className="continer">
+            <Button
+              onClick={() => navigate('/categories')}
+              variant="outlined"
+              startIcon={<ArrowBackIosNewOutlinedIcon />}
+            >
+              {t('gooBack')}
+            </Button>
+            {categoryCard.length > 0 ? (
+              <></>
+            ) : (
+              <GuardComponent role={role} section="addFood" action="addFood">
+                <Button
+                  onClick={() => navigate('/foods')}
+                  color="success"
+                  startIcon={<AddIcon />}
+                  variant="outlined"
+                >
+                  {t('createFood')}
+                </Button>
+              </GuardComponent>
+            )}
+          </div>
+          <h2>
+            <strong>{' ' + dataTitle?.getCategoryById?.payload?.name}</strong>{' '}
+            <FastfoodOutlinedIcon />
+          </h2>
+          <div
+            style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}
+            className="card"
           >
-            {t('gooBack')}
-          </Button>
-          {categoryCard.length > 0 ? (
-            <></>
-          ) : (
-            <GuardComponent role={role} section="addFood" action="addFood">
-              <Button
-                color="success"
-                startIcon={<AddIcon />}
-                variant="outlined"
-              >
-                {t('createFood')}
-              </Button>
-            </GuardComponent>
-          )}
-        </div>
-        <h2>
-          <strong>{' ' + dataTitle?.getCategoryById?.payload?.name}</strong>{' '}
-          <FastfoodOutlinedIcon />
-        </h2>
-        <div
-          style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}
-          className="card"
-        >
-          {categoryCard.length > 0 ? (
-            categoryCard.map((category) => (
-              <FoodCard
-                handleAddToCart={handleAddToCart}
-                key={category._id}
-                isSpeacial={true}
-                food={category}
-              />
-            ))
-          ) : (
-            <StyleCategoryInfo>
+            {categoryCard.length > 0 ? (
+              categoryCard.map((category) => (
+                <FoodCard
+                  handleAddToCart={handleAddToCart}
+                  key={category._id}
+                  isSpeacial={true}
+                  food={category}
+                />
+              ))
+            ) : (
               <div style={{ marginTop: 15 }} className="error">
                 <div className="img-with">
                   <img id="undefind" src={undefindImg} alt="Undefined Image" />
                 </div>
               </div>
-            </StyleCategoryInfo>
-          )}
-        </div>
-        <ToastExample
-          status="success"
-          title={t('addedNewCartFood')}
-          open={openToastForAddCard}
-          setOpen={setOpenToastForAddCard}
-        ></ToastExample>
-        <FoodQuontity
-          onConfirm={handleConfirmQuontity}
-          open={openQuontity}
-          setOpen={setOpenQuontity}
-        ></FoodQuontity>
+            )}
+          </div>
+          <ToastExample
+            status="success"
+            title={t('addedNewCartFood')}
+            open={openToastForAddCard}
+            setOpen={setOpenToastForAddCard}
+          ></ToastExample>
+          <FoodQuontity
+            onConfirm={handleConfirmQuontity}
+            open={openQuontity}
+            setOpen={setOpenQuontity}
+          ></FoodQuontity>
+        </StyleCategoryInfo>
       </Container>
     </HeaderDashborad>
   );

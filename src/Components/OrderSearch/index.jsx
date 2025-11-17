@@ -164,7 +164,7 @@ function OrderSearch({
   return (
     <StyleOrders>
       <div className="orders-search">
-        <div style={{ width: '900px', marginRight: 12 }}>
+        <div id="order-special">
           {action !== 'category' && (
             <TextField
               onChange={(e) => changedInput(e)}

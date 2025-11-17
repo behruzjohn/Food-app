@@ -13,6 +13,7 @@ import CheckToken from '../../Components/CheckToken';
 import GuardComponent from '../../Components/CheckRole/CheckRole';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
+import { StyleCategory } from './StyleCategory';
 const GET_ALL_CATEGORIES = gql`
   query GetAllCategories {
     getAllCategories {
@@ -143,68 +144,64 @@ function CategoriesPage() {
   }, [isDeleted, deleteCategory, refetch]);
   return (
     <HeaderDashborad>
-      <Container maxWidth="xl">
-        <div className="categories">
-          <div className="categories-nav">
-            <OrderSearch action="category"></OrderSearch>
-            <div style={{ marginTop: 30 }} className="category-nav">
-              <header
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <div>
-                  <h2>{t('categoryPg')}</h2>
-                  <p>{t('categoryDescription')}</p>
-                </div>
-                <GuardComponent
-                  role={role}
-                  section="category"
-                  action="addCategory"
-                >
-                  <Button
-                    onClick={() => setOpenCategories(true)}
-                    color="success"
-                    variant="contained"
-                    startIcon={<AddCircleOutlineIcon />}
+      <StyleCategory>
+        <Container maxWidth="xl">
+          <div className="categories">
+            <div className="categories-nav">
+              <OrderSearch action="category"></OrderSearch>
+              <div className="category-nav">
+                <header>
+                  <div>
+                    <h2>{t('categoryPg')}</h2>
+                    <p>{t('categoryDescription')}</p>
+                  </div>
+                  <GuardComponent
+                    role={role}
+                    section="category"
+                    action="addCategory"
                   >
-                    {t('addCategory')}
-                  </Button>
-                </GuardComponent>
-              </header>
-              <div
-                style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}
-                className="card"
-              >
-                {categoires?.map((category) => {
-                  return (
-                    <CategoryCard
-                      setClickedDelete={setClickedDelete}
-                      setOpenToast={setOpenToastDelete}
-                      category={category}
-                      setDeletedCategoryId={setDeletedCategoryId}
-                    ></CategoryCard>
-                  );
-                })}
+                    <Button
+                      onClick={() => setOpenCategories(true)}
+                      color="success"
+                      variant="contained"
+                      startIcon={<AddCircleOutlineIcon />}
+                    >
+                      {t('addCategory')}
+                    </Button>
+                  </GuardComponent>
+                </header>
+                <div
+                  style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}
+                  className="card"
+                >
+                  {categoires?.map((category) => {
+                    return (
+                      <CategoryCard
+                        setClickedDelete={setClickedDelete}
+                        setOpenToast={setOpenToastDelete}
+                        category={category}
+                        setDeletedCategoryId={setDeletedCategoryId}
+                      ></CategoryCard>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </Container>
+        </Container>
+      </StyleCategory>
       <AddCatagories
         open={openCategories}
         setOpen={setOpenCategories}
         onAdd={handleAddCategory}
       />
       <ToastExample
-        title={"Muvofoqiyatli o'chirildi!"}
+        title={t('categoryIsDeleted')}
         open={openToastDelete}
         setOpen={setOpenToastDelete}
       ></ToastExample>
       <ToastExample
-        title={"Categorya muvofoqiyatli qo'shildi!"}
+        title={t('categoryAddSuccessfull')}
         open={openToastC}
         setOpen={setOpenToastC}
       ></ToastExample>

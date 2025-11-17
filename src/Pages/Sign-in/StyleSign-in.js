@@ -14,7 +14,7 @@ export const StyleSignIn = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   .sign-in-nav {
-    width: 400px;
+    width: 100%;
     margin-top: 145px;
   }
 

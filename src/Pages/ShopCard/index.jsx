@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { StyleFoods } from '../Foods/StyleFoods';
 import Loader from '../../Components/Loader';
 import HeaderDashborad from '../../Components/HeaderDashboard';
-import { Container } from '@mui/material';
+import { Button, Container } from '@mui/material';
 import OrderSearch from '../../Components/OrderSearch';
 import { gql } from '@apollo/client';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react';
@@ -10,6 +10,7 @@ import FoodCard from '../../Components/FoodCard/FoodCards';
 import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
 import undefindImg from '../../assets/nocart.png';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 const GET_CARD_FOOD = gql`
   query GetCartItemsByUserId {
     getCartItemsByUserId {
@@ -52,6 +53,7 @@ const DELETE_CART_ITEM = gql`
 `;
 function ShopCart() {
   const { t } = useTranslation();
+  const navigate = useNavigate('');
   const [foods, setFoods] = useState([]);
   const [clickedDelete, setClickedDelete] = useState(false);
   const [deletedFoodId, setId] = useState(null);
@@ -153,6 +155,21 @@ function ShopCart() {
         setOpen={setClickedDelete}
         onConfirm={handleClickDelete}
       />
+      <div
+        style={{ display: 'flex', justifyContent: 'end', marginTop: 30 }}
+        className="placeAnOrder"
+      >
+        <Button
+          onClick={() => navigate('/order-list?1')}
+          style={{
+            marginRight: 20,
+          }}
+          color="success"
+          variant="contained"
+        >
+          Place an order
+        </Button>
+      </div>
     </HeaderDashborad>
   );
 }

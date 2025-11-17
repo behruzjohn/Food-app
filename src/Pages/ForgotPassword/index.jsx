@@ -1,6 +1,7 @@
 import {
   Autocomplete,
   Button,
+  IconButton,
   Input,
   InputAdornment,
   TextField,
@@ -16,6 +17,8 @@ import { StyleContainer } from '../../../ContainerCss';
 import { useNavigate } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { useTranslation } from 'react-i18next';
+import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
 
 const FORGOT_PASSWORD = gql`
   mutation ChangeUserPasswordById($data: UpdateUserPasswordInput!) {
@@ -36,6 +39,8 @@ const FORGOT_PASSWORD = gql`
 function ForgotPasswordPage() {
   const navigate = useNavigate('');
   const [isHide, setIsHide] = useState(false);
+  const [isHide2, setIsHide2] = useState(false);
+  const { t } = useTranslation();
   const [changePassword, { data, loading, error }] =
     useMutation(FORGOT_PASSWORD);
   const [succsesMessage, setSuccsesMessage] = useState('');
@@ -68,9 +73,20 @@ function ForgotPasswordPage() {
   function handleClickShowPassword() {
     setIsHide((prev) => !prev);
   }
+  function handleClickShowPassword2() {
+    setIsHide2((prev) => !prev);
+  }
 
   return (
     <StyleForgotPassword className="signIn">
+      <Button
+        style={{ marginTop: 20, marginLeft: 20 }}
+        onClick={() => navigate('/order-list')}
+        variant="outlined"
+        startIcon={<ArrowBackIosNewOutlinedIcon />}
+      >
+        {t('gooBack')}
+      </Button>
       <StyleContainer>
         <div className="sign-in-nav">
           <div className="form">
@@ -93,7 +109,7 @@ function ForgotPasswordPage() {
                     render={({ field, fieldState: { error } }) => (
                       <TextField
                         {...field}
-                        type={isHide ? 'text' : 'password'}
+                        type={isHide2 ? 'text' : 'password'}
                         error={Boolean(error)}
                         id="outlined-controlled"
                         helperText={error?.message}
@@ -102,6 +118,23 @@ function ForgotPasswordPage() {
                           startAdornment: (
                             <InputAdornment position="start">
                               <LockOpenIcon />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment
+                              style={{ cursor: 'pointer' }}
+                              position="end"
+                            >
+                              <IconButton
+                                onClick={handleClickShowPassword2}
+                                edge="end"
+                              >
+                                {isHide2 ? (
+                                  <VisibilityOffIcon />
+                                ) : (
+                                  <VisibilityIcon />
+                                )}
+                              </IconButton>
                             </InputAdornment>
                           ),
                         }}
@@ -121,7 +154,7 @@ function ForgotPasswordPage() {
                     render={({ field, fieldState: { error } }) => (
                       <TextField
                         {...field}
-                        type="password"
+                        type={isHide ? 'text' : 'password'}
                         error={Boolean(error)}
                         id="outlined-controlled"
                         helperText={error?.message}
@@ -154,7 +187,7 @@ function ForgotPasswordPage() {
                     )}
                   ></Controller>
 
-                  <Button type="submit" color="error" variant="contained">
+                  <Button type="submit" color="success" variant="contained">
                     CHANGE
                   </Button>
                 </div>

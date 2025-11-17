@@ -61,5 +61,9 @@ export const StyleForgotPassword = styled.div`
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    .sign-in-nav {
+      width: 100%;
+      margin-top: 145px;
+    }
   }
 `;

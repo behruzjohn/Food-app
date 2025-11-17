@@ -32,11 +32,12 @@ export const StyleHeaderDashboard = styled.div`
   }
   button {
     margin-top: 27px;
-    width: 100%;
+    margin-left: 30px;
+    width: 70%;
   }
   img {
     cursor: pointer;
-    margin-left: 35px;
+    margin-left: 25px;
     width: 150px;
     height: 150px;
     object-fit: cover;
@@ -78,7 +79,6 @@ export const StyleHeaderDashboard = styled.div`
     background-color: #fff;
     color: black;
     width: 150px;
-
     height: 50px;
   }
   .add-menus img {

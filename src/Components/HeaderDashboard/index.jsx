@@ -47,7 +47,7 @@ function HeaderDashborad({ children }) {
                 <li key={item.key} onClick={() => navigate(item.path)}>
                   <a>
                     {item.icon}
-                    <span id="span-title">{t(item.title)}</span>
+                    <span id="span-title">{t(item.key)}</span>
                   </a>
                 </li>
               );
@@ -71,7 +71,7 @@ function HeaderDashborad({ children }) {
           onClick={() => handleClickLogOut()}
           startIcon={<LogoutOutlinedIcon />}
           color="error"
-          variant="contained"
+          variant="outlined"
         >
           <span id="span-title">{t('logOut')}</span>
         </Button>

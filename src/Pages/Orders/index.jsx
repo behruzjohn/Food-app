@@ -11,6 +11,7 @@ import {
   Autocomplete,
   FormControl,
   InputLabel,
+  Chip,
 } from '@mui/material';
 import {
   Search,
@@ -22,7 +23,7 @@ import { StyleOrders } from './StyleOrders';
 import OrderSearch from '../../Components/OrderSearch/index';
 import AddOrder from '../../Components/AddOrder/index';
 import { gql } from '@apollo/client';
-import { useLazyQuery, useMutation } from '@apollo/client/react';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
 import CheckToken from '../../Components/CheckToken';
 import ToastExample from '../../Components/Toast';
@@ -33,36 +34,35 @@ import noOrder from '../../assets/noRemove.png';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import PendingActionsOutlinedIcon from '@mui/icons-material/PendingActionsOutlined';
 import Loader from '../../Components/Loader';
+
 const CREATE_ORDER = gql`
   mutation CreateOrder($order: OrderInput) {
     createOrder(order: $order) {
       payload {
         _id
-        totalPrice
-        status
         address
         createdAt
-        updatedAt
         createdBy {
           _id
+          createdAt
           name
           phone
+          photo
           role
+          telegramId
+          updatedAt
         }
-        orderItems {
-          _id
-          quantity
-          price
-          discount
-          user
-        }
+        status
+        totalPrice
+        updatedAt
       }
     }
   }
 `;
+
 const GET_ORDER = gql`
-  query GetOrders($statuses: String, $page: Int, $limit: Int) {
-    getOrders(statuses: $statuses, page: $page, limit: $limit) {
+  query GetOrdersByUserId($status: String) {
+    getOrdersByUserId(status: $status) {
       payload {
         _id
         totalPrice
@@ -70,20 +70,11 @@ const GET_ORDER = gql`
         address
         createdAt
         updatedAt
-        createdBy {
-          _id
-          name
-          phone
-          role
-          photo
-          telegramId
-          createdAt
-          updatedAt
-        }
       }
     }
   }
 `;
+
 const UPDATE_ORDER_STATUS = gql`
   mutation UpdateOrderStatusById($orderId: ID, $status: String) {
     updateOrderStatusById(orderId: $orderId, status: $status) {
@@ -98,100 +89,59 @@ const UPDATE_ORDER_STATUS = gql`
     }
   }
 `;
+
 function OrdersPg() {
   const [openAddOrder, setOpen] = useState(false);
-  const [oreder, setOrder] = useState([]);
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [openToastForOrderListError, setOpenToastForOrderListError] =
     useState(false);
-  const [fetchAddOrder, { data, loading, error }] = useMutation(CREATE_ORDER);
+  const localToken = JSON.parse(localStorage.getItem('authStore')) || '';
+  const role = localToken?.state?.role;
+  const [addOrder, { data, loading, error }] = useMutation(CREATE_ORDER);
   const [updateStatus, { data: statusData, loading: loadUptade }] =
     useMutation(UPDATE_ORDER_STATUS);
-  const [
-    getOrders,
-    { data: orderData, loading: orderLoading, error: orderError },
-  ] = useLazyQuery(GET_ORDER);
-
-  useEffect(() => {
-    const localToken = JSON.parse(localStorage.getItem('authStore')) || '';
-    const token = localToken?.state?.token;
-    getOrders({
-      variables: {
-        page: 1,
-        limit: 10,
-        statuses: 'All',
-      },
-      context: {
-        headers: { authorization: `Bearer ${token}` },
-      },
-    });
-  }, []);
+  const {
+    refetch,
+    data: orderData,
+    error: orderError,
+    loading: orderLoading,
+  } = useQuery(GET_ORDER);
 
   const open = Boolean(anchorEl);
 
   CheckToken();
 
+  useEffect(() => {
+    const search = location?.search;
+    if (search) {
+      setOpen(true);
+    }
+  }, []);
   const handleClickStatus = async (status) => {
     setAnchorEl(null);
 
     try {
-      const localToken = JSON.parse(localStorage.getItem('authStore')) || '';
-      const token = localToken?.state?.token;
-
-      // status update
       await updateStatus({
         variables: {
           orderId: selectedOrderId,
           status: status,
         },
-        context: {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        },
       });
 
-      await getOrders({
-        variables: {
-          page: 1,
-          limit: 10,
-          statuses: 'All',
-        },
-        context: {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        },
-      });
+      refetch();
     } catch (err) {
-      console.log('Update status error:', err);
       setOpenToastForOrderListError(true);
     }
   };
 
   const handleAddOrder = async (formData) => {
     try {
-      const localToken = JSON.parse(localStorage.getItem('authStore')) || '';
-      const token = localToken?.state?.token;
-      await fetchAddOrder({
+      await addOrder({
         variables: {
           order: {
             address: [Number(formData.lat), Number(formData.lng)],
-          },
-        },
-        context: {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        },
-      });
-
-      const { data: refreshedOrders } = await getOrders({
-        context: {
-          headers: {
-            authorization: `Bearer ${token}`,
           },
         },
       });
@@ -201,11 +151,10 @@ function OrdersPg() {
       }
     }
   };
-  useEffect(() => {
-    if (orderData?.getOrders?.payload) {
-      setOrder(orderData.getOrders.payload);
-    }
-  }, [orderData]);
+
+  const orders = orderData?.getOrdersByUserId?.payload || [];
+
+  console.log(orders);
 
   return (
     <HeaderDashborad>
@@ -217,7 +166,7 @@ function OrdersPg() {
       ></AddOrder>
       <StyleOrders className="orders">
         <div className="orders-nav">
-          <OrderSearch />
+          <OrderSearch action="category"></OrderSearch>
 
           <div className="main-header">
             <div className="order-header-text">
@@ -233,114 +182,118 @@ function OrdersPg() {
 
           <div className="orders-list">
             <div className="orders-list-nav">
-              {orderData?.getOrders?.payload && (
-                <table>
-                  <thead>
-                    <tr>
-                      <th>{t('orderId')}</th>
-                      <th>{t('data')}</th>
-                      <th>{t('customerName')}</th>
-                      <th>{t('location')}</th>
-                      <th>{t('amount')}</th>
-                      <th>{t('statusOrder')}</th>
-                      <th>{t('actions')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {oreder.map((orderItem, orderIndex) => {
-                      console.log(orderItem, 'ds');
+              <div className="orders-list-scroll">
+                {orders && (
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>{t('orderId')}</th>
+                        <th>{t('data')}</th>
+                        <th>{t('customerName')}</th>
+                        <th>{t('location')}</th>
+                        <th>{t('amount')}</th>
+                        <th>{t('statusOrder')}</th>
+                        {role === 'admin' ? <th>{t('actions')}</th> : <></>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orders.map((orderItem, orderIndex) => {
+                        return (
+                          <tr key={orderIndex}>
+                            <td>#{orderIndex}</td>
+                            <td>
+                              {orderItem?.createdAt
+                                ? new Date(
+                                    orderItem.createdAt
+                                  ).toLocaleDateString()
+                                : '-'}
+                            </td>
+                            <td>{orderItem?.createdBy?.name || 'No name'}</td>
+                            <td>{orderItem?.address}</td>
+                            <td>{orderItem?.totalPrice}</td>
+                            <td>
+                              <Chip label={orderItem?.status} />
+                            </td>
+                            {role === 'admin' && (
+                              <td>
+                                <MoreHoriz
+                                  onClick={(e) => {
+                                    setSelectedOrderId(orderItem._id);
+                                    setAnchorEl(e.currentTarget);
+                                  }}
+                                  style={{ cursor: 'pointer' }}
+                                />
+                                <Menu
+                                  anchorEl={anchorEl}
+                                  open={open}
+                                  onClose={() => setAnchorEl(null)}
+                                  PaperProps={{
+                                    elevation: 3,
+                                    sx: {
+                                      mt: 1.5,
+                                      borderRadius: '16px',
+                                      minWidth: 180,
+                                      p: 1,
+                                    },
+                                  }}
+                                  transformOrigin={{
+                                    horizontal: 'right',
+                                    vertical: 'top',
+                                  }}
+                                  anchorOrigin={{
+                                    horizontal: 'right',
+                                    vertical: 'bottom',
+                                  }}
+                                >
+                                  <MenuItem
+                                    onClick={() => handleClickStatus('pending')}
+                                  >
+                                    <ListItemIcon>
+                                      <PendingActionsOutlinedIcon color="primary" />
+                                    </ListItemIcon>
+                                    <ListItemText primary={t('pending')} />
+                                  </MenuItem>
 
-                      return (
-                        <tr key={orderIndex}>
-                          <td>#{orderIndex}</td>
-                          <td>
-                            {orderItem?.createdAt
-                              ? new Date(
-                                  orderItem.createdAt
-                                ).toLocaleDateString()
-                              : '-'}
-                          </td>
-                          <td>{orderItem?.createdBy?.name || 'No name'}</td>
-                          <td>{orderItem?.address}</td>
-                          <td>{orderItem?.totalPrice}</td>
-                          <td>
-                            <Button size="small" variant="contained">
-                              {orderItem?.status}
-                            </Button>
-                          </td>
-                          <td>
-                            <MoreHoriz
-                              onClick={(e) => {
-                                setSelectedOrderId(orderItem._id);
-                                setAnchorEl(e.currentTarget);
-                              }}
-                              style={{ cursor: 'pointer' }}
-                            />
-                            <Menu
-                              anchorEl={anchorEl}
-                              open={open}
-                              onClose={() => setAnchorEl(null)}
-                              PaperProps={{
-                                elevation: 3,
-                                sx: {
-                                  mt: 1.5,
-                                  borderRadius: '16px',
-                                  minWidth: 180,
-                                  p: 1,
-                                },
-                              }}
-                              transformOrigin={{
-                                horizontal: 'right',
-                                vertical: 'top',
-                              }}
-                              anchorOrigin={{
-                                horizontal: 'right',
-                                vertical: 'bottom',
-                              }}
-                            >
-                              <MenuItem
-                                onClick={() => handleClickStatus('pending')}
-                              >
-                                <ListItemIcon>
-                                  <PendingActionsOutlinedIcon color="primary" />
-                                </ListItemIcon>
-                                <ListItemText primary={t('pending')} />
-                              </MenuItem>
+                                  <MenuItem
+                                    onClick={() => handleClickStatus('cooking')}
+                                  >
+                                    <ListItemIcon>
+                                      <BlenderOutlinedIcon color="error" />
+                                    </ListItemIcon>
+                                    <ListItemText primary={t('cooking')} />
+                                  </MenuItem>
+                                  <MenuItem
+                                    onClick={() =>
+                                      handleClickStatus('delivering')
+                                    }
+                                  >
+                                    <ListItemIcon>
+                                      <LocalShippingOutlinedIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary={t('deleviring')} />
+                                  </MenuItem>
+                                  <MenuItem
+                                    onClick={() =>
+                                      handleClickStatus('received')
+                                    }
+                                  >
+                                    <ListItemIcon>
+                                      <TaskAltOutlinedIcon color="success" />
+                                    </ListItemIcon>
+                                    <ListItemText primary={t('received')} />
+                                  </MenuItem>
+                                </Menu>
+                              </td>
+                            )}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
 
-                              <MenuItem
-                                onClick={() => handleClickStatus('cooking')}
-                              >
-                                <ListItemIcon>
-                                  <BlenderOutlinedIcon color="error" />
-                                </ListItemIcon>
-                                <ListItemText primary={t('cooking')} />
-                              </MenuItem>
-                              <MenuItem
-                                onClick={() => handleClickStatus('delivering')}
-                              >
-                                <ListItemIcon>
-                                  <LocalShippingOutlinedIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={t('deleviring')} />
-                              </MenuItem>
-                              <MenuItem
-                                onClick={() => handleClickStatus('received')}
-                              >
-                                <ListItemIcon>
-                                  <TaskAltOutlinedIcon color="success" />
-                                </ListItemIcon>
-                                <ListItemText primary={t('received')} />
-                              </MenuItem>
-                            </Menu>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              )}
-
-              {!orderData?.getOrders?.payload && (
+              {!orderData?.getOrdersByUserId?.payload && (
                 <div className="img-with">
                   <img id="undefind" src={noOrder} alt="No Order Image" />
                 </div>

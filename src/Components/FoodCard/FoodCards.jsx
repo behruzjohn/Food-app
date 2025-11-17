@@ -9,6 +9,7 @@ import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { useEffect, useState } from 'react';
 import GuardComponent from '../CheckRole/CheckRole';
 import { useTranslation } from 'react-i18next';
+import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 
 function FoodCard({
   isFoodCard,
@@ -104,7 +105,7 @@ function FoodCard({
           )}
 
           <GuardComponent role={role} section="foodCard" action="addFavourite">
-            {isFavourite ? (
+            {isSpeacial || isFavourite ? (
               <></>
             ) : (
               <div className="btn">
@@ -114,7 +115,7 @@ function FoodCard({
                   variant="contained"
                   color="warning"
                 >
-                  <AddShoppingCartIcon fontSize="small" />
+                  <ThumbUpOutlinedIcon fontSize="small" />
                 </Button>
                 <p>{t('addFavourite')}</p>
               </div>

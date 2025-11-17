@@ -38,7 +38,7 @@ export const StyleCustomer = styled.div`
   }
   .orders-list table {
     border-collapse: separate;
-    border-spacing: 0 30px;
+    border-spacing: 0 10px;
     color: #fff;
     width: 100%;
   }

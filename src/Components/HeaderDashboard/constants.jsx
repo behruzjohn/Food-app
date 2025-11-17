@@ -9,38 +9,41 @@ import Person2Icon from '@mui/icons-material/Person2';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { useTransition } from 'react';
-
+const role = localStorage.getItem('authStore');
+const roleRes = role?.state?.role;
 export const SIDEBAR_LINKS = [
   {
-    title: 'orderList',
+    title: 'OrderList',
     path: '/order-list',
-    key: 'order-list',
+    key: 'orderList',
     icon: <FormatListBulletedIcon />,
   },
 
   {
-    title: 'foods',
+    title: 'Foods',
     path: '/foods',
     key: 'foods',
     icon: <FastfoodIcon />,
   },
   {
-    title: 'categories',
+    title: 'Categories',
     path: '/categories',
     key: 'categories',
     icon: <CategoryIcon />,
   },
+
   {
     title: 'Customers',
     path: '/customer',
     key: 'customers',
     icon: <PeopleAltIcon />,
+    guard: { section: 'headerDashboard', action: 'customer' },
   },
 
   {
-    title: 'favouriteFoods',
+    title: 'FavouriteFoods',
     path: '/favourite',
-    key: 'favourite',
+    key: 'favouriteFoods',
     icon: <FavoriteIcon />,
     guard: { section: 'headerDashboard', action: 'faovuriteLink' },
   },

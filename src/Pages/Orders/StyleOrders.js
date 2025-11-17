@@ -12,8 +12,10 @@ export const StyleOrders = styled.div`
   }
   .orders-search input {
     background-color: #fff;
-    height: 10px;
-    width: 860px;
+    height: 40px;
+    width: 100%;
+    max-width: 860px;
+    box-sizing: border-box;
   }
   .select {
     width: 68px;
@@ -21,21 +23,23 @@ export const StyleOrders = styled.div`
   .selectId {
     margin-right: 12px;
   }
+  .card {
+    display: flex;
+    flex-wrap: wrap;
+  }
   .shop {
     position: relative;
-
     display: inline-block;
   }
   .img-with {
     height: auto;
-
     width: 100%;
     display: flex;
     justify-content: center;
   }
   .img-with img {
-    width: 450px;
-    height: 450px;
+    width: 350px;
+    height: 350px;
   }
   .shop .badge {
     position: absolute;
@@ -98,5 +102,31 @@ export const StyleOrders = styled.div`
   }
   thead th {
     padding: 20px;
+  }
+  .order-special {
+    width: 900px;
+    margin-right: 12px;
+  }
+  @media screen and (max-width: 480px) {
+    .main-header {
+      display: flex;
+      flex-direction: column;
+    }
+    .order-header-text {
+      font-size: 12px;
+    }
+    .order-header-btns button {
+      font-size: 12px;
+      margin-top: 10px;
+      width: 150px;
+      height: 35px;
+      padding: 2px;
+    }
+    .orders-nav {
+      margin-right: 0;
+    }
+    .order-special {
+      margin-right: 0px;
+    }
   }
 `;

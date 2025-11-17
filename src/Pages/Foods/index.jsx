@@ -86,18 +86,10 @@ const ADD_FOOD_FAVOURITES = gql`
   }
 `;
 const DELETE_FOOD = gql`
-  mutation AddFoodToFavorites($foodId: ID!) {
+  mutation DeleteFoodById($foodId: ID!) {
     deleteFoodById(foodId: $foodId) {
       payload {
         _id
-        shortName
-        name
-        image
-        description
-        price
-        discount
-        likes
-        isFavorite
       }
     }
   }
@@ -122,6 +114,23 @@ const CREATE_CARD = gql`
           likes
           isFavorite
         }
+      }
+    }
+  }
+`;
+const UPDATE_FOOD = gql`
+  mutation UpdateFoodById($foodId: ID!, $food: FoodUpdateInput!) {
+    updateFoodById(foodId: $foodId, food: $food) {
+      payload {
+        _id
+        shortName
+        name
+        image
+        description
+        price
+        discount
+        likes
+        isFavorite
       }
     }
   }
@@ -155,6 +164,8 @@ function Foods() {
   ] = useMutation(DELETE_FOOD);
 
   const [createFood] = useMutation(ADD_FOODS);
+  const [updateFood] = useMutation(UPDATE_FOOD);
+
   const { data, loading, error, refetch } = useQuery(GET_ALL_FOODS);
   useEffect(() => {
     refetch();
@@ -165,6 +176,7 @@ function Foods() {
       setLoad(false);
     }
   }, [data]);
+
   useEffect(() => {
     setLoad(true);
     refetch();
@@ -223,6 +235,14 @@ function Foods() {
     try {
       setLoad(true);
       const token = localStorage.getItem('token') || '';
+      if (editedFoodId) {
+        await updateFood({
+          variables: {
+            foodId: editedFoodId,
+            food: formData,
+          },
+        });
+      }
       await createFood({
         variables: {
           food: {
@@ -282,7 +302,7 @@ function Foods() {
               <h2>{t('foodsName')}</h2>
               <p>{t('foodsDescription')}</p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 15 }}>
+            <div id="special">
               <GuardComponent role={role} section="newMenu" action="create">
                 <Button
                   onClick={() => setOpen(true)}

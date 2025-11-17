@@ -1,6 +1,12 @@
 import styled from 'styled-components';
 
 export const StyleCategoryInfo = styled.div`
+  .continer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
   #undefind {
     margin-top: 50px;
     margin-left: 350px;
@@ -17,7 +23,11 @@ export const StyleCategoryInfo = styled.div`
       height: auto;
       display: block;
       margin-inline: auto;
-      margin-top: 30px;
+      margin-top: 160px;
+    }
+    .continer button {
+      height: 35px;
+      font-size: 12px;
     }
   }
 `;

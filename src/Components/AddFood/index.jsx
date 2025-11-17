@@ -7,10 +7,12 @@ import {
   DialogContent,
   DialogTitle,
   MenuItem,
+  InputAdornment,
+  CircularProgress,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { gql } from '@apollo/client';
-import { useLazyQuery } from '@apollo/client/react';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 import { useTranslation } from 'react-i18next';
 
 import Loader from '../Loader';
@@ -38,13 +40,19 @@ const GET_FOOD_BY_ID = gql`
         discount
         likes
         isFavorite
+        category {
+          _id
+        }
       }
     }
   }
 `;
+
 function AddFood({ open, setOpen, onAdd, editedFoodId }) {
   const { t } = useTranslation();
-  const [getFoodById, { datas, load, err }] = useLazyQuery(GET_FOOD_BY_ID);
+  const [getFoodById, { data: foodData, loading: foodLoading, err }] =
+    useLazyQuery(GET_FOOD_BY_ID);
+
   useEffect(() => {
     if (editedFoodId) {
       getFoodById({
@@ -54,8 +62,8 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
       });
     }
   }, [editedFoodId, getFoodById]);
-  const [getCategories, { data, loading, error }] =
-    useLazyQuery(GET_ALL_CATAGORIES);
+
+  const [getCategories, { data, loading }] = useLazyQuery(GET_ALL_CATAGORIES);
 
   useEffect(() => {
     if (open) {
@@ -76,18 +84,22 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
   });
 
   useEffect(() => {
-    if (datas?.getFoodById?.payload) {
-      reset({
-        name: datas?.getFoodById.payload.name || '',
-        shortName: datas?.getFoodById.payload.shortName || '',
-        description: datas?.getFoodById.payload.description || '',
-        price: datas?.getFoodById.payload.price || '',
-        discount: datas?.getFoodById.payload.discount || '',
-        category: datas?.getFoodById.payload.category?._id || '',
-        image: datas?.getFoodById.payload.image || '',
-      });
+    if (foodData && !foodLoading) {
+      const food = foodData?.getFoodById?.payload;
+
+      if (food) {
+        reset({
+          name: food?.name || '',
+          shortName: food?.shortName || '',
+          description: food?.description || '',
+          price: food?.price || '',
+          discount: food?.discount || '',
+          category: food?.category?._id || '',
+          image: food?.image || '',
+        });
+      }
     }
-  }, [datas, reset]);
+  }, [foodData, foodLoading]);
 
   const onSubmit = (data) => {
     console.log(data.image);
@@ -159,6 +171,15 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
                   fullWidth
                   error={Boolean(error)}
                   helperText={error?.message}
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {loading && <CircularProgress size={20} />}
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
                 >
                   {categories?.map((categories) => (
                     <MenuItem key={categories._id} value={categories._id}>
@@ -241,9 +262,15 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>{t('cancel')}</Button>
-            <Button type="submit" variant="contained" color="success">
-              {t('add')}
-            </Button>
+            {!editedFoodId ? (
+              <Button type="submit" variant="contained" color="success">
+                {t('add')}
+              </Button>
+            ) : (
+              <Button type="submit" variant="contained" color="success">
+                {t('update')}
+              </Button>
+            )}
           </DialogActions>
         </form>
       </Dialog>

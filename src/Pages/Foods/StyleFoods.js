@@ -23,4 +23,23 @@ export const StyleFoods = styled.div`
     width: 550px;
     height: 400px;
   }
+  @media screen and (max-width: 480px) {
+    .foods-header {
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+    }
+    .foods-header button {
+      font-size: 12px;
+      margin-top: 10px;
+      width: 150px;
+      height: 35px;
+      padding: 2px;
+    }
+    #special {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+  }
 `;

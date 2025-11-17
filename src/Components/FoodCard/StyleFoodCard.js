@@ -4,9 +4,9 @@ export const StyleFoodCard = styled.div`
   margin-top: 20px;
   background-color: ${(props) =>
     props.isSpeacial
-      ? 'aqua'
+      ? '#fff'
       : props.isFavourite
-      ? '#ffeeba'
+      ? '#fff'
       : props.isFoodCard
       ? '#fbcce6'
       : '#fff'};
@@ -75,5 +75,6 @@ export const StyleFoodCard = styled.div`
   .btn p {
     font-size: 12px;
     color: #333;
+    margin-top: 5px;
   }
 `;

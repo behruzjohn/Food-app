@@ -69,7 +69,7 @@ function Customer() {
               <table>
                 <thead>
                   <tr>
-                    <th>{t('customerId')}</th>
+                    <th className="aa">{t('customerId')}</th>
                     <th>{t('joinDate')}</th>
                     <th>{t('customers')}</th>
                     <th>{t('location')}</th>

@@ -121,6 +121,12 @@ function FavouriteFood() {
     }
   };
 
+  useEffect(() => {
+    if (deleteFavData?.removeFoodFromFavorites?.payload) {
+      setClickedDelete(false);
+    }
+  }, [deleteFavData]);
+
   const handleAddToCart = (food) => {
     setSelectedFood(food);
     setOpenQuontity(true);
