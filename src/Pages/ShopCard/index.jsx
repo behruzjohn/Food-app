@@ -11,6 +11,8 @@ import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
 import undefindImg from '../../assets/nocart.png';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import AddOrder from '../../Components/AddOrder';
+import ToastExample from '../../Components/Toast';
 const GET_CARD_FOOD = gql`
   query GetCartItemsByUserId {
     getCartItemsByUserId {
@@ -51,17 +53,48 @@ const DELETE_CART_ITEM = gql`
     }
   }
 `;
+const CREATE_ORDER = gql`
+  mutation CreateOrder($order: OrderInput) {
+    createOrder(order: $order) {
+      payload {
+        _id
+        address
+        createdAt
+        createdBy {
+          _id
+          createdAt
+          name
+          phone
+          photo
+          role
+          telegramId
+          updatedAt
+        }
+        status
+        totalPrice
+        updatedAt
+      }
+    }
+  }
+`;
 function ShopCart() {
   const { t } = useTranslation();
   const navigate = useNavigate('');
   const [foods, setFoods] = useState([]);
   const [clickedDelete, setClickedDelete] = useState(false);
   const [deletedFoodId, setId] = useState(null);
+  const [openAddOrder, setOpen] = useState(false);
   const [openToast, setOpenToast] = useState(false);
+  const [openToastForAddOrder, setOpenToastForAddOrder] = useState(false);
   const { data, error, loading, refetch } = useQuery(GET_CARD_FOOD);
   const [deleteCart, { data: deleteData, error: deleteFoodError }] =
     useMutation(DELETE_CART_ITEM);
+  const [addOrder, { data: addData, error: addErr }] =
+    useMutation(CREATE_ORDER);
 
+  useEffect(() => {
+    refetch();
+  }, []);
   useEffect(() => {
     if (data?.getCartItemsByUserId?.payload?.items) {
       setFoods(
@@ -87,7 +120,7 @@ function ShopCart() {
   const handleClickDelete = async () => {
     try {
       await deleteCart({
-        variables: { foodId: deletedFoodId },
+        variables: { food: deletedFoodId },
       });
 
       setOpenToast(true);
@@ -97,6 +130,21 @@ function ShopCart() {
       console.log(e);
     }
   };
+
+  const handleAddOrder = async (formData) => {
+    await addOrder({
+      variables: {
+        order: { address: [Number(formData.lat), Number(formData.lng)] },
+      },
+    })
+      .then((res) => {
+        if (res.data?.createOrder?.payload) {
+          setOpenToastForAddOrder(true);
+          refetch();
+        }
+      })
+      .catch((err) => console.log(err.message));
+  };
   return (
     <HeaderDashborad>
       <Loader load={loading}></Loader>
@@ -105,7 +153,7 @@ function ShopCart() {
           <OrderSearch
             quontityLen={data?.getCartItemsByUserId?.payload?.items.length}
             setFoods={setFoods}
-            action="foods"
+            action="category"
             refetchItem={refetch}
           />
           <div className="foods-header">
@@ -115,9 +163,13 @@ function ShopCart() {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 15 }}>
-              <h3>
+              <h3 style={{ fontFamily: 'sans-serif' }}>
                 {t('totalPrice')}
-                {data?.getCartItemsByUserId?.payload?.totalPrice}
+                {new Intl.NumberFormat('uz-UZ', {
+                  style: 'currency',
+                  currency: 'UZS',
+                  minimumFractionDigits: 0,
+                }).format(data?.getCartItemsByUserId?.payload?.totalPrice)}
               </h3>
             </div>
           </div>
@@ -144,7 +196,7 @@ function ShopCart() {
       </StyleFoods>
       {deleteFoodError?.errors?.length && (
         <ToastExample
-          status={'succsess'}
+          status={'success'}
           title={t('foodIsDeleted')}
           open={openToast}
           setOpen={setOpenToast}
@@ -160,16 +212,26 @@ function ShopCart() {
         className="placeAnOrder"
       >
         <Button
-          onClick={() => navigate('/order-list?1')}
+          onClick={() => setOpen(true)}
           style={{
             marginRight: 20,
           }}
           color="success"
           variant="contained"
         >
-          Place an order
+          {t('placeInHolder')}
         </Button>
       </div>
+      <AddOrder
+        open={openAddOrder}
+        setOpen={setOpen}
+        onAdd={handleAddOrder}
+      ></AddOrder>
+      <ToastExample
+        title={addData?.createOrder ? t('orderAdded') : addErr?.message}
+        open={openToastForAddOrder}
+        setOpen={setOpenToastForAddOrder}
+      />
     </HeaderDashborad>
   );
 }

@@ -175,20 +175,6 @@ function CategoryInfo() {
             >
               {t('gooBack')}
             </Button>
-            {categoryCard.length > 0 ? (
-              <></>
-            ) : (
-              <GuardComponent role={role} section="addFood" action="addFood">
-                <Button
-                  onClick={() => navigate('/foods')}
-                  color="success"
-                  startIcon={<AddIcon />}
-                  variant="outlined"
-                >
-                  {t('createFood')}
-                </Button>
-              </GuardComponent>
-            )}
           </div>
           <h2>
             <strong>{' ' + dataTitle?.getCategoryById?.payload?.name}</strong>{' '}
@@ -211,6 +197,24 @@ function CategoryInfo() {
               <div style={{ marginTop: 15 }} className="error">
                 <div className="img-with">
                   <img id="undefind" src={undefindImg} alt="Undefined Image" />
+                  {categoryCard.length > 0 ? (
+                    <></>
+                  ) : (
+                    <GuardComponent
+                      role={role}
+                      section="addFood"
+                      action="addFood"
+                    >
+                      <Button
+                        onClick={() => navigate('/foods')}
+                        color="success"
+                        startIcon={<AddIcon />}
+                        variant="contained"
+                      >
+                        {t('createFood')}
+                      </Button>
+                    </GuardComponent>
+                  )}
                 </div>
               </div>
             )}

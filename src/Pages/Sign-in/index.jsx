@@ -1,9 +1,13 @@
 import {
   Autocomplete,
   Button,
+  FormControl,
   IconButton,
   Input,
   InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
 } from '@mui/material';
 import { StyleContainer } from '../../../ContainerCss';
@@ -17,15 +21,19 @@ import { useLazyQuery } from '@apollo/client/react';
 import { useEffect, useState } from 'react';
 import { MuiTelInput } from 'mui-tel-input';
 import Loader from '../../Components/Loader/index';
+import { useTranslation } from 'react-i18next';
 import { useUserStore } from '../../../store';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { useLang } from '../../useLang';
 const options = ['user', 'admin'];
 function SignIn() {
   const [load, setLoad] = useState(false);
   const navigate = useNavigate('');
   const [signInFetchEror, setSignInFetchEror] = useState('');
   const [isHide, setHide] = useState(false);
+  const { lang, setLang } = useLang();
+  const { t } = useTranslation();
 
   const setUserRole = useUserStore((state) => state.setUserRole);
   const setToken = useUserStore((state) => state.setToken);
@@ -87,6 +95,11 @@ function SignIn() {
     }
   };
 
+  const handleChange = (event) => {
+    const newLang = event.target.value;
+    setLang(newLang);
+  };
+
   function handleClickShowPassword() {
     setHide((prev) => !prev);
   }
@@ -95,22 +108,50 @@ function SignIn() {
     <>
       <Loader load={load}></Loader>
       <StyleSignIn className="signIn">
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginRight: 30,
+            position: 'relative',
+            top: 20,
+          }}
+          className="lang"
+        >
+          <FormControl
+            style={{ backgroundColor: 'aqua', borderRadius: 10 }}
+            className="selectId"
+          >
+            <InputLabel id="lang-select-label">Lang</InputLabel>
+            <Select
+              className="select"
+              style={{ height: 40 }}
+              labelId="lang-select-label"
+              id="lang-select"
+              value={lang}
+              label="Lang"
+              onChange={handleChange}
+            >
+              <MenuItem value="en">En</MenuItem>
+              <MenuItem value="uz">Uz</MenuItem>
+              <MenuItem value="ru">Ru</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
         <StyleContainer>
           <div className="sign-in-nav">
             <div className="form">
               <div className="form-nav">
                 <div className="texts">
-                  <h1>Login</h1>
-                  <p>
-                    More than <span>15,000 recipts</span> from around the world!
-                  </p>
+                  <h1>{t('login')}</h1>
+                  <p>{t('signUpDesc')}</p>
                 </div>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="inputs">
                     <Controller
                       name="role"
                       control={control}
-                      rules={{ required: 'Role is required' }}
+                      rules={{ required: t('roleIsReq') }}
                       render={({
                         fieldState: { error },
                         field: { onChange, value },
@@ -137,7 +178,7 @@ function SignIn() {
                       rules={{
                         required: {
                           value: true,
-                          message: 'Phone is required',
+                          message: t('phoneNum'),
                         },
                       }}
                       render={({ field, fieldState: { error } }) => (
@@ -145,7 +186,7 @@ function SignIn() {
                           {...field}
                           error={Boolean(error)}
                           helperText={error?.message}
-                          placeholder="Enter your phone number"
+                          placeholder={t('enterYourPhoneNUm')}
                         ></MuiTelInput>
                       )}
                     />
@@ -155,14 +196,13 @@ function SignIn() {
                       rules={{
                         required: {
                           value: true,
-
-                          message: 'Password Max lenght 8',
+                          message: t('passwordReq'),
                         },
                       }}
                       render={({ field, fieldState: { error } }) => (
                         <TextField
                           {...field}
-                          type={!isHide ? 'password' : 'text'}
+                          type={isHide ? 'password' : 'text'}
                           error={Boolean(error)}
                           id="outlined-controlled"
                           helperText={error?.message}
@@ -200,10 +240,10 @@ function SignIn() {
                         justifyContent: 'space-between',
                       }}
                     >
-                      <a href="/sign-up">Don't have an accaount?</a>
+                      <a href="/sign-up">{t('dontHaveAcc')}</a>
                     </p>
                     <Button type="submit" color="error" variant="contained">
-                      LOGIN
+                      {t('login')}
                     </Button>
                   </div>
                 </form>

@@ -23,6 +23,10 @@ const SECTIONS = {
     admin: { faovuriteLink: false, customer: true },
     user: { faovuriteLink: true, customer: false },
   },
+  order: {
+    admin: { addOrder: false },
+    user: { addOrder: true },
+  },
 };
 const GuardComponent = ({ role, section, action, children }) => {
   const hasAccess = SECTIONS[section]?.[role]?.[action];

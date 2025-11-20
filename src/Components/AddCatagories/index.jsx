@@ -8,33 +8,11 @@ import {
   DialogTitle,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
-import { gql } from '@apollo/client';
-import { useMutation } from '@apollo/client/react';
 import { useTranslation } from 'react-i18next';
-// const CREATE_CATAGORIES = gql`
-//   mutation CreateCategory($name: String!, $image: String!) {
-//     createCategory(category: { name: $name, image: $image }) {
-//       payload {
-//         _id
-//         name
-//         image
-//       }
-//     }
-//   }
-// `;
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 function AddCatagories({ open, setOpen, onAdd }) {
   const { t } = useTranslation();
-  // const [fetchCatagories, { data, loading, error }] =
-  //   useMutation(CREATE_CATAGORIES);
-  // const handleAdd = async () => {
-  //   await fetchCatagories({
-  //     variables: {
-  //       name: 'Fast Food',
-  //       image: 'https://example.com/image.png',
-  //     },
-  //   });
-  // };
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -59,7 +37,7 @@ function AddCatagories({ open, setOpen, onAdd }) {
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add New Category</DialogTitle>
+        <DialogTitle>{t('addNewCategory')}</DialogTitle>
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogContent>
             <Controller
@@ -103,7 +81,12 @@ function AddCatagories({ open, setOpen, onAdd }) {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>{t('cancel')}</Button>
-            <Button type="submit" variant="contained" color="success">
+            <Button
+              startIcon={<AddCircleOutlineIcon />}
+              type="submit"
+              variant="contained"
+              color="success"
+            >
               {t('add')}
             </Button>
           </DialogActions>

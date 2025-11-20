@@ -54,7 +54,7 @@ function CategoryCard({ category, setDeletedCategoryId, setClickedDelete }) {
           alt={category.name}
         />
         <div onClick={() => navigate(`/categoriesById?id=${category?._id}`)}>
-          <h4>{category?.name}</h4>
+          <h4 style={{ marginTop: 18 }}>{category?.name}</h4>
         </div>
       </div>
       <GuardComponent role={role} section="category" action="delete">

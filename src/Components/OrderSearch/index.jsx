@@ -11,7 +11,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { StyleOrders } from '../../Pages/Orders/StyleOrders';
+import { StyleOrders } from './StyleOrders';
 import { Search } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -25,6 +25,7 @@ import GuardComponent from '../CheckRole/CheckRole';
 import { useTranslation } from 'react-i18next';
 import { create } from 'zustand';
 import { useLang } from '../../useLang';
+import Loader from '../Loader';
 
 const GET_FOODS_BY_SEARCH = gql`
   query GetAllFoods($name: String!) {
@@ -80,6 +81,7 @@ function OrderSearch({
   refetchItem,
 }) {
   const { t } = useTranslation();
+  const [load, setLoad] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const { lang, setLang } = useLang();
 
@@ -131,7 +133,11 @@ function OrderSearch({
   }, [data, setFoods]);
 
   const changedInput = (e) => {
-    setSearchInput(e.target.value);
+    setLoad(true);
+    setTimeout(() => {
+      setSearchInput(e.target.value);
+      setLoad(false);
+    }, 200);
   };
   const [open, setopen] = useState(null);
   const naivagte = useNavigate('');
@@ -163,14 +169,16 @@ function OrderSearch({
 
   return (
     <StyleOrders>
+      <Loader load={load}></Loader>
       <div className="orders-search">
         <div id="order-special">
           {action !== 'category' && (
             <TextField
+              className="input"
               onChange={(e) => changedInput(e)}
               type="text"
               placeholder={t('searchPlaceHolder')}
-              style={{ backgroundColor: 'white', width: '100%' }}
+              style={{ backgroundColor: 'white' }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">

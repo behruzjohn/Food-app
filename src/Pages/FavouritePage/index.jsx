@@ -107,13 +107,12 @@ function FavouriteFood() {
     setId(clickedFoodId);
     setClickedDelete(true);
   };
+
   const handleClickDelete = async () => {
     try {
-      setClickedDelete(true);
       await deleteFoodById({
         variables: { foodId: deletedFoodId },
       });
-
       setOpenToast(true);
       refetch();
     } catch (e) {
@@ -135,7 +134,7 @@ function FavouriteFood() {
     createCard({
       variables: {
         data: {
-          food: selectedFood,
+          food: selectedFood._id,
           quantity: quontity,
         },
       },
@@ -159,8 +158,8 @@ function FavouriteFood() {
           />
           <div className="foods-header">
             <div>
-              <h2>Favourite Foods</h2>
-              <p>Here is your menu summary with graph view</p>
+              <h2>{t('favouriteFoodTitle')}</h2>
+              <p>{t('favouriteDesc')}</p>
             </div>
             <div
               style={{ display: 'flex', alignItems: 'center', gap: 15 }}
@@ -171,6 +170,7 @@ function FavouriteFood() {
               {foods.length ? (
                 foods.map((food) => (
                   <FoodCard
+                    getAllFavouriteFoods={getAllFavouriteFoods}
                     isFavourite={true}
                     handleClickDeleteFood={handleClickDeleteFood}
                     handleAddToCart={handleAddToCart}
@@ -187,14 +187,15 @@ function FavouriteFood() {
           </div>
         </Container>
       </StyleFoods>
-      {deleteFoodError?.errors?.length && (
+      {deleteFoodError && (
         <ToastExample
-          status={'succsess'}
-          title={'Food is deleted!'}
+          status="error"
+          title="Error deleting food!"
           open={openToast}
           setOpen={setOpenToast}
         />
       )}
+
       <ToastExample
         status="success"
         title={t('addedNewCartFood')}

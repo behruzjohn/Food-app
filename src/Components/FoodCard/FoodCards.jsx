@@ -9,18 +9,25 @@ import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { useEffect, useState } from 'react';
 import GuardComponent from '../CheckRole/CheckRole';
 import { useTranslation } from 'react-i18next';
-import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 function FoodCard({
   isFoodCard,
   handleAddToCart,
   handleClickFavourite,
+  handleClickRemoveFav,
   isFavourite,
   isSpeacial,
   food,
   handleClickDeleteFood,
   handleClickEditFood,
 }) {
+  const [isLiked, setLiked] = useState(food?.isFavorite || false);
+
+  useEffect(() => {
+    setLiked(food?.isFavorite || false);
+  }, [food?.isFavorite]);
+
   const { t } = useTranslation();
   const [role, setRole] = useState('');
 
@@ -50,16 +57,38 @@ function FoodCard({
             <span style={{ color: '#fff' }}>{food.quantity}</span>
           </div>
         ) : null}
+        <GuardComponent role={role} section="foodCard" action="addFavourite">
+          {isSpeacial || isFavourite ? (
+            <></>
+          ) : (
+            <div id="unicBtn" className="btn">
+              <h2
+                onClick={() => {
+                  if (isLiked) {
+                    handleClickRemoveFav(food?._id);
+                    setLiked(false);
+                  } else {
+                    handleClickFavourite(food?._id);
+                    setLiked(true);
+                  }
+                }}
+              >
+                {isLiked ? (
+                  <FavoriteIcon color="error" fontSize="medium" />
+                ) : (
+                  <FavoriteBorderIcon fontSize="medium" />
+                )}
+              </h2>
+            </div>
+          )}
+        </GuardComponent>
         <img src={food?.image ? food.image : defulatFoodImg} alt={food.name} />
 
         <h2>{food?.name}</h2>
+        <p>{food?.description?.slice(0, 50) + '.'}</p>
         <p>
-          <span>{food?.category?.name}</span> /{food?.name}
-        </p>
-        <p>{food?.description}</p>
-        <p>
-          <strong>{t('price')}</strong>
-          {food?.price}
+          <strong>{t('price')}: </strong>
+          {food?.price} {food?.discount > 0 ? `(${food.discount}%)` : null}
         </p>
 
         <div className="buttons">
@@ -104,23 +133,6 @@ function FoodCard({
             </GuardComponent>
           )}
 
-          <GuardComponent role={role} section="foodCard" action="addFavourite">
-            {isSpeacial || isFavourite ? (
-              <></>
-            ) : (
-              <div className="btn">
-                <Button
-                  onClick={() => handleClickFavourite(food?._id)}
-                  id="save"
-                  variant="contained"
-                  color="warning"
-                >
-                  <ThumbUpOutlinedIcon fontSize="small" />
-                </Button>
-                <p>{t('addFavourite')}</p>
-              </div>
-            )}
-          </GuardComponent>
           <GuardComponent role={role} section="foodCard" action="addToCard">
             {food?.quantity ? (
               <></>

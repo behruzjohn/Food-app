@@ -24,9 +24,16 @@ export const StyleHeaderDashboard = styled.div`
   width: 280px;
   padding: 20px;
   height: 100%;
-  z-index: 1111;
+  z-index: 1 !important;
   background-color: #fff;
 
+  .active {
+    background-color: lightgreen;
+    padding-bottom: 8px;
+    padding-top: 8px;
+    color: green;
+    border-radius: 8px;
+  }
   .header-nav {
     padding: 30px;
   }

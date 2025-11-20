@@ -18,40 +18,54 @@ function AddOrder({ open, setOpen, onAdd }) {
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
   const [marker, setMarker] = useState(null);
+  const markerRef = useRef(null);
 
   useEffect(() => {
-    if (mapContainer.current && !map) {
-      const initializeMap = new maplibregl.Map({
-        container: mapContainer.current,
-        style: 'https://demotiles.maplibre.org/style.json',
-        center: [69.240562, 41.311081],
-        zoom: 10,
-      });
+    if (!open) return;
 
-      initializeMap.on('click', (e) => {
-        const { lng, lat } = e.lngLat;
+    const timer = setTimeout(() => {
+      if (mapContainer.current) {
+        const newMap = new maplibregl.Map({
+          container: mapContainer.current,
+          style: 'https://demotiles.maplibre.org/style.json',
+          center: [69.240562, 41.311081],
+          zoom: 10,
+        });
 
-        if (marker) marker.remove();
+        newMap.on('click', (e) => {
+          const { lng, lat } = e.lngLat;
 
-        const newMarker = new maplibregl.Marker({ draggable: true })
-          .setLngLat([lng, lat])
-          .addTo(initializeMap);
+          if (markerRef.current) {
+            markerRef.current.remove();
+          }
 
-        newMarker.on('dragend', () => {
-          const { lng, lat } = newMarker.getLngLat();
+          const newMarker = new maplibregl.Marker({ draggable: true })
+            .setLngLat([lng, lat])
+            .addTo(newMap);
+
+          newMarker.on('dragend', () => {
+            const { lng, lat } = newMarker.getLngLat();
+            setValue('lat', lat.toFixed(6));
+            setValue('lng', lng.toFixed(6));
+          });
+
+          markerRef.current = newMarker;
+
           setValue('lat', lat.toFixed(6));
           setValue('lng', lng.toFixed(6));
         });
 
-        setMarker(newMarker);
+        setMap(newMap);
+      }
+    }, 50);
 
-        setValue('lat', lat.toFixed(6));
-        setValue('lng', lng.toFixed(6));
-      });
-
-      setMap(initializeMap);
-    }
-  }, [map]);
+    return () => {
+      clearTimeout(timer);
+      if (map) map.remove();
+      setMap(null);
+      markerRef.current = null;
+    };
+  }, [open]);
 
   const onSubmit = (data) => {
     onAdd(data);
@@ -62,6 +76,7 @@ function AddOrder({ open, setOpen, onAdd }) {
     setOpen(false);
     reset();
     if (marker) marker.remove();
+    setMarker(null);
   };
 
   return (

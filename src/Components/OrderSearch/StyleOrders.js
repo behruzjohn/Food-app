@@ -3,26 +3,26 @@ import styled from 'styled-components';
 export const StyleOrders = styled.div`
   width: 100%;
 
-  .orders-nav {
-    padding: 20px;
-  }
   .orders-search {
     display: flex;
+    flex-wrap: wrap; /* kichik ekranlarda pastga tushadi */
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
     justify-content: space-between;
   }
-  .orders-search input {
-    background-color: #fff;
-    height: 40px;
+
+  .input input {
     width: 100%;
-    max-width: 860px;
+    height: 45px;
+    padding: 10px 12px;
     box-sizing: border-box;
+    border-radius: 8px;
   }
-  .select {
-    width: 68px;
+  .input input {
+    width: 100%;
   }
-  .selectId {
-    margin-right: 12px;
-  }
+
   .card {
     display: flex;
     flex-wrap: wrap;
@@ -38,8 +38,8 @@ export const StyleOrders = styled.div`
     justify-content: center;
   }
   .img-with img {
-    width: 350px;
-    height: 350px;
+    width: 450px;
+    height: 450px;
   }
   .shop .badge {
     position: absolute;
@@ -69,7 +69,6 @@ export const StyleOrders = styled.div`
   }
 
   .orders-list {
-    margin-top: 20px;
     width: 100%;
   }
   .orders-list table {
@@ -78,10 +77,25 @@ export const StyleOrders = styled.div`
     color: #fff;
     width: 100%;
   }
-  table thead {
-    background-color: #00b074;
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
   }
-  thead tr th {
+  table thead {
+    background-color: #ffd900ff;
+  }
+  table thead th {
+    border-top: 2px solid;
+    border-bottom: 2px solid;
+    padding: 18px;
+  }
+  table thead th:first-child {
+    border-top-left-radius: 12px;
+  }
+
+  table thead th:last-child {
+    border-top-right-radius: 12px;
   }
   table tbody {
     color: #000;
@@ -104,7 +118,7 @@ export const StyleOrders = styled.div`
     padding: 20px;
   }
   .order-special {
-    width: 900px;
+    width: 100%;
     margin-right: 12px;
   }
   @media screen and (max-width: 480px) {
@@ -127,6 +141,14 @@ export const StyleOrders = styled.div`
     }
     .order-special {
       margin-right: 0px;
+    }
+    .orders-search {
+      flex-direction: column;
+      gap: 10px;
+    }
+    .input {
+      width: 100%;
+      min-width: 0;
     }
   }
 `;

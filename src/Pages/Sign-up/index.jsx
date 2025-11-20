@@ -2,8 +2,12 @@ import {
   Autocomplete,
   Box,
   Button,
+  FormControl,
+  IconButton,
   Input,
   InputAdornment,
+  InputLabel,
+  MenuItem,
   Modal,
   TextField,
   Typography,
@@ -22,6 +26,12 @@ import { gql } from '@apollo/client';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../Components/Loader/index';
+import { useLang } from '../../useLang';
+import { Select } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 function SignUp() {
   const [open, setOpen] = useState(false);
@@ -30,6 +40,10 @@ function SignUp() {
   const [erorFetch, setErorFetch] = useState('');
   const [loaderr, setLoad] = useState(false);
   const navigate = useNavigate('');
+  const { lang, setLang } = useLang();
+  const { t } = useTranslation();
+  const [isHide, setIsHide] = useState(false);
+  const [isHide2, setIsHide2] = useState(false);
 
   const style = {
     position: 'absolute',
@@ -66,6 +80,10 @@ function SignUp() {
   });
 
   const onSubmit = async (formData) => {
+    if (formData.password !== formData.confirmPassword) {
+      setErorFetch('Passwords do not match');
+      return;
+    }
     setErorFetch('');
     console.log(formData);
 
@@ -121,26 +139,66 @@ function SignUp() {
         setLoad(false);
         navigate('/sign-in');
       }
-    } catch (error) {
-      setConfirmError(error.message || 'Something went wrong');
-      setOpen(true);
-      setLoad(false);
+    } catch (err) {
+      setErorFetch(err.message);
+      setOpen(false);
     }
+  }
+  const handleChange = (event) => {
+    const newLang = event.target.value;
+    setLang(newLang);
+  };
+  function handleClickShowPassword() {
+    setIsHide((prev) => !prev);
+  }
+  function handleClickShowPassword2() {
+    setIsHide2((prev) => !prev);
   }
 
   return (
     <>
       <Loader load={loaderr}></Loader>
       <StyleSignUp className="signUp">
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginRight: 30,
+            position: 'relative',
+            top: 20,
+          }}
+          className="lang"
+        >
+          <FormControl
+            style={{ backgroundColor: 'aqua', borderRadius: 10 }}
+            className="selectId"
+          >
+            <InputLabel id="lang-select-label">Lang</InputLabel>
+            <Select
+              className="select"
+              style={{ height: 40 }}
+              labelId="lang-select-label"
+              id="lang-select"
+              value={lang}
+              label="Lang"
+              onChange={handleChange}
+            >
+              <MenuItem value="en">En</MenuItem>
+              <MenuItem value="uz">Uz</MenuItem>
+              <MenuItem value="ru">Ru</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
         <StyleContainer>
           <div className="sign-up-nav">
             <div className="form">
-              <div className="form-nav">
+              <div
+                style={{ position: 'relative', bottom: 12 }}
+                className="form-nav"
+              >
                 <div className="texts">
-                  <h1>SIGN-UP</h1>
-                  <p>
-                    More than <span>15,000 recipts</span> from around the world!
-                  </p>
+                  <h1>{t('signUp')}</h1>
+                  <p>{t('signUpDesc')}</p>
                 </div>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="inputs">
@@ -150,7 +208,7 @@ function SignUp() {
                       rules={{
                         required: {
                           value: true,
-                          message: 'Name is required',
+                          message: t('nameIsReq'),
                         },
                       }}
                       render={({ field, fieldState: { error } }) => (
@@ -160,7 +218,7 @@ function SignUp() {
                           error={Boolean(error)}
                           id="outlined-controlled"
                           helperText={error?.message}
-                          placeholder="Enter your name"
+                          placeholder={t('namePlaceHolder')}
                           slotProps={{
                             input: {
                               startAdornment: (
@@ -179,7 +237,7 @@ function SignUp() {
                       rules={{
                         required: {
                           value: true,
-                          message: 'Phone is required',
+                          message: t('phoneReq'),
                         },
                       }}
                       render={({ field, fieldState: { error } }) => (
@@ -187,7 +245,7 @@ function SignUp() {
                           {...field}
                           error={Boolean(error)}
                           helperText={error?.message}
-                          placeholder="Enter your phone number"
+                          placeholder={t('phonePlaceHolder')}
                         ></MuiTelInput>
                       )}
                     />
@@ -195,23 +253,45 @@ function SignUp() {
                       name="password"
                       control={control}
                       rules={{
-                        required: {
-                          value: true,
-                          message: 'Password min lenght 4, max lenght 8',
+                        required: t('rule'),
+                        minLength: {
+                          value: 8,
+                          message: `Min 4 ${t('characters')} `,
+                        },
+                        maxLength: {
+                          value: 16,
+                          message: `Max 16 ${t('characters')}`,
                         },
                       }}
                       render={({ field, fieldState: { error } }) => (
                         <TextField
                           {...field}
-                          type="password"
+                          type={!isHide ? 'password' : 'text'}
                           error={Boolean(error)}
                           id="outlined-controlled"
                           helperText={error?.message}
-                          placeholder="Password"
+                          placeholder={t('password')}
                           InputProps={{
                             startAdornment: (
                               <InputAdornment position="start">
                                 <LockOpenIcon />
+                              </InputAdornment>
+                            ),
+                            endAdornment: (
+                              <InputAdornment
+                                style={{ cursor: 'pointer' }}
+                                position="end"
+                              >
+                                <IconButton
+                                  onClick={handleClickShowPassword}
+                                  edge="end"
+                                >
+                                  {isHide ? (
+                                    <VisibilityOffIcon />
+                                  ) : (
+                                    <VisibilityIcon />
+                                  )}
+                                </IconButton>
                               </InputAdornment>
                             ),
                           }}
@@ -223,23 +303,45 @@ function SignUp() {
                       name="confirmPassword"
                       control={control}
                       rules={{
-                        required: {
-                          value: true,
-                          message: 'Password min lenght 4, max lenght 8',
+                        required: t('rule'),
+                        minLength: {
+                          value: 8,
+                          message: `Min 4'${t('characters')} `,
+                        },
+                        maxLength: {
+                          value: 16,
+                          message: `Max 16 ${t('characters')} `,
                         },
                       }}
                       render={({ field, fieldState: { error } }) => (
                         <TextField
                           {...field}
-                          type="password"
+                          type={!isHide2 ? 'password' : 'text'}
                           error={Boolean(error)}
                           id="outlined-controlled"
                           helperText={error?.message}
-                          placeholder="Confirm Password"
+                          placeholder={t('confirmPassword')}
                           InputProps={{
                             startAdornment: (
                               <InputAdornment position="start">
                                 <LockOpenIcon />
+                              </InputAdornment>
+                            ),
+                            endAdornment: (
+                              <InputAdornment
+                                style={{ cursor: 'pointer' }}
+                                position="end"
+                              >
+                                <IconButton
+                                  onClick={handleClickShowPassword2}
+                                  edge="end"
+                                >
+                                  {isHide2 ? (
+                                    <VisibilityOffIcon />
+                                  ) : (
+                                    <VisibilityIcon />
+                                  )}
+                                </IconButton>
                               </InputAdornment>
                             ),
                           }}
@@ -248,10 +350,10 @@ function SignUp() {
                     ></Controller>
 
                     <p>
-                      <a href="/sign-in">You have allready have an account?</a>
+                      <a href="/sign-in">{t('youHaveAccaunt')}</a>
                     </p>
                     <Button type="submit" color="warning" variant="contained">
-                      SIGN-UP
+                      {t('signUp')}
                     </Button>
                   </div>
                 </form>
@@ -260,8 +362,8 @@ function SignUp() {
                     style={{
                       color: 'red',
                       marginTop: '10px',
-                      marginLeft: '30px',
-                      fontSize: '18px',
+                      marginLeft: '0px',
+                      fontSize: '14px',
                     }}
                   >
                     {erorFetch} !
@@ -279,13 +381,19 @@ function SignUp() {
             aria-describedby="modal-modal-description"
           >
             <Box sx={style}>
-              <h2 style={{ margin: 0, color: '#ff9800' }}>
-                We sent you an SMS code!
-              </h2>
+              <div
+                onClick={() => setOpen(false)}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  cursor: 'pointer',
+                }}
+              >
+                <ClearOutlinedIcon />
+              </div>
+              <h2 style={{ margin: 0, color: '#ff9800' }}>{t('weSentSms')}</h2>
 
-              <p style={{ color: '#555', fontSize: 14 }}>
-                Please enter the 5-digit code we sent to your phone.
-              </p>
+              <p style={{ color: '#555', fontSize: 14 }}>{t('smsDesc')}</p>
 
               <div
                 style={{ display: 'flex', alignItems: 'center', gap: 15 }}
@@ -299,27 +407,27 @@ function SignUp() {
                     marginTop: 18,
                     paddingLeft: 10,
                   }}
-                  type="text"
+                  type="number"
                   placeholder="Enter code..."
                   className="sms-input"
                 />
                 <Button
                   onClick={() => handleClickConfirm()}
                   variant="contained"
-                  color="warning"
+                  color="success"
                   sx={{
-                    borderRadius: '12px',
+                    borderRadius: '7px',
                     mt: 2,
                     fontWeight: 600,
                     textTransform: 'none',
                   }}
                 >
-                  Confirm
+                  {t('confirm')}
                 </Button>
               </div>
               {confirmError && (
                 <p
-                  style={{ color: 'red', marginTop: '10px', fontSize: '17px' }}
+                  style={{ color: 'red', marginTop: '10px', fontSize: '13px' }}
                 >
                   {confirmError}
                 </p>

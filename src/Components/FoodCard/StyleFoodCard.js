@@ -56,7 +56,10 @@ export const StyleFoodCard = styled.div`
     gap: 12px;
     margin-top: auto;
   }
-
+  #unicBtn {
+    position: relative;
+    left: 105px;
+  }
   .btn {
     display: flex;
     flex-direction: column;

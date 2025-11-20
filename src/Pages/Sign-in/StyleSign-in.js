@@ -14,7 +14,7 @@ export const StyleSignIn = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   .sign-in-nav {
-    width: 100%;
+    width: 400px;
     margin-top: 145px;
   }
 
@@ -61,5 +61,9 @@ export const StyleSignIn = styled.div`
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    .sign-in-nav {
+      width: 100%;
+      margin-top: 60px;
+    }
   }
 `;

@@ -12,6 +12,7 @@ import {
   FormControl,
   InputLabel,
   Chip,
+  Pagination,
 } from '@mui/material';
 import {
   Search,
@@ -19,7 +20,7 @@ import {
   CheckCircleOutline,
   CancelOutlined,
 } from '@mui/icons-material';
-import { StyleOrders } from './StyleOrders';
+import { StyleOrders } from '../../Components/OrderSearch/StyleOrders';
 import OrderSearch from '../../Components/OrderSearch/index';
 import AddOrder from '../../Components/AddOrder/index';
 import { gql } from '@apollo/client';
@@ -30,10 +31,13 @@ import ToastExample from '../../Components/Toast';
 import { useTranslation } from 'react-i18next';
 import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 import BlenderOutlinedIcon from '@mui/icons-material/BlenderOutlined';
-import noOrder from '../../assets/noRemove.png';
+import noOrder from '../../assets/noRd.png';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import PendingActionsOutlinedIcon from '@mui/icons-material/PendingActionsOutlined';
 import Loader from '../../Components/Loader';
+import { useLocation } from 'react-router-dom';
+import GuardComponent from '../../Components/CheckRole/CheckRole';
+import { StyleOrder } from './StyleOrder';
 
 const CREATE_ORDER = gql`
   mutation CreateOrder($order: OrderInput) {
@@ -60,7 +64,7 @@ const CREATE_ORDER = gql`
   }
 `;
 
-const GET_ORDER = gql`
+const GET_ORDER_BY_ID = gql`
   query GetOrdersByUserId($status: String) {
     getOrdersByUserId(status: $status) {
       payload {
@@ -70,6 +74,49 @@ const GET_ORDER = gql`
         address
         createdAt
         updatedAt
+      }
+    }
+  }
+`;
+
+const GET_ORDER_FOR_ADMIN = gql`
+  query GetOrders($statuses: String, $page: Int, $limit: Int) {
+    getOrders(statuses: $statuses, page: $page, limit: $limit) {
+      payload {
+        _id
+        totalPrice
+        status
+        address
+        createdAt
+        updatedAt
+        createdBy {
+          _id
+          name
+          phone
+          role
+          photo
+          telegramId
+          createdAt
+          updatedAt
+        }
+        orderItems {
+          _id
+          quantity
+          price
+          discount
+          user
+          food {
+            _id
+            shortName
+            name
+            image
+            description
+            price
+            discount
+            likes
+            isFavorite
+          }
+        }
       }
     }
   }
@@ -93,7 +140,9 @@ const UPDATE_ORDER_STATUS = gql`
 function OrdersPg() {
   const [openAddOrder, setOpen] = useState(false);
   const { t } = useTranslation();
+  const [load, setLoad] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [orders, setOrders] = useState([]);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [openToastForOrderListError, setOpenToastForOrderListError] =
     useState(false);
@@ -102,23 +151,49 @@ function OrdersPg() {
   const [addOrder, { data, loading, error }] = useMutation(CREATE_ORDER);
   const [updateStatus, { data: statusData, loading: loadUptade }] =
     useMutation(UPDATE_ORDER_STATUS);
-  const {
-    refetch,
-    data: orderData,
-    error: orderError,
-    loading: orderLoading,
-  } = useQuery(GET_ORDER);
+  const [locations, setLocations] = useState({});
+  const [page, setPage] = useState(1);
+
+  const [
+    getOrderForUser,
+    { data: orderData, error: orderError, loading: orderLoading },
+  ] = useLazyQuery(GET_ORDER_BY_ID);
+
+  const [
+    getOrderForAdmin,
+    {
+      data: orderDataAdmin,
+      error: orderErrorAdmin,
+      loading: orderLoadingAdmin,
+      refetch,
+    },
+  ] = useLazyQuery(GET_ORDER_FOR_ADMIN);
+
+  useEffect(() => {
+    if (role === 'admin') {
+      getOrderForAdmin({
+        variables: {
+          page: page,
+          limit: 10,
+        },
+      });
+    } else {
+      getOrderForUser();
+    }
+  }, [page]);
+
+  const location = useLocation();
 
   const open = Boolean(anchorEl);
 
   CheckToken();
 
   useEffect(() => {
-    const search = location?.search;
-    if (search) {
+    if (location.state?.openAddOrder) {
       setOpen(true);
     }
-  }, []);
+  }, [location.state]);
+
   const handleClickStatus = async (status) => {
     setAnchorEl(null);
 
@@ -129,8 +204,16 @@ function OrdersPg() {
           status: status,
         },
       });
-
-      refetch();
+      if (role === 'admin') {
+        getOrderForAdmin({
+          variables: {
+            page: 1,
+            limit: 10,
+          },
+        });
+      } else {
+        getOrderForUser();
+      }
     } catch (err) {
       setOpenToastForOrderListError(true);
     }
@@ -148,166 +231,269 @@ function OrdersPg() {
     } catch (error) {
       if (error) {
         setOpenToastForOrderListError(true);
+        console.log(error?.message);
       }
     }
   };
 
-  const orders = orderData?.getOrdersByUserId?.payload || [];
+  useEffect(() => {
+    if (role === 'admin') {
+      if (orderDataAdmin?.getOrders?.payload) {
+        setOrders(orderDataAdmin.getOrders.payload);
+      }
+    } else {
+      if (orderData?.getOrdersByUserId?.payload) {
+        setOrders(orderData.getOrdersByUserId.payload);
+      }
+    }
+  }, [orderData, orderDataAdmin]);
 
-  console.log(orders);
+  useEffect(() => {
+    if (role === 'admin') {
+      if (!location.state?.openAddOrder) {
+        const fetchLocations = async () => {
+          const newLocations = {};
+          for (const orderItem of orders) {
+            if (orderItem.address?.length === 2) {
+              const [lat, lng] = orderItem.address;
+              try {
+                setLoad(true);
+                const res = await fetch(
+                  `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=uz`
+                );
+                const data = await res.json();
+                newLocations[orderItem._id] = data.display_name;
+              } catch {
+                newLocations[orderItem._id] = '-';
+              } finally {
+                setLoad(false);
+              }
+            } else {
+              newLocations[orderItem._id] = '-';
+            }
+          }
+          setLocations(newLocations);
+        };
+
+        if (orders.length > 0) fetchLocations();
+      }
+    }
+  }, [data]);
+
+  const handleChange = (event, value) => {
+    setPage(value);
+  };
 
   return (
     <HeaderDashborad>
-      <Loader load={loading || loadUptade}></Loader>
+      <Loader load={loading || loadUptade || load}></Loader>
       <AddOrder
         open={openAddOrder}
         setOpen={setOpen}
         onAdd={handleAddOrder}
       ></AddOrder>
-      <StyleOrders className="orders">
+      <StyleOrder className="orders">
         <div className="orders-nav">
           <OrderSearch action="category"></OrderSearch>
 
           <div className="main-header">
             <div className="order-header-text">
-              <h2>{t('orderTitle')}</h2>
-              <p>{t('orderDescription')}</p>
+              <h2>
+                {role === 'admin' ? t('orderTitleAdmin') : t('orderTitle')}
+              </h2>
+              <p>
+                {role === 'admin' ? t('orderDescAdmin') : t('orderDescription')}
+              </p>
             </div>
-            <div className="order-header-btns">
-              <Button onClick={() => setOpen(true)} variant="contained">
-                {t('addOrder')}
-              </Button>
-            </div>
+            <GuardComponent role={role} section="order" action="addOrder">
+              <div className="order-header-btns">
+                <Button
+                  color="success"
+                  onClick={() => setOpen(true)}
+                  variant="contained"
+                >
+                  {t('addOrder')}
+                </Button>
+              </div>
+            </GuardComponent>
           </div>
 
           <div className="orders-list">
             <div className="orders-list-nav">
               <div className="orders-list-scroll">
-                {orders && (
+                {orders.length > 0 ? (
                   <table>
                     <thead>
                       <tr>
                         <th>{t('orderId')}</th>
                         <th>{t('data')}</th>
-                        <th>{t('customerName')}</th>
-                        <th>{t('location')}</th>
+                        {role === 'admin' && <th>{t('customerName')}</th>}
+                        {role === 'admin' && <th>{t('location')}</th>}
                         <th>{t('amount')}</th>
                         <th>{t('statusOrder')}</th>
-                        {role === 'admin' ? <th>{t('actions')}</th> : <></>}
+                        {role === 'admin' && <th>{t('actions')}</th>}
                       </tr>
                     </thead>
                     <tbody>
-                      {orders.map((orderItem, orderIndex) => {
-                        return (
-                          <tr key={orderIndex}>
-                            <td>#{orderIndex}</td>
-                            <td>
-                              {orderItem?.createdAt
-                                ? new Date(
-                                    orderItem.createdAt
-                                  ).toLocaleDateString()
-                                : '-'}
-                            </td>
+                      {orders.map((orderItem, orderIndex) => (
+                        <tr key={orderItem._id}>
+                          <td>#{orderIndex + 1}</td>
+                          <td>
+                            {orderItem.createdAt
+                              ? new Date(
+                                  orderItem.createdAt
+                                ).toLocaleDateString()
+                              : '-'}
+                          </td>
+                          {role === 'admin' && (
                             <td>{orderItem?.createdBy?.name || 'No name'}</td>
-                            <td>{orderItem?.address}</td>
-                            <td>{orderItem?.totalPrice}</td>
+                          )}
+                          {role === 'admin' && (
                             <td>
-                              <Chip label={orderItem?.status} />
+                              {locations[orderItem._id]?.slice(0, -13) || '-'}
                             </td>
-                            {role === 'admin' && (
-                              <td>
-                                <MoreHoriz
-                                  onClick={(e) => {
-                                    setSelectedOrderId(orderItem._id);
-                                    setAnchorEl(e.currentTarget);
-                                  }}
-                                  style={{ cursor: 'pointer' }}
-                                />
-                                <Menu
-                                  anchorEl={anchorEl}
-                                  open={open}
-                                  onClose={() => setAnchorEl(null)}
-                                  PaperProps={{
-                                    elevation: 3,
-                                    sx: {
-                                      mt: 1.5,
-                                      borderRadius: '16px',
-                                      minWidth: 180,
-                                      p: 1,
-                                    },
-                                  }}
-                                  transformOrigin={{
-                                    horizontal: 'right',
-                                    vertical: 'top',
-                                  }}
-                                  anchorOrigin={{
-                                    horizontal: 'right',
-                                    vertical: 'bottom',
-                                  }}
-                                >
-                                  <MenuItem
-                                    onClick={() => handleClickStatus('pending')}
-                                  >
-                                    <ListItemIcon>
-                                      <PendingActionsOutlinedIcon color="primary" />
-                                    </ListItemIcon>
-                                    <ListItemText primary={t('pending')} />
-                                  </MenuItem>
+                          )}
 
-                                  <MenuItem
-                                    onClick={() => handleClickStatus('cooking')}
-                                  >
-                                    <ListItemIcon>
-                                      <BlenderOutlinedIcon color="error" />
-                                    </ListItemIcon>
-                                    <ListItemText primary={t('cooking')} />
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() =>
-                                      handleClickStatus('delivering')
-                                    }
-                                  >
-                                    <ListItemIcon>
-                                      <LocalShippingOutlinedIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary={t('deleviring')} />
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() =>
-                                      handleClickStatus('received')
-                                    }
-                                  >
-                                    <ListItemIcon>
-                                      <TaskAltOutlinedIcon color="success" />
-                                    </ListItemIcon>
-                                    <ListItemText primary={t('received')} />
-                                  </MenuItem>
-                                </Menu>
-                              </td>
-                            )}
-                          </tr>
-                        );
-                      })}
+                          <td style={{ fontFamily: 'sans-serif' }}>
+                            {new Intl.NumberFormat('uz-UZ', {
+                              style: 'currency',
+                              currency: 'UZS',
+                              minimumFractionDigits: 0,
+                            }).format(orderItem.totalPrice)}
+                          </td>
+                          <td>
+                            <Chip
+                              label={orderItem.status}
+                              color={
+                                orderItem.status === 'pending'
+                                  ? 'warning'
+                                  : orderItem.status === 'cooking'
+                                  ? 'error'
+                                  : orderItem.status === 'delivering'
+                                  ? 'info'
+                                  : orderItem.status === 'received'
+                                  ? 'success'
+                                  : 'default'
+                              }
+                            />
+                          </td>
+                          {role === 'admin' && (
+                            <td>
+                              <MoreHoriz
+                                onClick={(e) => {
+                                  setSelectedOrderId(orderItem._id);
+                                  setAnchorEl(e.currentTarget);
+                                }}
+                                style={{ cursor: 'pointer' }}
+                              />
+                              <Menu
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={() => setAnchorEl(null)}
+                                PaperProps={{
+                                  elevation: 3,
+                                  sx: {
+                                    mt: 1.5,
+                                    borderRadius: '16px',
+                                    minWidth: 180,
+                                    p: 1,
+                                  },
+                                }}
+                                transformOrigin={{
+                                  horizontal: 'right',
+                                  vertical: 'top',
+                                }}
+                                anchorOrigin={{
+                                  horizontal: 'right',
+                                  vertical: 'bottom',
+                                }}
+                              >
+                                <MenuItem
+                                  onClick={() => handleClickStatus('pending')}
+                                >
+                                  <ListItemIcon>
+                                    <PendingActionsOutlinedIcon color="warning" />
+                                  </ListItemIcon>
+                                  <ListItemText primary={t('pending')} />
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() => handleClickStatus('cooking')}
+                                >
+                                  <ListItemIcon>
+                                    <BlenderOutlinedIcon color="error" />
+                                  </ListItemIcon>
+                                  <ListItemText primary={t('cooking')} />
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() =>
+                                    handleClickStatus('delivering')
+                                  }
+                                >
+                                  <ListItemIcon>
+                                    <LocalShippingOutlinedIcon color="primary" />
+                                  </ListItemIcon>
+                                  <ListItemText primary={t('deleviring')} />
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() => handleClickStatus('received')}
+                                >
+                                  <ListItemIcon>
+                                    <TaskAltOutlinedIcon color="success" />
+                                  </ListItemIcon>
+                                  <ListItemText primary={t('received')} />
+                                </MenuItem>
+                              </Menu>
+                            </td>
+                          )}
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
+                ) : (
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                    }}
+                    className="img-with"
+                  >
+                    <img
+                      style={{ width: 450, height: 450 }}
+                      id="undefind"
+                      src={noOrder}
+                      alt="No Order Image"
+                    />
+                  </div>
                 )}
               </div>
-
-              {!orderData?.getOrdersByUserId?.payload && (
-                <div className="img-with">
-                  <img id="undefind" src={noOrder} alt="No Order Image" />
-                </div>
-              )}
             </div>
           </div>
         </div>
-      </StyleOrders>
+      </StyleOrder>
       <ToastExample
-        status={'error'}
+        status={error?.message ? 'error' : 'success'}
         open={openToastForOrderListError}
-        setOpen={setOpenToastForOrderListError}
-        title={error ? error.message : ''}
+        setOpen={error?.message ? setOpenToastForOrderListError : 'true'}
+        title={error?.message ? error?.message : t('orderAdded')}
       ></ToastExample>
+      {role === 'admin' && (
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginTop: 20,
+          }}
+        >
+          <Pagination
+            page={page}
+            onChange={handleChange}
+            count={10}
+            color="primary"
+            shape="rounded"
+          />
+        </div>
+      )}
     </HeaderDashborad>
   );
 }

@@ -5,6 +5,7 @@ import {
   ListItemIcon,
   ListItemText,
   Button,
+  Chip,
 } from '@mui/material';
 import {
   MoreHoriz,
@@ -60,7 +61,7 @@ function Customers() {
     <HeaderDashborad>
       <StyleCustomer className="orders">
         <div className="orders-nav">
-          <OrderSearch />
+          <OrderSearch action={'category'} />
 
           <div className="main-header">
             <div className="order-header-text">
@@ -94,12 +95,30 @@ function Customers() {
                               : '-'}
                           </td>
                           <td>{u.name || 'No name'}</td>
-                          <td>{u.telegramId || '0000000000'}</td>
-                          <td>{u.phone}</td>
+                          <td>{u.telegramId || '-'}</td>
+                          <td style={{ fontFamily: 'sans-serif' }}>
+                            <a
+                              href={`tel:${u.phone}`}
+                              style={{
+                                color: 'blue',
+                                textDecoration: 'none',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {u.phone}
+                            </a>
+                          </td>
                           <td>
-                            <Button size="small" variant="contained">
-                              {u.role}
-                            </Button>
+                            <Chip
+                              label={u.role}
+                              color={
+                                u.role === 'admin'
+                                  ? 'error'
+                                  : u.role === 'moderator'
+                                  ? 'warning'
+                                  : 'default'
+                              }
+                            />
                           </td>
                         </tr>
                       )

@@ -52,9 +52,7 @@ const DELETE_CATEGORY = gql`
 
 function CategoriesPage() {
   const [createCategory] = useMutation(CREATE_CATEGORIES);
-  const { f } = useTranslation();
   const [categoires, setCategories] = useState([]);
-  const [allCategoriesForSearch, setAllCategoriesForSearch] = useState();
   const [openCategories, setOpenCategories] = useState(false);
   const [deletedCategoryId, setDeletedCategoryId] = useState('');
   const [openToastDelete, setOpenToastDelete] = useState(false);
@@ -78,7 +76,6 @@ function CategoriesPage() {
   useEffect(() => {
     if (data?.getAllCategories?.payload) {
       setCategories(data.getAllCategories.payload);
-      setAllCategoriesForSearch(data?.getAllFoods?.payload);
     }
   }, [data]);
 
@@ -161,6 +158,7 @@ function CategoriesPage() {
                     action="addCategory"
                   >
                     <Button
+                      style={{ height: 38 }}
                       onClick={() => setOpenCategories(true)}
                       color="success"
                       variant="contained"

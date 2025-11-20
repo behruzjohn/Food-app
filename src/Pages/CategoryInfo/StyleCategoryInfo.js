@@ -7,15 +7,32 @@ export const StyleCategoryInfo = styled.div`
     justify-content: space-between;
     margin-bottom: 20px;
   }
+  .img-with {
+    justify-content: center;
+    margin-left: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .img-with button {
+    margin-right: 70px;
+  }
   #undefind {
     margin-top: 50px;
-    margin-left: 350px;
     width: 450px;
     height: 400px;
     object-fit: contain;
   }
 
   @media (max-width: 800px) {
+    .img-with {
+      margin-left: 0;
+      margin-top: 50px;
+    }
+    .img-with button {
+      font-size: 10px;
+      margin-right: 50px;
+    }
     #undefind {
       margin-left: 0;
       width: 100%;
@@ -23,7 +40,6 @@ export const StyleCategoryInfo = styled.div`
       height: auto;
       display: block;
       margin-inline: auto;
-      margin-top: 160px;
     }
     .continer button {
       height: 35px;

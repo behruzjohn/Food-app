@@ -19,7 +19,7 @@ function HeaderDashborad({ children }) {
   const [role, setRole] = useState('');
 
   useEffect(() => {
-    const a = JSON.parse(localStorage.getItem('authStore') || '');
+    const a = JSON.parse(localStorage.getItem('authStore') || 'null');
     console.log(a?.state?.role);
 
     setRole(a?.state?.role);
@@ -43,8 +43,13 @@ function HeaderDashborad({ children }) {
         <div className="header-nav">
           <ul>
             {SIDEBAR_LINKS?.map((item) => {
+              const isActive = location.pathname === item.path;
               const content = (
-                <li key={item.key} onClick={() => navigate(item.path)}>
+                <li
+                  className={isActive ? 'active' : ''}
+                  key={item.key}
+                  onClick={() => navigate(item.path)}
+                >
                   <a>
                     {item.icon}
                     <span id="span-title">{t(item.key)}</span>

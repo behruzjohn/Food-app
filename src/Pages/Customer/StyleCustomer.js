@@ -60,6 +60,13 @@ export const StyleCustomer = styled.div`
     height: 30px;
     width: 10px !important;
   }
+  table thead th:first-child {
+    border-top-left-radius: 12px;
+  }
+
+  table thead th:last-child {
+    border-top-right-radius: 12px;
+  }
   tbody td {
     padding: 20px;
   }

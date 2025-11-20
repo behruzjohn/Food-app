@@ -65,7 +65,7 @@ function Customer() {
           </div>
 
           <div className="orders-list">
-            <div className="orders-list-nav">
+            <div className="orders-list-scroll">
               <table>
                 <thead>
                   <tr>

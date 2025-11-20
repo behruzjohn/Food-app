@@ -2,13 +2,11 @@ import { LastPage } from '@mui/icons-material';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
-
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     debug: true,
-    lng: 'en',
     resources: {
       en: {
         translation: {
@@ -106,6 +104,40 @@ i18n
           update: 'Update',
           categoryAddSuccessfull: 'Category is added successfully!',
           categoryIsDeleted: 'Category is Deleted!',
+          favouriteFoodTitle: 'Favourite Foods',
+          favouriteDesc:
+            'Here you can view and manage all the foods you have added to your favorites. Quickly access your preferred dishes anytime.',
+          placeInHolder: 'Place a Holder',
+          orderAdded: 'Order added successfully',
+          signUp: 'SIGN UP',
+          signUpDesc: 'More than 15,000 recipes from around the world!',
+          signUpName: 'Enter your name',
+          signUpPhone: 'Enter your phone number',
+          password: 'Password',
+          confirmPassword: 'Confirm Password',
+          youHaveAccaunt: 'Do you already have an account?',
+          nameIsReq: 'Name is required',
+          namePlaceHolder: 'Enter your name',
+          phoneReq: 'Phone is required',
+          phonePlaceHolder: 'Enter your phone number',
+          passwordReq: 'Password min lenght 8, max lenght 16',
+          rule: 'Password is requred',
+          characters: 'characters',
+          weSentSms: 'We sent you an SMS code!',
+          smsDesc: 'Please enter the 5-digit code we sent to your phone.',
+          confirm: 'Confirm',
+          login: 'LOGIN',
+          userType: 'User type',
+          dontHaveAcc: "Don't have an accaunt?",
+          roleIsReq: 'Role is requred',
+          phoneNum: 'Phone number is requred',
+          enterYourPhoneNUm: 'Enter your phone number',
+          orderTitleAdmin: 'All Orders',
+          orderDescAdmin:
+            'The All Orders page allows admins to view, manage, and update the status of every order. Quickly track orders, see customer details, and take action when needed.',
+          updatedFood: 'Food is uptaded successfully',
+          addedToFavourite: 'Added to favourites',
+          addNewCategory: 'Add New Category',
         },
       },
       uz: {
@@ -150,12 +182,12 @@ i18n
           price: 'Narxi: ',
           edit: "O'zgartirish",
           addFavourite: "Sevimli qo'shish",
-          addToCard: "Kartaga qo'shish",
+          addToCard: "Savadga qo'shish",
           delete: "O'chirish",
           newMenu: 'Yangi menyu',
           addedNewFood: "Yangi Food qo'shildi!",
-          addedNewCartFood: "Muvofoqiyatli Card ga qo'shildi",
-          categoryPg: 'Category Page',
+          addedNewCartFood: "Muvofoqiyatli Savad ga qo'shildi",
+          categoryPg: 'Kategoriya sahifasi',
           categoryDescription:
             'Barcha oziq-ovqat toifalarini bir joyda boshqaring va tartibga soling.',
           addCategory: "Kategoriyalarni qo'shish",
@@ -204,6 +236,43 @@ i18n
           update: 'Yangilash',
           categoryAddSuccessfull: "Categorya muvofoqiyatli qo'shildi!",
           categoryIsDeleted: "Muvofoqiyatli o'chirildi!",
+          favouriteFoodTitle: 'Sevimli taomlar',
+          favouriteDesc:
+            'Bu yerda sevimlilarga qo‘shgan barcha taomlarni ko‘rishingiz va boshqarishingiz mumkin. Yoqtirgan taomlaringizga istalgan vaqtda tez kirish imkoniyati mavjud.',
+          placeInHolder: 'Rasmiylashtiring',
+          orderAdded: 'Buyurtma muvaffaqiyatli qo‘shildi',
+          signUp: 'Ro‘yxatdan o‘tish',
+          signUpDesc:
+            'Dunyoning turli burchaklaridan 15 000 dan ortiq retseptlar!',
+          signUpName: 'Ismingizni kiriting',
+          signUpPhone: 'Telefon raqamingizni kiriting',
+          password: 'Parol',
+          confirmPassword: 'Parolni tasdiqlang',
+          youHaveAccaunt: 'Akkountingiz bormi?',
+          nameIsReq: 'Ism majburiy',
+          namePlaceHolder: 'Ismingizni kiriting',
+          phoneReq: 'Telefon raqam majburiy',
+          phonePlaceHolder: 'Telefon raqamingizni kiriting',
+          passwordReq:
+            'Parol: minimal 4 ta, maksimal 8 ta belgidan iborat bo‘lishi kerak',
+          rule: 'Parol majburiy',
+          characters: 'belgi',
+          weSentSms: 'Sizga SMS kodi yuborildi!',
+          smsDesc:
+            'Iltimos, telefoningizga yuborilgan 5 xonali kodni kiriting.',
+          confirm: 'Tasdiqlash',
+          login: 'Kirish',
+          userType: 'Foydalanuvchi turi',
+          dontHaveAcc: 'Akkountingiz yo‘qmi?',
+          roleIsReq: 'Roli majburiy',
+          phoneNum: 'Telefon raqam majburiy',
+          enterYourPhoneNUm: 'Telefon raqamingizni kiriting',
+          orderTitleAdmin: 'Hamma Buyurtmalar',
+          orderDescAdmin:
+            'Hamma Buyurtmalar sahifasi adminlarga barcha buyurtmalarni ko‘rish, boshqarish va ularning holatini yangilash imkonini beradi.',
+          updatedFood: 'Taom muvaffaqiyatli yangilandi',
+          addedToFavourite: 'Sevimlilarga qo‘shildi',
+          addNewCategory: 'Yangi kategoriya qo‘shish',
         },
       },
       ru: {
@@ -253,7 +322,7 @@ i18n
           newMenu: 'Новое меню',
           addedNewFood: 'Добавлена ​​новая еда!',
           addedNewCartFood: 'Успешно добавлено на карту',
-          categoryPg: 'Category Page',
+          categoryPg: 'Страница категорий',
           categoryDescription:
             'Управляйте и организуйте все категории продуктов питания в одном месте.',
           addCategory: 'Добавить категории',
@@ -302,8 +371,44 @@ i18n
           update: 'обновлять',
           categoryAddSuccessfull: 'Категория успешно добавлена!',
           categoryIsDeleted: 'Успешно удалено!',
+          favouriteFoodTitle: 'Избранные блюда',
+          favouriteDesc:
+            'Здесь вы можете просматривать и управлять всеми блюдами, добавленными в избранное. Быстрый доступ к любимым блюдам в любое время.',
+          placeInHolder: 'Укажите значение',
+          orderAdded: 'Заказ успешно добавлен',
+          signUp: 'Регистрация',
+          signUpDesc: 'Более 15 000 рецептов со всего мира!',
+          signUpName: 'Введите ваше имя',
+          signUpPhone: 'Введите ваш номер телефона',
+          password: 'Пароль',
+          confirmPassword: 'Подтвердите пароль',
+          youHaveAccaunt: 'У вас уже есть аккаунт?',
+          nameIsReq: 'Имя обязательно',
+          namePlaceHolder: 'Введите ваше имя',
+          phoneReq: 'Телефон обязателен',
+          phonePlaceHolder: 'Введите ваш номер телефона',
+          passwordReq: 'Пароль: минимум 4 символа, максимум 8',
+          rule: 'Пароль обязателен',
+          characters: 'символов',
+          weSentSms: 'Мы отправили вам SMS код!',
+          smsDesc:
+            'Пожалуйста, введите 5-значный код, который мы отправили на ваш телефон.',
+          confirm: 'Подтвердить',
+          login: 'Вход',
+          userType: 'Тип пользователя',
+          dontHaveAcc: 'Нет аккаунта?',
+          roleIsReq: 'Роль обязательна',
+          phoneNum: 'Телефон обязателен',
+          enterYourPhoneNUm: 'Введите ваш номер телефона',
+          orderTitleAdmin: 'Все заказы',
+          orderDescAdmin:
+            'Страница Все заказы позволяет администраторам просматривать, управлять и обновлять статус каждого заказа.',
+          updatedFood: 'Блюдо успешно обновлено',
+          addedToFavourite: 'Добавлено в избранное',
+          addNewCategory: 'Добавить новую категорию',
         },
       },
     },
   });
+
 export default i18n;

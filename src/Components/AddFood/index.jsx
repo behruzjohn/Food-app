@@ -9,11 +9,13 @@ import {
   MenuItem,
   InputAdornment,
   CircularProgress,
+  Container,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { gql } from '@apollo/client';
 import { useLazyQuery, useMutation } from '@apollo/client/react';
 import { useTranslation } from 'react-i18next';
+import AddIcon from '@mui/icons-material/Add';
 
 import Loader from '../Loader';
 const GET_ALL_CATAGORIES = gql`
@@ -71,10 +73,10 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
     }
   }, [open]);
 
-  const { control, handleSubmit, reset } = useForm({
+  const { control, handleSubmit, reset, getValues } = useForm({
     defaultValues: {
       name: '',
-      shortName: '',
+
       description: '',
       price: '',
       discount: '',
@@ -90,7 +92,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
       if (food) {
         reset({
           name: food?.name || '',
-          shortName: food?.shortName || '',
+
           description: food?.description || '',
           price: food?.price || '',
           discount: food?.discount || '',
@@ -138,23 +140,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
                 />
               )}
             ></Controller>
-            <Controller
-              name="shortName"
-              control={control}
-              rules={{
-                required: { message: t('foodShortNameReq') },
-              }}
-              render={({ field, fieldState: { error } }) => (
-                <TextField
-                  {...field}
-                  error={Boolean(error)}
-                  helperText={error?.message}
-                  margin="dense"
-                  label={t('foodShortName')}
-                  fullWidth
-                />
-              )}
-            ></Controller>
+
             <Controller
               name="category"
               control={control}
@@ -214,6 +200,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
               }}
               render={({ field, fieldState: { error } }) => (
                 <TextField
+                  type="number"
                   required={true}
                   {...field}
                   error={Boolean(error)}
@@ -232,6 +219,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
               }}
               render={({ field, fieldState: { error } }) => (
                 <TextField
+                  type="number"
                   {...field}
                   error={Boolean(error)}
                   helperText={error?.message}
@@ -244,34 +232,36 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
             <Controller
               name="image"
               control={control}
-              rules={{
-                required: { message: t('foodImgReq') },
-              }}
+              rules={{ required: { message: t('foodImgReq') } }}
               render={({ field, fieldState: { error } }) => (
                 <TextField
-                  required
                   {...field}
                   error={Boolean(error)}
                   helperText={error?.message}
                   margin="dense"
-                  label={t('foodImgUrl')}
+                  label={t('categoryImgUrl')}
                   fullWidth
                 />
               )}
-            ></Controller>
+            />
+            <DialogActions style={{ marginTop: 10 }}>
+              <Button onClick={handleClose}>{t('cancel')}</Button>
+              {!editedFoodId ? (
+                <Button
+                  startIcon={<AddIcon />}
+                  type="submit"
+                  variant="contained"
+                  color="success"
+                >
+                  {t('add')}
+                </Button>
+              ) : (
+                <Button type="submit" variant="contained" color="success">
+                  {t('update')}
+                </Button>
+              )}
+            </DialogActions>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>{t('cancel')}</Button>
-            {!editedFoodId ? (
-              <Button type="submit" variant="contained" color="success">
-                {t('add')}
-              </Button>
-            ) : (
-              <Button type="submit" variant="contained" color="success">
-                {t('update')}
-              </Button>
-            )}
-          </DialogActions>
         </form>
       </Dialog>
     </>

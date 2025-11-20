@@ -15,6 +15,8 @@ import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
 import GuardComponent from '../../Components/CheckRole/CheckRole';
 import FoodQuontity from '../../Components/FoodQuontity';
 import { useTranslation } from 'react-i18next';
+import AddIcon from '@mui/icons-material/Add';
+
 const GET_ALL_FOODS = gql`
   query GetAllFoods {
     getAllFoods {
@@ -47,7 +49,7 @@ const GET_ALL_FOODS = gql`
   }
 `;
 const ADD_FOODS = gql`
-  mutation CreateFood($food: FoodInput!, $image: Upload!) {
+  mutation CreateFood($food: FoodInput!, $image: Upload) {
     createFood(image: $image, food: $food) {
       payload {
         _id
@@ -135,6 +137,23 @@ const UPDATE_FOOD = gql`
     }
   }
 `;
+const DELETE_FOOD_FROM_FAVOURITES = gql`
+  mutation RemoveFoodFromFavorites($foodId: ID!) {
+    removeFoodFromFavorites(foodId: $foodId) {
+      payload {
+        _id
+        shortName
+        name
+        image
+        description
+        price
+        discount
+        likes
+        isFavorite
+      }
+    }
+  }
+`;
 function Foods() {
   const { t } = useTranslation();
 
@@ -150,10 +169,13 @@ function Foods() {
   const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
   const [editedFoodId, setEditedFoodId] = useState(null);
+  const [openToastForUpdateFood, setOpenToastForUpdateFood] = useState(false);
   const [createCard, { data: createCardData }] = useMutation(CREATE_CARD);
   const [addToFavourites, { data: favouriteData, error: favouriteError }] =
     useMutation(ADD_FOOD_FAVOURITES);
   const [allFoodsForSearch, setAllFoodsForSearch] = useState([]);
+  const [deleteFoodById, { data: deleteFavData, error: deleteFoodError }] =
+    useMutation(DELETE_FOOD_FROM_FAVOURITES);
   const [
     deleteFood,
     {
@@ -163,8 +185,11 @@ function Foods() {
     },
   ] = useMutation(DELETE_FOOD);
 
-  const [createFood] = useMutation(ADD_FOODS);
-  const [updateFood] = useMutation(UPDATE_FOOD);
+  const [createFood, { data: AddFoodData, error: AddFoodErr }] =
+    useMutation(ADD_FOODS);
+  const [updateFood, { data: updateFoodData, error: updateFoodErr }] =
+    useMutation(UPDATE_FOOD);
+  const [quontityLen, setQuontityLen] = useState(0);
 
   const { data, loading, error, refetch } = useQuery(GET_ALL_FOODS);
   useEffect(() => {
@@ -207,6 +232,10 @@ function Foods() {
     console.log(favouriteError?.errors[0]?.message);
   };
 
+  const handleClickRemoveFav = (clickedFoodId) => {
+    deleteFoodById({ variables: { foodId: clickedFoodId } });
+  };
+
   const handleAddToCart = (food) => {
     setOpenQuontity(false);
     setSelectedFood(food);
@@ -221,6 +250,8 @@ function Foods() {
         },
       },
     });
+    console.log(createCardData);
+    setQuontityLen((prev) => prev + 1);
 
     setOpenQuontity(false);
     setSelectedFood(null);
@@ -231,23 +262,43 @@ function Foods() {
     setEditedFoodId(foodId);
     setOpen(true);
   };
+
   const handleAddFood = async (formData) => {
     try {
       setLoad(true);
       const token = localStorage.getItem('token') || '';
+
       if (editedFoodId) {
+        const { image, ...rest } = formData;
+
         await updateFood({
           variables: {
             foodId: editedFoodId,
-            food: formData,
+            food: rest,
+          },
+          context: {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
           },
         });
+        if (updateFoodData?.updateFoodById?.payload) {
+          setOpenToastForUpdateFood(true);
+        }
+        refetch();
+
+        setOpen(false);
+        setEditedFoodId(null);
+        setLoad(false);
+        setOpenToast(true);
+        return;
       }
+
       await createFood({
         variables: {
           food: {
             name: formData.name,
-            shortName: formData.shortName,
+            shortName: formData.name.slice(0, 10),
             description: formData.description,
             price: Number(formData.price),
             discount: Number(formData.discount),
@@ -261,9 +312,10 @@ function Foods() {
           },
         },
       });
-      if (data?.createFood?.payload) {
-        setLoad(false);
-      }
+
+      setOpen(false);
+      setOpenToast(true);
+      setLoad(false);
     } catch (err) {
       console.error(err);
     }
@@ -292,6 +344,7 @@ function Foods() {
       <StyleFoods className="foods">
         <Container maxWidth="xl">
           <OrderSearch
+            quontityLen={quontityLen}
             refetchItem={refetch}
             setFoods={setFoods}
             allFoods={allFoodsForSearch}
@@ -308,7 +361,7 @@ function Foods() {
                   onClick={() => setOpen(true)}
                   color="success"
                   variant="contained"
-                  startIcon={<PersonAddIcon />}
+                  startIcon={<AddIcon />}
                 >
                   {t('newMenu')}
                 </Button>
@@ -319,6 +372,7 @@ function Foods() {
             <div className="food-cards-nav">
               {foods?.map((food) => (
                 <FoodCard
+                  handleClickRemoveFav={handleClickRemoveFav}
                   handleClickEditFood={handleClickEditFood}
                   handleClickDeleteFood={handleClickDeleteFood}
                   handleClickFavourite={handleClickFavourite}
@@ -332,15 +386,17 @@ function Foods() {
         </Container>
       </StyleFoods>
       <ToastExample
-        status={favouriteError?.errors?.length ? 'error' : 'success'}
+        status={favouriteError || AddFoodErr ? 'error' : 'success'}
         title={
-          favouriteError?.errors?.length
-            ? favouriteError?.errors[0]?.message
-            : t('addedNewFood')
+          favouriteError?.errors?.[0]?.message ||
+          AddFoodErr?.errors?.[0]?.message ||
+          (AddFoodData?.createFood?.payload ? t('addedNewFood') : '') ||
+          (favouriteData?.addToFavourite?.payload ? t('addedToFavourite') : '')
         }
         open={openToast}
         setOpen={setOpenToast}
       />
+
       <AddFood
         editedFoodId={editedFoodId}
         open={open}
@@ -362,6 +418,12 @@ function Foods() {
         title={t('addedNewCartFood')}
         open={openToastForAddCard}
         setOpen={setOpenToastForAddCard}
+      ></ToastExample>
+      <ToastExample
+        status={updateFoodData?.updateFoodById?.payload ? 'success' : 'error'}
+        title={updateFoodData?.updateFoodById?.payload ? t('updatedFood') : ''}
+        open={openToastForUpdateFood}
+        setOpen={setOpenToastForUpdateFood}
       ></ToastExample>
     </HeaderDashborad>
   );

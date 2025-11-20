@@ -59,14 +59,14 @@ export default function DeleteFoodModalAlert({
             <div style={{ display: 'flex', gap: 15 }} className="btns">
               <Button
                 onClick={() => setOpen(false)}
-                style={{ width: 120 }}
+                style={{ width: 140, height: 40 }}
                 variant="outlined"
               >
                 {t('cancel')}
               </Button>
               <Button
                 onClick={() => handleConfirm()}
-                style={{ width: 120 }}
+                style={{ width: 140, height: 40 }}
                 color="error"
                 variant="contained"
               >

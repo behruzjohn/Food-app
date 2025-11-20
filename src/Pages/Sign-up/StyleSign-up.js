@@ -15,7 +15,8 @@ export const StyleSignUp = styled.div`
   background-repeat: no-repeat;
   .sign-up-nav {
     width: 400px;
-    margin-top: 100px;
+    max-width: 400px;
+    margin-top: 14px;
   }
 
   .texts span {

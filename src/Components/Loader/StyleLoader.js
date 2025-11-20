@@ -4,6 +4,7 @@ import styled from 'styled-components';
 export const StyleLoader = styled.div`
   position: absolute;
   top: 0;
+  left: 0;
   display: ${(props) => (props.status ? 'flex' : 'none')};
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
@@ -12,7 +13,7 @@ export const StyleLoader = styled.div`
   width: 100%;
   height: 100%;
   position: fixed;
-  z-index: 999999999999999999999999999999999999999999999;
+  z-index: 2000;
   .loader {
     --d: 22px;
     width: 4px;
