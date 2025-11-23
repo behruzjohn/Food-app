@@ -137,7 +137,7 @@ function OrderSearch({
     setTimeout(() => {
       setSearchInput(e.target.value);
       setLoad(false);
-    }, 200);
+    }, 300);
   };
   const [open, setopen] = useState(null);
   const naivagte = useNavigate('');

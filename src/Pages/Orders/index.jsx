@@ -5,26 +5,16 @@ import {
   ListItemIcon,
   ListItemText,
   Button,
-  Avatar,
-  TextField,
-  InputAdornment,
-  Autocomplete,
-  FormControl,
-  InputLabel,
   Chip,
   Pagination,
+  Container,
+  CircularProgress,
 } from '@mui/material';
-import {
-  Search,
-  MoreHoriz,
-  CheckCircleOutline,
-  CancelOutlined,
-} from '@mui/icons-material';
+import { MoreHoriz } from '@mui/icons-material';
 import { StyleOrders } from '../../Components/OrderSearch/StyleOrders';
 import OrderSearch from '../../Components/OrderSearch/index';
 import AddOrder from '../../Components/AddOrder/index';
-import { gql } from '@apollo/client';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
 import CheckToken from '../../Components/CheckToken';
 import ToastExample from '../../Components/Toast';
@@ -35,139 +25,40 @@ import noOrder from '../../assets/noRd.png';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import PendingActionsOutlinedIcon from '@mui/icons-material/PendingActionsOutlined';
 import Loader from '../../Components/Loader';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import GuardComponent from '../../Components/CheckRole/CheckRole';
 import { StyleOrder } from './StyleOrder';
-
-const CREATE_ORDER = gql`
-  mutation CreateOrder($order: OrderInput) {
-    createOrder(order: $order) {
-      payload {
-        _id
-        address
-        createdAt
-        createdBy {
-          _id
-          createdAt
-          name
-          phone
-          photo
-          role
-          telegramId
-          updatedAt
-        }
-        status
-        totalPrice
-        updatedAt
-      }
-    }
-  }
-`;
-
-const GET_ORDER_BY_ID = gql`
-  query GetOrdersByUserId($status: String) {
-    getOrdersByUserId(status: $status) {
-      payload {
-        _id
-        totalPrice
-        status
-        address
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
-
-const GET_ORDER_FOR_ADMIN = gql`
-  query GetOrders($statuses: String, $page: Int, $limit: Int) {
-    getOrders(statuses: $statuses, page: $page, limit: $limit) {
-      payload {
-        _id
-        totalPrice
-        status
-        address
-        createdAt
-        updatedAt
-        createdBy {
-          _id
-          name
-          phone
-          role
-          photo
-          telegramId
-          createdAt
-          updatedAt
-        }
-        orderItems {
-          _id
-          quantity
-          price
-          discount
-          user
-          food {
-            _id
-            shortName
-            name
-            image
-            description
-            price
-            discount
-            likes
-            isFavorite
-          }
-        }
-      }
-    }
-  }
-`;
-
-const UPDATE_ORDER_STATUS = gql`
-  mutation UpdateOrderStatusById($orderId: ID, $status: String) {
-    updateOrderStatusById(orderId: $orderId, status: $status) {
-      payload {
-        _id
-        totalPrice
-        status
-        address
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
+import { formatPrice } from '../../helpers/formatters';
+import {
+  CREATE_ORDER,
+  GET_ORDER_BY_ID,
+  GET_ORDER_FOR_ADMIN,
+  UPDATE_ORDER_STATUS,
+} from './api';
 
 function OrdersPg() {
-  const [openAddOrder, setOpen] = useState(false);
   const { t } = useTranslation();
+  const location = useLocation();
+  const [page, setPage] = useState(1);
   const [load, setLoad] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [locations, setLocations] = useState({});
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openAddOrder, setOpenAddOrder] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [openToastForOrderListError, setOpenToastForOrderListError] =
     useState(false);
   const localToken = JSON.parse(localStorage.getItem('authStore')) || '';
   const role = localToken?.state?.role;
-  const [addOrder, { data, loading, error }] = useMutation(CREATE_ORDER);
-  const [updateStatus, { data: statusData, loading: loadUptade }] =
+
+  const open = Boolean(anchorEl);
+  const [addOrder, { loading, error }] = useMutation(CREATE_ORDER);
+  const [updateStatus, { loading: loadUptade }] =
     useMutation(UPDATE_ORDER_STATUS);
-  const [locations, setLocations] = useState({});
-  const [page, setPage] = useState(1);
-
-  const [
-    getOrderForUser,
-    { data: orderData, error: orderError, loading: orderLoading },
-  ] = useLazyQuery(GET_ORDER_BY_ID);
-
-  const [
-    getOrderForAdmin,
-    {
-      data: orderDataAdmin,
-      error: orderErrorAdmin,
-      loading: orderLoadingAdmin,
-      refetch,
-    },
-  ] = useLazyQuery(GET_ORDER_FOR_ADMIN);
+  const [getOrderForUser, { data: orderData }] = useLazyQuery(GET_ORDER_BY_ID);
+  const [getOrderForAdmin, { data: orderDataAdmin }] =
+    useLazyQuery(GET_ORDER_FOR_ADMIN);
+  const navigate = useNavigate('');
 
   useEffect(() => {
     if (role === 'admin') {
@@ -182,15 +73,9 @@ function OrdersPg() {
     }
   }, [page]);
 
-  const location = useLocation();
-
-  const open = Boolean(anchorEl);
-
-  CheckToken();
-
   useEffect(() => {
     if (location.state?.openAddOrder) {
-      setOpen(true);
+      setOpenAddOrder(true);
     }
   }, [location.state]);
 
@@ -278,7 +163,7 @@ function OrdersPg() {
         if (orders.length > 0) fetchLocations();
       }
     }
-  }, [data]);
+  }, []);
 
   const handleChange = (event, value) => {
     setPage(value);
@@ -286,189 +171,211 @@ function OrdersPg() {
 
   return (
     <HeaderDashborad>
-      <Loader load={loading || loadUptade || load}></Loader>
+      {/* <Loader load={loading || loadUptade || load}></Loader> */}
       <AddOrder
         open={openAddOrder}
-        setOpen={setOpen}
+        setOpen={setOpenAddOrder}
         onAdd={handleAddOrder}
       ></AddOrder>
       <StyleOrder className="orders">
-        <div className="orders-nav">
-          <OrderSearch action="category"></OrderSearch>
+        <Container maxWidth="xl">
+          <div className="orders-nav">
+            <OrderSearch action="category"></OrderSearch>
 
-          <div className="main-header">
-            <div className="order-header-text">
-              <h2>
-                {role === 'admin' ? t('orderTitleAdmin') : t('orderTitle')}
-              </h2>
-              <p>
-                {role === 'admin' ? t('orderDescAdmin') : t('orderDescription')}
-              </p>
-            </div>
-            <GuardComponent role={role} section="order" action="addOrder">
-              <div className="order-header-btns">
-                <Button
-                  color="success"
-                  onClick={() => setOpen(true)}
-                  variant="contained"
-                >
-                  {t('addOrder')}
-                </Button>
+            <div className="main-header">
+              <div className="order-header-text">
+                <h2>
+                  {role === 'admin' ? t('orderTitleAdmin') : t('orderTitle')}
+                </h2>
+                <p>
+                  {role === 'admin'
+                    ? t('orderDescAdmin')
+                    : t('orderDescription')}
+                </p>
               </div>
-            </GuardComponent>
-          </div>
-
-          <div className="orders-list">
-            <div className="orders-list-nav">
-              <div className="orders-list-scroll">
-                {orders.length > 0 ? (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>{t('orderId')}</th>
-                        <th>{t('data')}</th>
-                        {role === 'admin' && <th>{t('customerName')}</th>}
-                        {role === 'admin' && <th>{t('location')}</th>}
-                        <th>{t('amount')}</th>
-                        <th>{t('statusOrder')}</th>
-                        {role === 'admin' && <th>{t('actions')}</th>}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orders.map((orderItem, orderIndex) => (
-                        <tr key={orderItem._id}>
-                          <td>#{orderIndex + 1}</td>
-                          <td>
-                            {orderItem.createdAt
-                              ? new Date(
-                                  orderItem.createdAt
-                                ).toLocaleDateString()
-                              : '-'}
-                          </td>
-                          {role === 'admin' && (
-                            <td>{orderItem?.createdBy?.name || 'No name'}</td>
-                          )}
-                          {role === 'admin' && (
-                            <td>
-                              {locations[orderItem._id]?.slice(0, -13) || '-'}
-                            </td>
-                          )}
-
-                          <td style={{ fontFamily: 'sans-serif' }}>
-                            {new Intl.NumberFormat('uz-UZ', {
-                              style: 'currency',
-                              currency: 'UZS',
-                              minimumFractionDigits: 0,
-                            }).format(orderItem.totalPrice)}
-                          </td>
-                          <td>
-                            <Chip
-                              label={orderItem.status}
-                              color={
-                                orderItem.status === 'pending'
-                                  ? 'warning'
-                                  : orderItem.status === 'cooking'
-                                  ? 'error'
-                                  : orderItem.status === 'delivering'
-                                  ? 'info'
-                                  : orderItem.status === 'received'
-                                  ? 'success'
-                                  : 'default'
-                              }
-                            />
-                          </td>
-                          {role === 'admin' && (
-                            <td>
-                              <MoreHoriz
-                                onClick={(e) => {
-                                  setSelectedOrderId(orderItem._id);
-                                  setAnchorEl(e.currentTarget);
-                                }}
-                                style={{ cursor: 'pointer' }}
-                              />
-                              <Menu
-                                anchorEl={anchorEl}
-                                open={open}
-                                onClose={() => setAnchorEl(null)}
-                                PaperProps={{
-                                  elevation: 3,
-                                  sx: {
-                                    mt: 1.5,
-                                    borderRadius: '16px',
-                                    minWidth: 180,
-                                    p: 1,
-                                  },
-                                }}
-                                transformOrigin={{
-                                  horizontal: 'right',
-                                  vertical: 'top',
-                                }}
-                                anchorOrigin={{
-                                  horizontal: 'right',
-                                  vertical: 'bottom',
-                                }}
-                              >
-                                <MenuItem
-                                  onClick={() => handleClickStatus('pending')}
-                                >
-                                  <ListItemIcon>
-                                    <PendingActionsOutlinedIcon color="warning" />
-                                  </ListItemIcon>
-                                  <ListItemText primary={t('pending')} />
-                                </MenuItem>
-                                <MenuItem
-                                  onClick={() => handleClickStatus('cooking')}
-                                >
-                                  <ListItemIcon>
-                                    <BlenderOutlinedIcon color="error" />
-                                  </ListItemIcon>
-                                  <ListItemText primary={t('cooking')} />
-                                </MenuItem>
-                                <MenuItem
-                                  onClick={() =>
-                                    handleClickStatus('delivering')
-                                  }
-                                >
-                                  <ListItemIcon>
-                                    <LocalShippingOutlinedIcon color="primary" />
-                                  </ListItemIcon>
-                                  <ListItemText primary={t('deleviring')} />
-                                </MenuItem>
-                                <MenuItem
-                                  onClick={() => handleClickStatus('received')}
-                                >
-                                  <ListItemIcon>
-                                    <TaskAltOutlinedIcon color="success" />
-                                  </ListItemIcon>
-                                  <ListItemText primary={t('received')} />
-                                </MenuItem>
-                              </Menu>
-                            </td>
-                          )}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                    }}
-                    className="img-with"
+              <GuardComponent role={role} section="order" action="addOrder">
+                <div className="order-header-btns">
+                  <Button
+                    color="success"
+                    onClick={() => setOpenAddOrder(true)}
+                    variant="contained"
                   >
-                    <img
-                      style={{ width: 450, height: 450 }}
-                      id="undefind"
-                      src={noOrder}
-                      alt="No Order Image"
-                    />
-                  </div>
-                )}
+                    {t('addOrder')}
+                  </Button>
+                </div>
+              </GuardComponent>
+            </div>
+
+            <div style={{ marginTop: 40 }} className="orders-list">
+              <div className="orders-list-nav">
+                <div
+                  className="orders-list-scroll"
+                  style={{ position: 'relative', overflowX: 'auto' }}
+                >
+                  {load || loading || loadUptade ? (
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        padding: 20,
+                      }}
+                    >
+                      <CircularProgress style={{ marginTop: 180 }} size={50} />
+                    </div>
+                  ) : orders.length > 0 ? (
+                    <table
+                      style={{ width: '100%', borderCollapse: 'collapse' }}
+                    >
+                      <thead>
+                        <tr>
+                          <th>{t('orderId')}</th>
+                          <th>{t('data')}</th>
+                          {role === 'admin' && <th>{t('customerName')}</th>}
+                          {role === 'admin' && <th>{t('location')}</th>}
+                          <th>{t('amount')}</th>
+                          <th>{t('statusOrder')}</th>
+                          {role === 'admin' && <th>{t('actions')}</th>}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orders.map((orderItem, orderIndex) => (
+                          <tr
+                            onClick={() =>
+                              navigate(`orderItems/${orderItem._id}`)
+                            }
+                            key={orderItem._id}
+                          >
+                            <td>#{orderIndex + 1}</td>
+                            <td>
+                              {orderItem.createdAt
+                                ? new Date(
+                                    orderItem.createdAt
+                                  ).toLocaleDateString()
+                                : '-'}
+                            </td>
+                            {role === 'admin' && (
+                              <td>{orderItem?.createdBy?.name || 'No name'}</td>
+                            )}
+                            {role === 'admin' && (
+                              <td>{locations[orderItem._id] || '-'}</td>
+                            )}
+                            <td style={{ fontFamily: 'sans-serif' }}>
+                              {formatPrice(orderItem?.totalPrice)}
+                            </td>
+                            <td>
+                              <Chip
+                                label={orderItem.status}
+                                color={
+                                  orderItem.status === 'pending'
+                                    ? 'warning'
+                                    : orderItem.status === 'cooking'
+                                    ? 'error'
+                                    : orderItem.status === 'delivering'
+                                    ? 'info'
+                                    : orderItem.status === 'received'
+                                    ? 'success'
+                                    : 'default'
+                                }
+                              />
+                            </td>
+                            {role === 'admin' && (
+                              <td>
+                                <MoreHoriz
+                                  onClick={(e) =>
+                                    setAnchorEl({
+                                      [orderItem._id]: e.currentTarget,
+                                    })
+                                  }
+                                  style={{ cursor: 'pointer' }}
+                                />
+                                <Menu
+                                  anchorEl={anchorEl?.[orderItem._id] || null}
+                                  open={Boolean(anchorEl?.[orderItem._id])}
+                                  onClose={() => setAnchorEl(null)}
+                                  PaperProps={{
+                                    elevation: 3,
+                                    sx: {
+                                      mt: 1.5,
+                                      borderRadius: '16px',
+                                      minWidth: 180,
+                                      p: 1,
+                                    },
+                                  }}
+                                  transformOrigin={{
+                                    horizontal: 'right',
+                                    vertical: 'top',
+                                  }}
+                                  anchorOrigin={{
+                                    horizontal: 'right',
+                                    vertical: 'bottom',
+                                  }}
+                                >
+                                  <MenuItem
+                                    onClick={() => handleClickStatus('pending')}
+                                  >
+                                    <ListItemIcon>
+                                      <PendingActionsOutlinedIcon color="warning" />
+                                    </ListItemIcon>
+                                    <ListItemText primary={t('pending')} />
+                                  </MenuItem>
+
+                                  <MenuItem
+                                    onClick={() => handleClickStatus('cooking')}
+                                  >
+                                    <ListItemIcon>
+                                      <BlenderOutlinedIcon color="error" />
+                                    </ListItemIcon>
+                                    <ListItemText primary={t('cooking')} />
+                                  </MenuItem>
+
+                                  <MenuItem
+                                    onClick={() =>
+                                      handleClickStatus('delivering')
+                                    }
+                                  >
+                                    <ListItemIcon>
+                                      <LocalShippingOutlinedIcon color="primary" />
+                                    </ListItemIcon>
+                                    <ListItemText primary={t('deleviring')} />
+                                  </MenuItem>
+
+                                  <MenuItem
+                                    onClick={() =>
+                                      handleClickStatus('received')
+                                    }
+                                  >
+                                    <ListItemIcon>
+                                      <TaskAltOutlinedIcon color="success" />
+                                    </ListItemIcon>
+                                    <ListItemText primary={t('received')} />
+                                  </MenuItem>
+                                </Menu>
+                              </td>
+                            )}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        padding: 20,
+                      }}
+                    >
+                      <img
+                        style={{ width: 200, height: 200 }}
+                        src={noOrder}
+                        alt="No Order"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </Container>
       </StyleOrder>
       <ToastExample
         status={error?.message ? 'error' : 'success'}
@@ -476,7 +383,7 @@ function OrdersPg() {
         setOpen={error?.message ? setOpenToastForOrderListError : 'true'}
         title={error?.message ? error?.message : t('orderAdded')}
       ></ToastExample>
-      {role === 'admin' && (
+      {!load && !loading && !loadUptade && (
         <div
           style={{
             width: '100%',

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const StyleCategory = styled.div`
+export const StyleCategories = styled.div`
   header {
     display: flex;
     justify-content: space-between;
@@ -12,7 +12,6 @@ export const StyleCategory = styled.div`
     margin-top: 30px;
   }
   @media screen and (max-width: 480px) {
-    
     header {
       display: flex;
       flex-direction: column;

@@ -3,6 +3,10 @@ import styled from '@emotion/styled';
 export const StyleCustomer = styled.div`
   width: 100%;
 
+  .orders-list .orders-list-scroll {
+    overflow-x: auto;
+    width: 100%;
+  }
   .orders-nav {
     padding: 20px;
   }
@@ -31,16 +35,20 @@ export const StyleCustomer = styled.div`
   .order-header-btns input {
     height: 15px;
   }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
 
   .orders-list {
     margin-top: 20px;
     width: 100%;
   }
   .orders-list table {
-    border-collapse: separate;
     border-spacing: 0 10px;
     color: #fff;
     width: 100%;
+    border-collapse: collapse;
   }
   table thead {
     background-color: #2d9cdb;
@@ -72,5 +80,9 @@ export const StyleCustomer = styled.div`
   }
   thead th {
     padding: 20px;
+  }
+  .orders-list-nav {
+    overflow-x: auto;
+    width: 100%;
   }
 `;

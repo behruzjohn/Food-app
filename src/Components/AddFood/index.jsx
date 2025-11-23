@@ -50,7 +50,7 @@ const GET_FOOD_BY_ID = gql`
   }
 `;
 
-function AddFood({ open, setOpen, onAdd, editedFoodId }) {
+function AddFood({ open, setOpen, onAdd, editedFoodId, externalReset }) {
   const { t } = useTranslation();
   const [getFoodById, { data: foodData, loading: foodLoading, err }] =
     useLazyQuery(GET_FOOD_BY_ID);
@@ -76,7 +76,6 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
   const { control, handleSubmit, reset, getValues } = useForm({
     defaultValues: {
       name: '',
-
       description: '',
       price: '',
       discount: '',
@@ -104,13 +103,15 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
   }, [foodData, foodLoading]);
 
   const onSubmit = (data) => {
-    console.log(data.image);
     onAdd(data);
     reset();
     handleClose();
   };
 
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    reset();
+  };
   const categories = data?.getAllCategories?.payload || [];
 
   return (

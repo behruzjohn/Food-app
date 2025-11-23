@@ -6,13 +6,13 @@ import {
 } from '@apollo/client/react/compiled';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import FoodCard from '../../Components/FoodCard/FoodCards';
+import FoodCard from '../../../../Components/FoodCard/FoodCards';
 import { Button, Container } from '@mui/material';
-import HeaderDashborad from '../../Components/HeaderDashboard/index';
+import HeaderDashborad from '../../../../Components/HeaderDashboard/index';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import AddIcon from '@mui/icons-material/Add';
 import FastfoodOutlinedIcon from '@mui/icons-material/FastfoodOutlined';
-import undefindImg from '../../assets/noFound.png';
+import undefindImg from '../../../../assets/noFound.png';
 import { useTranslation } from 'react-i18next';
 
 const GET_FOODS_BY_CATEGORY = gql`
@@ -76,12 +76,15 @@ const CREATE_CARD = gql`
     }
   }
 `;
+
 import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
-import GuardComponent from '../../Components/CheckRole/CheckRole';
+import GuardComponent from '../../../../Components/CheckRole/CheckRole';
 import { StyleCategoryInfo } from './StyleCategoryInfo';
-import FoodQuontity from '../../Components/FoodQuontity';
-import ToastExample from '../../Components/Toast';
+import FoodQuontity from '../../../../Components/FoodQuontity';
+import ToastExample from '../../../../Components/Toast';
 import { StyleCategoryInfoo } from './StyleInfo';
+import { ADD_FOODS } from '../../../Foods/api';
+import AddFood from '../../../../Components/AddFood';
 
 function CategoryInfo() {
   const { t } = useTranslation();
@@ -96,6 +99,11 @@ function CategoryInfo() {
   const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
   const [openQuontity, setOpenQuontity] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [openToast, setOpenToast] = useState(false);
+
+  const [createFood, { data: AddFoodData, error: AddFoodErr }] =
+    useMutation(ADD_FOODS);
 
   useEffect(() => {
     const a = JSON.parse(localStorage.getItem('authStore') || '');
@@ -126,7 +134,7 @@ function CategoryInfo() {
     const token = localStorage.getItem('token') || '';
 
     if (categoryId) {
-      console.log('Request yuborildi id:', categoryId);
+      console.log('Request yuborildi:', categoryId);
       fetchCategoryById({
         variables: { categories: [categoryId] },
         context: {
@@ -163,6 +171,34 @@ function CategoryInfo() {
     setOpenToastForAddCard(true);
   };
 
+  const handleAddFood = async (formData) => {
+    try {
+      const token = localStorage.getItem('token') || '';
+
+      await createFood({
+        variables: {
+          food: {
+            name: formData.name,
+            shortName: formData.name.slice(0, 10),
+            description: formData.description,
+            price: Number(formData.price),
+            discount: formData.discount ? Number(formData.discount) : 0,
+            category: formData.category,
+          },
+          image: formData.image,
+        },
+        context: {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
+      });
+
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <HeaderDashborad>
       <Container maxWidth="xl">
@@ -206,7 +242,7 @@ function CategoryInfo() {
                       action="addFood"
                     >
                       <Button
-                        onClick={() => navigate('/foods')}
+                        onClick={() => setOpen(true)}
                         color="success"
                         startIcon={<AddIcon />}
                         variant="contained"
@@ -231,6 +267,16 @@ function CategoryInfo() {
             setOpen={setOpenQuontity}
           ></FoodQuontity>
         </StyleCategoryInfo>
+        <AddFood open={open} setOpen={setOpen} onAdd={handleAddFood} />
+        <ToastExample
+          status={AddFoodErr ? 'error' : 'success'}
+          title={
+            AddFoodErr?.errors?.[0]?.message ||
+            (AddFoodData?.createFood?.payload ? t('addedNewFood') : '')
+          }
+          open={openToast}
+          setOpen={setOpenToast}
+        />
       </Container>
     </HeaderDashborad>
   );

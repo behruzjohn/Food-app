@@ -4,6 +4,7 @@ export const StyledLayoutWrapper = styled.div`
   position: relative;
 
   .content {
+    overflow: hidden;
     min-height: 100vh;
     padding-block: 32px;
     padding-left: 280px;
@@ -29,8 +30,6 @@ export const StyleHeaderDashboard = styled.div`
 
   .active {
     background-color: lightgreen;
-    padding-bottom: 8px;
-    padding-top: 8px;
     color: green;
     border-radius: 8px;
   }
@@ -44,7 +43,7 @@ export const StyleHeaderDashboard = styled.div`
   }
   img {
     cursor: pointer;
-    margin-left: 25px;
+    margin-left: 38px;
     width: 150px;
     height: 150px;
     object-fit: cover;
@@ -56,6 +55,7 @@ export const StyleHeaderDashboard = styled.div`
     gap: 50px;
   }
   .header-nav ul li {
+    padding: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -110,6 +110,12 @@ export const StyleHeaderDashboard = styled.div`
       height: 40px;
       margin-left: ${(props) => (props.openHeaderDashboard ? '28px' : '5px')};
       padding-left: 30px;
+    }
+    .header-nav ul li a svg {
+      font-size: 22px;
+    }
+    .header-nav ul li {
+      padding-left: 0;
     }
   }
 `;

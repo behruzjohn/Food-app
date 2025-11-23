@@ -2,9 +2,6 @@ import styled from 'styled-components';
 
 export const StyleOrder = styled.div`
   width: 100%;
-  .orders-nav {
-    padding: 20px;
-  }
 
   .main-header {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
@@ -14,7 +11,10 @@ export const StyleOrder = styled.div`
     justify-content: space-between;
     margin-top: 20px;
   }
-
+  .orders-list-scroll {
+    overflow-x: auto;
+    width: 100%;
+  }
   .order-header-btns input {
     height: 15px;
   }
@@ -60,7 +60,13 @@ export const StyleOrder = styled.div`
   }
 
   tbody tr {
+    cursor: pointer;
     margin-top: 20px;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+  }
+  tbody tr:hover {
+    background-color: #e3dddd;
+    transform: scale(1);
   }
 
   tbody td button {

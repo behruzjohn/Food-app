@@ -40,7 +40,7 @@ function CategoryCard({ category, setDeletedCategoryId, setClickedDelete }) {
     setopenOption(null);
   };
 
-  const navigate = useNavigate('');
+  const navigate = useNavigate();
   const handleClickDelete = (id) => {
     setDeletedCategoryId(id);
     setClickedDelete(true);
@@ -49,11 +49,11 @@ function CategoryCard({ category, setDeletedCategoryId, setClickedDelete }) {
     <StyleCategoryCardS className="card">
       <div className="card__content">
         <img
-          onClick={() => navigate(`/categoriesById?id=${category?._id}`)}
+          onClick={() => navigate(`/categoriesById/${category._id}`)}
           src={category?.image !== null ? category?.image : 'pgn.sda'}
           alt={category.name}
         />
-        <div onClick={() => navigate(`/categoriesById?id=${category?._id}`)}>
+        <div onClick={() => navigate(`/categoriesById/${category._id}`)}>
           <h4 style={{ marginTop: 18 }}>{category?.name}</h4>
         </div>
       </div>

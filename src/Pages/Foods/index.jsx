@@ -1,4 +1,4 @@
-import { Button, Container } from '@mui/material';
+import { Button, CircularProgress, Container } from '@mui/material';
 import OrderSearch from '../../Components/OrderSearch/index';
 import { StyleFoods } from './StyleFoods';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -6,7 +6,6 @@ import FoodCard from '../../Components/FoodCard/FoodCards';
 import AddFood from '../../Components/AddFood/index';
 import { useEffect, useRef, useState } from 'react';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { gql } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
 import Loader from '../../Components/Loader/index';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
@@ -16,144 +15,16 @@ import GuardComponent from '../../Components/CheckRole/CheckRole';
 import FoodQuontity from '../../Components/FoodQuontity';
 import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
+import {
+  ADD_FOOD_FAVOURITES,
+  ADD_FOODS,
+  CREATE_CARD,
+  DELETE_FOOD,
+  DELETE_FOOD_FROM_FAVOURITES,
+  GET_ALL_FOODS,
+  UPDATE_FOOD,
+} from './api';
 
-const GET_ALL_FOODS = gql`
-  query GetAllFoods {
-    getAllFoods {
-      totalDocs
-      limit
-      totalPages
-      page
-      pagingCounter
-      hasPrevPage
-      hasNextPage
-      prevPage
-      nextPage
-      payload {
-        _id
-        shortName
-        name
-        image
-        description
-        price
-        discount
-        likes
-        isFavorite
-        category {
-          _id
-          name
-          image
-        }
-      }
-    }
-  }
-`;
-const ADD_FOODS = gql`
-  mutation CreateFood($food: FoodInput!, $image: Upload) {
-    createFood(image: $image, food: $food) {
-      payload {
-        _id
-        shortName
-        name
-        image
-        description
-        price
-        discount
-        likes
-        isFavorite
-        category {
-          _id
-          name
-          image
-        }
-      }
-    }
-  }
-`;
-const ADD_FOOD_FAVOURITES = gql`
-  mutation AddFoodToFavorites($foodId: ID!) {
-    addFoodToFavorites(foodId: $foodId) {
-      payload {
-        _id
-        shortName
-        name
-        image
-        description
-        price
-        discount
-        likes
-        isFavorite
-      }
-    }
-  }
-`;
-const DELETE_FOOD = gql`
-  mutation DeleteFoodById($foodId: ID!) {
-    deleteFoodById(foodId: $foodId) {
-      payload {
-        _id
-      }
-    }
-  }
-`;
-const CREATE_CARD = gql`
-  mutation CreateCartItem($data: CartItemInput!) {
-    createCartItem(data: $data) {
-      payload {
-        _id
-        quantity
-        price
-        discount
-        user
-        food {
-          _id
-          shortName
-          name
-          image
-          description
-          price
-          discount
-          likes
-          isFavorite
-        }
-      }
-    }
-  }
-`;
-const UPDATE_FOOD = gql`
-  mutation UpdateFoodById($foodId: ID!, $food: FoodUpdateInput!) {
-    updateFoodById(foodId: $foodId, food: $food) {
-      payload {
-        _id
-        shortName
-        name
-        image
-        description
-        price
-        discount
-        likes
-        isFavorite
-      }
-    }
-  }
-`;
-const DELETE_FOOD_FROM_FAVOURITES = gql`
-  mutation RemoveFoodFromFavorites($foodId: ID!) {
-    removeFoodFromFavorites(foodId: $foodId) {
-      payload {
-        _id
-        shortName
-        name
-        image
-        description
-        price
-        discount
-        likes
-        isFavorite
-      }
-    }
-  }
-`;
 function Foods() {
   const { t } = useTranslation();
 
@@ -176,6 +47,11 @@ function Foods() {
   const [allFoodsForSearch, setAllFoodsForSearch] = useState([]);
   const [deleteFoodById, { data: deleteFavData, error: deleteFoodError }] =
     useMutation(DELETE_FOOD_FROM_FAVOURITES);
+
+  const updatedIsComplated = () => {
+    setOpenToastForUpdateFood(true);
+  };
+
   const [
     deleteFood,
     {
@@ -188,28 +64,25 @@ function Foods() {
   const [createFood, { data: AddFoodData, error: AddFoodErr }] =
     useMutation(ADD_FOODS);
   const [updateFood, { data: updateFoodData, error: updateFoodErr }] =
-    useMutation(UPDATE_FOOD);
+    useMutation(UPDATE_FOOD, { onCompleted: updatedIsComplated });
   const [quontityLen, setQuontityLen] = useState(0);
 
   const { data, loading, error, refetch } = useQuery(GET_ALL_FOODS);
   useEffect(() => {
     refetch();
-    setLoad(true);
+
     if (data?.getAllFoods?.payload) {
       setFoods(data?.getAllFoods?.payload);
       setAllFoodsForSearch(data?.getAllFoods?.payload);
-      setLoad(false);
     }
   }, [data]);
 
   useEffect(() => {
-    setLoad(true);
     refetch();
   }, []);
 
   useEffect(() => {
     const a = JSON.parse(localStorage.getItem('authStore') || '');
-
     setRole(a?.state?.role);
   }, []);
 
@@ -274,7 +147,11 @@ function Foods() {
         await updateFood({
           variables: {
             foodId: editedFoodId,
-            food: rest,
+            food: {
+              ...rest,
+              price: formData.price ? Number(formData.price) : 0,
+              discount: formData.discount ? Number(formData.discount) : 0,
+            },
           },
           context: {
             headers: {
@@ -282,9 +159,7 @@ function Foods() {
             },
           },
         });
-        if (updateFoodData?.updateFoodById?.payload) {
-          setOpenToastForUpdateFood(true);
-        }
+
         refetch();
 
         setOpen(false);
@@ -301,7 +176,7 @@ function Foods() {
             shortName: formData.name.slice(0, 10),
             description: formData.description,
             price: Number(formData.price),
-            discount: Number(formData.discount),
+            discount: formData.discount ? Number(formData.discount) : 0,
             category: formData.category,
           },
           image: formData.image,
@@ -338,9 +213,36 @@ function Foods() {
     }
   }, [isDeleted]);
 
+  // useEffect(() => {
+  //   if (open) {
+  //     if (editedFoodId) {
+  //       const food = foods.find((f) => f._id === editedFoodId);
+  //       if (!food) return;
+  //       reset({
+  //         name: food?.name || '',
+  //         shortName: food?.shortName || '',
+  //         description: food?.description || '',
+  //         price: food?.price || '',
+  //         discount: food?.discount || '',
+  //         category: food?.category || '',
+  //         image: null,
+  //       });
+  //     } else {
+  //       reset({
+  //         name: '',
+  //         shortName: '',
+  //         description: '',
+  //         price: '',
+  //         discount: '',
+  //         category: '',
+  //         image: null,
+  //       });
+  //     }
+  //   }
+  // }, [open, editedFoodId, foods]);
+
   return (
     <HeaderDashborad>
-      <Loader load={loading}></Loader>
       <StyleFoods className="foods">
         <Container maxWidth="xl">
           <OrderSearch
@@ -369,19 +271,31 @@ function Foods() {
             </div>
           </div>
           <div className="food-cards">
-            <div className="food-cards-nav">
-              {foods?.map((food) => (
-                <FoodCard
-                  handleClickRemoveFav={handleClickRemoveFav}
-                  handleClickEditFood={handleClickEditFood}
-                  handleClickDeleteFood={handleClickDeleteFood}
-                  handleClickFavourite={handleClickFavourite}
-                  handleAddToCart={handleAddToCart}
-                  key={food._id}
-                  food={food}
-                />
-              ))}
-            </div>
+            {loading ? (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  padding: 20,
+                }}
+              >
+                <CircularProgress style={{ marginTop: 40 }} size={50} />
+              </div>
+            ) : (
+              <div className="food-cards-nav">
+                {foods?.map((food) => (
+                  <FoodCard
+                    handleClickRemoveFav={handleClickRemoveFav}
+                    handleClickEditFood={handleClickEditFood}
+                    handleClickDeleteFood={handleClickDeleteFood}
+                    handleClickFavourite={handleClickFavourite}
+                    handleAddToCart={handleAddToCart}
+                    key={food._id}
+                    food={food}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </Container>
       </StyleFoods>
