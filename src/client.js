@@ -1,19 +1,24 @@
 import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { useState } from 'react';
+import { useSSR } from 'react-i18next';
 
 const httpLink = new HttpLink({
   uri: 'http://localhost:8000/api',
 });
 
 const authLink = setContext((_, { headers }) => {
-  const localToken = JSON.parse(localStorage.getItem('authStore')) || {};
-  const token = localToken?.state?.token;
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : '',
-    },
-  };
+  if (localStorage.getItem('authStore')) {
+    const localToken = JSON.parse(localStorage.getItem('authStore')) || {};
+    const token = localToken?.state?.token;
+
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : '',
+      },
+    };
+  }
 });
 
 export const clientAppollo = new ApolloClient({

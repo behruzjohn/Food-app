@@ -45,10 +45,10 @@ export const routes = [
     path: ROUTE_PATHS.categories,
     component: <CategoriesPage />,
   },
-  {
-    path: `${ROUTE_PATHS.categoryById}/:id`,
-    component: <CategoryInfo />,
-  },
+  // {
+  //   path: `${ROUTE_PATHS.categoryById}/:id`,
+  //   component: <CategoryInfo />,
+  // },
   {
     path: ROUTE_PATHS.favourite,
     component: <FavouriteFood />,

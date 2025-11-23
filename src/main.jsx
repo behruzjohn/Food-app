@@ -30,6 +30,7 @@ createRoot(document.getElementById('root')).render(
         {routes?.map((route) => {
           return <Route path={route?.path} element={route?.component} />;
         })}
+        <Route path="/categoriesById/:id" element={<CategoryInfo />} />
       </Routes>
     </BrowserRouter>
   </ApolloProvider>

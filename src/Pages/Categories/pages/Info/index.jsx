@@ -5,7 +5,7 @@ import {
   useQuery,
 } from '@apollo/client/react/compiled';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import FoodCard from '../../../../Components/FoodCard/FoodCards';
 import { Button, Container } from '@mui/material';
 import HeaderDashborad from '../../../../Components/HeaderDashboard/index';
@@ -102,6 +102,7 @@ function CategoryInfo() {
   const [open, setOpen] = useState(false);
   const [openToast, setOpenToast] = useState(false);
 
+  const { id } = useParams();
   const [createFood, { data: AddFoodData, error: AddFoodErr }] =
     useMutation(ADD_FOODS);
 
@@ -114,7 +115,7 @@ function CategoryInfo() {
 
   const { data: dataTitle, loading: LoadTitle } = useQuery(GET_CATEOGRY_BY_ID, {
     variables: {
-      categoryId: categoryId,
+      categoryId: id,
     },
     context: {
       headers: {
@@ -129,14 +130,11 @@ function CategoryInfo() {
   const [createCard, { data: createCardData }] = useMutation(CREATE_CARD);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const categoryId = params.get('id');
     const token = localStorage.getItem('token') || '';
 
-    if (categoryId) {
-      console.log('Request yuborildi:', categoryId);
+    if (id) {
       fetchCategoryById({
-        variables: { categories: [categoryId] },
+        variables: { categories: [id] },
         context: {
           headers: {
             authorization: `Bearer ${token}`,
@@ -144,7 +142,7 @@ function CategoryInfo() {
         },
       });
     }
-  }, [location.search]);
+  }, [id]);
 
   useEffect(() => {
     if (data?.getAllFoods?.payload) {
