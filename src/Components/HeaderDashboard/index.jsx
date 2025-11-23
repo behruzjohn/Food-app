@@ -19,7 +19,10 @@ function HeaderDashborad({ children }) {
   const [role, setRole] = useState('');
 
   useEffect(() => {
-    const a = JSON.parse(localStorage.getItem('authStore') || 'null');
+    const stored = localStorage.getItem('authStore');
+
+    const a = JSON.parse(stored || '{}');
+
     console.log(a?.state?.role);
 
     setRole(a?.state?.role);
