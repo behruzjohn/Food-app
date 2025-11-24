@@ -29,9 +29,9 @@ import Loader from '../../Components/Loader/index';
 import { useLang } from '../../useLang';
 import { Select } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import SentCode from '../../Components/SentCodeSignUp';
 
 function SignUp() {
   const [open, setOpen] = useState(false);
@@ -45,21 +45,6 @@ function SignUp() {
   const [isHide, setIsHide] = useState(false);
   const [isHide2, setIsHide2] = useState(false);
 
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    bgcolor: 'background.paper',
-    borderRadius: '16px',
-    boxShadow: 24,
-    p: 4,
-    width: 360,
-    textAlign: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 2,
-  };
   const SIGN_UP = gql`
     mutation SignUp($name: String!, $phone: String!, $password: String!) {
       signUp(data: { name: $name, phone: $phone, password: $password }) {
@@ -126,6 +111,7 @@ function SignUp() {
     try {
       setLoad(true);
       setConfirmError('');
+
       const res = await fetchConfirm({
         variables: {
           code: String(code),
@@ -141,7 +127,8 @@ function SignUp() {
       }
     } catch (err) {
       setErorFetch(err.message);
-      setOpen(false);
+      setConfirmError(err.message);
+      setLoad(false);
     }
   }
   const handleChange = (event) => {
@@ -170,7 +157,7 @@ function SignUp() {
           className="lang"
         >
           <FormControl
-            style={{ backgroundColor: 'aqua', borderRadius: 10 }}
+            style={{ backgroundColor: 'azure', borderRadius: 10 }}
             className="selectId"
           >
             <InputLabel id="lang-select-label">Lang</InputLabel>
@@ -256,7 +243,7 @@ function SignUp() {
                         required: t('rule'),
                         minLength: {
                           value: 8,
-                          message: `Min 4 ${t('characters')} `,
+                          message: `Min 8 ${t('characters')} `,
                         },
                         maxLength: {
                           value: 16,
@@ -306,7 +293,7 @@ function SignUp() {
                         required: t('rule'),
                         minLength: {
                           value: 8,
-                          message: `Min 4'${t('characters')} `,
+                          message: `Min 8'${t('characters')} `,
                         },
                         maxLength: {
                           value: 16,
@@ -373,68 +360,14 @@ function SignUp() {
             </div>
           </div>
         </StyleContainer>
-        <div className="modal">
-          <Modal
-            open={open}
-            onClose={() => setOpen(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={style}>
-              <div
-                onClick={() => setOpen(false)}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  cursor: 'pointer',
-                }}
-              >
-                <ClearOutlinedIcon />
-              </div>
-              <h2 style={{ margin: 0, color: '#ff9800' }}>{t('weSentSms')}</h2>
-
-              <p style={{ color: '#555', fontSize: 14 }}>{t('smsDesc')}</p>
-
-              <div
-                style={{ display: 'flex', alignItems: 'center', gap: 15 }}
-                className="modal-text"
-              >
-                <input
-                  onChange={(e) => setCode(e.target.value)}
-                  style={{
-                    height: 35,
-                    borderRadius: 4,
-                    marginTop: 18,
-                    paddingLeft: 10,
-                  }}
-                  type="number"
-                  placeholder="Enter code..."
-                  className="sms-input"
-                />
-                <Button
-                  onClick={() => handleClickConfirm()}
-                  variant="contained"
-                  color="success"
-                  sx={{
-                    borderRadius: '7px',
-                    mt: 2,
-                    fontWeight: 600,
-                    textTransform: 'none',
-                  }}
-                >
-                  {t('confirm')}
-                </Button>
-              </div>
-              {confirmError && (
-                <p
-                  style={{ color: 'red', marginTop: '10px', fontSize: '13px' }}
-                >
-                  {confirmError}
-                </p>
-              )}
-            </Box>
-          </Modal>
-        </div>
+        {open && (
+          <SentCode
+            setOpen={setOpen}
+            setCode={setCode}
+            handleClickConfirm={handleClickConfirm}
+            confirmError={confirmError}
+          />
+        )}
       </StyleSignUp>
     </>
   );

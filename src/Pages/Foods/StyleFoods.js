@@ -12,22 +12,27 @@ export const StyleFoods = styled.div`
     flex-wrap: wrap;
     width: 100%;
   }
-  .img-with {
+  .defualtImage {
+    width: 100%;
     display: flex;
     justify-content: center;
-    width: 100%;
-    height: 100vh;
+    padding: 20px;
   }
-  #undefind {
-    margin-top: 50px;
-    width: 550px;
-    height: 400px;
+  .defualtImage img {
+    margin-top: 100px;
+    width: 400px;
+    max-width: 100%;
+    height: auto;
   }
   @media screen and (max-width: 480px) {
     .foods-header {
       display: flex;
       flex-direction: column;
       font-size: 14px;
+      gap: 20px;
+    }
+    .foods-header p {
+      margin-top: 10px;
     }
     .foods-header button {
       font-size: 12px;
@@ -40,6 +45,12 @@ export const StyleFoods = styled.div`
       display: flex;
       align-items: center;
       gap: 15px;
+    }
+    .defualtImage img {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
     }
   }
 `;

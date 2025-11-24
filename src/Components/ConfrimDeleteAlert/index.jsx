@@ -29,7 +29,7 @@ export default function DeleteFoodModalAlert({
     if (onConfirm) {
       onConfirm();
     }
-    setIsDeleted(true);
+    // setIsDeleted(true);
     setOpen(false);
   }
 

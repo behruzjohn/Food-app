@@ -63,7 +63,7 @@ export const StyleSignIn = styled.div`
     background-repeat: no-repeat;
     .sign-in-nav {
       width: 100%;
-      margin-top: 60px;
+      margin-top: 150px;
     }
   }
 `;

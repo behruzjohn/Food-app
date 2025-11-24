@@ -7,6 +7,7 @@ i18n
   .use(initReactI18next)
   .init({
     debug: true,
+    fallbackLng: 'en',
     resources: {
       en: {
         translation: {
@@ -138,6 +139,7 @@ i18n
           updatedFood: 'Food is uptaded successfully',
           addedToFavourite: 'Added to favourites',
           addNewCategory: 'Add New Category',
+          howMuchAdd: 'How much do you want to add?',
         },
       },
       uz: {
@@ -273,6 +275,7 @@ i18n
           updatedFood: 'Taom muvaffaqiyatli yangilandi',
           addedToFavourite: 'Sevimlilarga qo‘shildi',
           addNewCategory: 'Yangi kategoriya qo‘shish',
+          howMuchAdd: 'Qancha qo‘shmoqchisiz?',
         },
       },
       ru: {
@@ -406,6 +409,7 @@ i18n
           updatedFood: 'Блюдо успешно обновлено',
           addedToFavourite: 'Добавлено в избранное',
           addNewCategory: 'Добавить новую категорию',
+          howMuchAdd: 'Сколько хотите добавить?',
         },
       },
     },

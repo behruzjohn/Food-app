@@ -88,10 +88,28 @@ export const StyleOrder = styled.div`
     width: 100%;
     margin-right: 12px;
   }
+  .defualtImage {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+  .defualtImage img {
+    width: 400px;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
 
   @media screen and (max-width: 480px) {
     .order-header-text {
       font-size: 12px;
+    }
+    .defualtImage img {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
     }
 
     .order-header-btns button {
@@ -108,6 +126,13 @@ export const StyleOrder = styled.div`
 
     .order-special {
       margin-right: 0px;
+    }
+    .main-header {
+      flex-direction: column;
+    }
+    .main-header button {
+      width: 150px;
+      height: 30px;
     }
   }
 `;

@@ -36,6 +36,7 @@ function Foods() {
   const [isDeleted, setIsDeleted] = useState(false);
   const [openToast, setOpenToast] = useState(false);
   const [role, setRole] = useState('');
+  const [loadSearch, setLoadSearch] = useState(false);
   const [openQuontity, setOpenQuontity] = useState(false);
   const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
@@ -92,18 +93,10 @@ function Foods() {
   }, []);
 
   const handleClickFavourite = (clickedFoodId) => {
-    const localToken = JSON.parse(localStorage.getItem('authStore') || '');
-    const token = localToken?.state?.token;
-
     setOpenToast(true);
     addToFavourites({
       variables: {
         foodId: clickedFoodId,
-      },
-      context: {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
       },
     });
 
@@ -251,6 +244,8 @@ function Foods() {
       <StyleFoods className="foods">
         <Container maxWidth="xl">
           <OrderSearch
+            setLoadSearch={setLoadSearch}
+            loadSearch={loadSearch}
             quontityLen={quontityLen}
             refetchItem={refetch}
             setFoods={setFoods}
@@ -276,12 +271,13 @@ function Foods() {
             </div>
           </div>
           <div className="food-cards">
-            {loading ? (
+            {loading || loadSearch ? (
               <div
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
                   padding: 20,
+                  marginTop: 150,
                 }}
               >
                 <CircularProgress style={{ marginTop: 40 }} size={50} />
@@ -310,7 +306,9 @@ function Foods() {
           favouriteError?.errors?.[0]?.message ||
           AddFoodErr?.errors?.[0]?.message ||
           (AddFoodData?.createFood?.payload ? t('addedNewFood') : '') ||
-          (favouriteData?.addToFavourite?.payload ? t('addedToFavourite') : '')
+          (favouriteData?.addFoodToFavorites?.payload
+            ? t('addedToFavourite')
+            : '')
         }
         open={openToast}
         setOpen={setOpenToast}

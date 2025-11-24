@@ -40,6 +40,7 @@ function FoodCard({
 
     setRole(a?.state?.role);
   }, []);
+
   return (
     <>
       <StyleFoodCard

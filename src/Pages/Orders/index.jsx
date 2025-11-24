@@ -35,6 +35,7 @@ import {
   GET_ORDER_FOR_ADMIN,
   UPDATE_ORDER_STATUS,
 } from './api';
+import { lime } from '@mui/material/colors';
 
 function OrdersPg() {
   const { t } = useTranslation();
@@ -69,7 +70,12 @@ function OrdersPg() {
         },
       });
     } else {
-      getOrderForUser();
+      getOrderForUser({
+        variables: {
+          page: page,
+          limit: 10,
+        },
+      });
     }
   }, [page]);
 
@@ -97,7 +103,12 @@ function OrdersPg() {
           },
         });
       } else {
-        getOrderForUser();
+        getOrderForUser({
+          variables: {
+            page: page,
+            limit: 10,
+          },
+        });
       }
     } catch (err) {
       setOpenToastForOrderListError(true);
@@ -163,7 +174,7 @@ function OrdersPg() {
         if (orders.length > 0) fetchLocations();
       }
     }
-  }, []);
+  }, [orders]);
 
   const handleChange = (event, value) => {
     setPage(value);
@@ -357,18 +368,8 @@ function OrdersPg() {
                       </tbody>
                     </table>
                   ) : (
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        padding: 20,
-                      }}
-                    >
-                      <img
-                        style={{ width: 200, height: 200 }}
-                        src={noOrder}
-                        alt="No Order"
-                      />
+                    <div className="defualtImage">
+                      <img src={noOrder} alt="No Order" />
                     </div>
                   )}
                 </div>

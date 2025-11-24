@@ -6,7 +6,7 @@ import { Container } from '@mui/material';
 import OrderSearch from '../../Components/OrderSearch';
 import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert/index';
 import { gql } from '@apollo/client';
-import { useLazyQuery, useMutation } from '@apollo/client/react';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react';
 import FoodCard from '../../Components/FoodCard/FoodCards';
 import ToastExample from '../../Components/Toast';
 import undefindImg from '../../assets/noFound.png';
@@ -89,8 +89,9 @@ function FavouriteFood() {
     useMutation(DELETE_FOOD_FROM_FAVOURITES);
   const [deletedFoodId, setId] = useState(null);
 
-  const [getAllFavouriteFoods, { data, loading, error, refetch }] =
-    useLazyQuery(GET_ALL_FAVOURITE_FOODS);
+  const { data, loading, error, refetch } = useQuery(GET_ALL_FAVOURITE_FOODS, {
+    fetchPolicy: 'network-only',
+  });
 
   useEffect(() => {
     if (data?.getFavoriteFoods?.payload) {
@@ -98,10 +99,6 @@ function FavouriteFood() {
       setAllFoodsForSearch(data.getFavoriteFoods.payload);
     }
   }, [data]);
-
-  useEffect(() => {
-    getAllFavouriteFoods();
-  }, []);
 
   const handleClickDeleteFood = (clickedFoodId) => {
     setId(clickedFoodId);
@@ -134,7 +131,7 @@ function FavouriteFood() {
     createCard({
       variables: {
         data: {
-          food: selectedFood._id,
+          food: selectedFood,
           quantity: quontity,
         },
       },
@@ -151,13 +148,12 @@ function FavouriteFood() {
       <StyleFoods className="foods">
         <Container maxWidth="xl">
           <OrderSearch
-            refetchItem={getAllFavouriteFoods}
             setFoods={setFoods}
             allFoods={allFoodsForSearch}
-            action="foods"
+            action="category"
           />
           <div className="foods-header">
-            <div>
+            <div className="text">
               <h2>{t('favouriteFoodTitle')}</h2>
               <p>{t('favouriteDesc')}</p>
             </div>
@@ -170,7 +166,7 @@ function FavouriteFood() {
               {foods.length ? (
                 foods.map((food) => (
                   <FoodCard
-                    getAllFavouriteFoods={getAllFavouriteFoods}
+                    getAllFavouriteFoods={refetch}
                     isFavourite={true}
                     handleClickDeleteFood={handleClickDeleteFood}
                     handleAddToCart={handleAddToCart}
@@ -179,8 +175,8 @@ function FavouriteFood() {
                   />
                 ))
               ) : (
-                <div className="img-with">
-                  <img id="undefind" src={undefindImg} alt="Undefined Image" />
+                <div className="defualtImage">
+                  <img src={undefindImg} alt="Undefined Image" />
                 </div>
               )}
             </div>

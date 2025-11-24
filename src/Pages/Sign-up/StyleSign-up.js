@@ -16,7 +16,7 @@ export const StyleSignUp = styled.div`
   .sign-up-nav {
     width: 400px;
     max-width: 400px;
-    margin-top: 14px;
+    margin-top: 25px;
   }
 
   .texts span {
@@ -63,5 +63,10 @@ export const StyleSignUp = styled.div`
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    .sign-up-nav {
+      width: 100%;
+      max-width: 100%;
+      margin-top: 120px;
+    }
   }
 `;

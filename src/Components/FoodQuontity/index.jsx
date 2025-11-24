@@ -1,5 +1,6 @@
 import { Box, Button, Modal } from '@mui/material';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const style = {
   position: 'absolute',
@@ -15,6 +16,8 @@ const style = {
 };
 
 function FoodQuontity({ open, setOpen, onConfirm }) {
+  const { t } = useTranslation();
+
   const handleClose = () => setOpen(false);
   const [count, setCount] = useState(1);
 
@@ -29,9 +32,7 @@ function FoodQuontity({ open, setOpen, onConfirm }) {
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
-        <h2 style={{ fontWeight: 600, marginBottom: 20 }}>
-          Qancha qo'shmoqchisiz?
-        </h2>
+        <h2 style={{ fontWeight: 600, marginBottom: 20 }}>{t('howMuchAdd')}</h2>
 
         <div
           style={{
@@ -105,7 +106,7 @@ function FoodQuontity({ open, setOpen, onConfirm }) {
             fontWeight: 600,
           }}
         >
-          Add
+          {t('add')}
         </Button>
       </Box>
     </Modal>

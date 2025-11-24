@@ -22,7 +22,7 @@ export const StyledLayoutWrapper = styled.div`
 
 export const StyleHeaderDashboard = styled.div`
   position: fixed;
-  width: 280px;
+  width: 290px;
   padding: 20px;
   height: 100%;
   z-index: 1 !important;
@@ -44,6 +44,7 @@ export const StyleHeaderDashboard = styled.div`
   img {
     cursor: pointer;
     margin-left: 38px;
+    margin-top: 22px;
     width: 150px;
     height: 150px;
     object-fit: cover;
@@ -52,6 +53,7 @@ export const StyleHeaderDashboard = styled.div`
     margin-top: 0px;
     display: flex;
     flex-direction: column;
+
     gap: 50px;
   }
   .header-nav ul li {
@@ -64,6 +66,7 @@ export const StyleHeaderDashboard = styled.div`
   .header-nav ul li a {
     display: flex;
     gap: 15px;
+    align-items: center;
     text-decoration: none;
     color: black;
   }
@@ -115,7 +118,8 @@ export const StyleHeaderDashboard = styled.div`
       font-size: 22px;
     }
     .header-nav ul li {
-      padding-left: 0;
+      padding: 10px;
+      padding-left: 0px;
     }
   }
 `;

@@ -102,7 +102,8 @@ function ShopCart() {
           ...item.food,
           quantity: item.quantity,
           cartId: item._id,
-          price: (item.price * item.quantity * item.discount) / 100,
+          // price: (item.price * item.quantity * item.discount) / 100,
+          price: item.price,
         }))
       );
       localStorage.setItem(

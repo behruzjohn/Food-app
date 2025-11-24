@@ -120,7 +120,7 @@ function SignIn() {
         >
           <FormControl
             variant="outlined"
-            style={{ backgroundColor: 'aqua', borderRadius: 10 }}
+            style={{ backgroundColor: 'azure', borderRadius: 10 }}
             className="selectId"
           >
             <InputLabel id="lang-select-label">Lang</InputLabel>

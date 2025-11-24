@@ -74,6 +74,8 @@ const GET_ALL_FAVOURITE_FOODS = gql`
 `;
 
 function OrderSearch({
+  setLoadSearch,
+  loadSearch,
   quontityLen,
   setFoods,
   allFoodsForSearch,
@@ -81,7 +83,6 @@ function OrderSearch({
   refetchItem,
 }) {
   const { t } = useTranslation();
-  const [load, setLoad] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const { lang, setLang } = useLang();
 
@@ -136,10 +137,10 @@ function OrderSearch({
   }, [data, setFoods]);
 
   const changedInput = (e) => {
-    setLoad(true);
+    setLoadSearch(true);
     setTimeout(() => {
       setSearchInput(e.target.value);
-      setLoad(false);
+      setLoadSearch(false);
     }, 300);
   };
   const [open, setopen] = useState(null);
@@ -172,7 +173,6 @@ function OrderSearch({
 
   return (
     <StyleOrders>
-      <Loader load={load}></Loader>
       <div className="orders-search">
         <div id="order-special">
           {action !== 'category' && (
