@@ -24,7 +24,17 @@ export const StyleFoods = styled.div`
     max-width: 100%;
     height: auto;
   }
+  #def {
+    width: 550px;
+    height: 330px;
+  }
+  .food-cards {
+    display: flex;
+  }
   @media screen and (max-width: 480px) {
+    .food-cards {
+      flex-direction: column;
+    }
     .foods-header {
       display: flex;
       flex-direction: column;
@@ -47,6 +57,12 @@ export const StyleFoods = styled.div`
       gap: 15px;
     }
     .defualtImage img {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    #def {
       width: 100%;
       max-width: 100%;
       height: auto;

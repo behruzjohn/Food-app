@@ -150,5 +150,8 @@ export const StyleOrders = styled.div`
       width: 100%;
       min-width: 0;
     }
+    .profile {
+      margin-top: 20px;
+    }
   }
 `;

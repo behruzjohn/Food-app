@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import AddOrder from '../../Components/AddOrder';
 import ToastExample from '../../Components/Toast';
+import ConfirmOrder from '../../Components/OrderConfirm';
 const GET_CARD_FOOD = gql`
   query GetCartItemsByUserId {
     getCartItemsByUserId {
@@ -146,6 +147,14 @@ function ShopCart() {
       })
       .catch((err) => console.log(err.message));
   };
+
+  const quantity = data?.getCartItemsByUserId?.payload?.items.reduce(
+    (total, item) => {
+      return (total += item?.quantity);
+    },
+    0
+  );
+
   return (
     <HeaderDashborad>
       <Loader load={loading}></Loader>
@@ -159,19 +168,14 @@ function ShopCart() {
           />
           <div className="foods-header">
             <div>
-              <h2>{t('cartFood')}</h2>
+              <h2 style={{ fontFamily: 'sans-serif' }}>
+                {t('cartFood')}
+                <span style={{ color: 'gray' }}>
+                  {' '}
+                  , {quantity} {t('product')}
+                </span>
+              </h2>
               <p>{t('cartDescription')}</p>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 15 }}>
-              <h3 style={{ fontFamily: 'sans-serif' }}>
-                {t('totalPrice')}
-                {new Intl.NumberFormat('uz-UZ', {
-                  style: 'currency',
-                  currency: 'UZS',
-                  minimumFractionDigits: 0,
-                }).format(data?.getCartItemsByUserId?.payload?.totalPrice)}
-              </h3>
             </div>
           </div>
           <div className="food-cards">
@@ -187,11 +191,12 @@ function ShopCart() {
                   />
                 ))
               ) : (
-                <div className="img-with">
-                  <img id="undefind" src={undefindImg} alt="Undefined Image" />
+                <div className="defualtImage">
+                  <img id="def" src={undefindImg} alt="Undefined Image" />
                 </div>
               )}
             </div>
+            {foods.length > 0 && <ConfirmOrder setOpen={setOpen} data={data} />}
           </div>
         </Container>
       </StyleFoods>
@@ -208,21 +213,6 @@ function ShopCart() {
         setOpen={setClickedDelete}
         onConfirm={handleClickDelete}
       />
-      <div
-        style={{ display: 'flex', justifyContent: 'end', marginTop: 30 }}
-        className="placeAnOrder"
-      >
-        <Button
-          onClick={() => setOpen(true)}
-          style={{
-            marginRight: 20,
-          }}
-          color="success"
-          variant="contained"
-        >
-          {t('placeInHolder')}
-        </Button>
-      </div>
       <AddOrder
         open={openAddOrder}
         setOpen={setOpen}

@@ -14,7 +14,7 @@ import { MoreHoriz } from '@mui/icons-material';
 import { StyleOrders } from '../../Components/OrderSearch/StyleOrders';
 import OrderSearch from '../../Components/OrderSearch/index';
 import AddOrder from '../../Components/AddOrder/index';
-import { useLazyQuery, useMutation } from '@apollo/client/react';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
 import CheckToken from '../../Components/CheckToken';
 import ToastExample from '../../Components/Toast';
@@ -56,26 +56,33 @@ function OrdersPg() {
   const [addOrder, { loading, error }] = useMutation(CREATE_ORDER);
   const [updateStatus, { loading: loadUptade }] =
     useMutation(UPDATE_ORDER_STATUS);
-  const [getOrderForUser, { data: orderData }] = useLazyQuery(GET_ORDER_BY_ID);
-  const [getOrderForAdmin, { data: orderDataAdmin }] =
-    useLazyQuery(GET_ORDER_FOR_ADMIN);
+  const { data: orderData, refetch: getOrderForUser } = useQuery(
+    GET_ORDER_BY_ID,
+    {
+      variables: {
+        page: page,
+        limit: 10,
+      },
+      fetchPolicy: 'network-only',
+    }
+  );
+  const { data: orderDataAdmin, refetch: getOrderForAdmin } = useQuery(
+    GET_ORDER_FOR_ADMIN,
+    {
+      variables: {
+        page: page,
+        limit: 10,
+      },
+      fetchPolicy: 'network-only',
+    }
+  );
   const navigate = useNavigate('');
 
   useEffect(() => {
     if (role === 'admin') {
-      getOrderForAdmin({
-        variables: {
-          page: page,
-          limit: 10,
-        },
-      });
+      getOrderForAdmin();
     } else {
-      getOrderForUser({
-        variables: {
-          page: page,
-          limit: 10,
-        },
-      });
+      getOrderForUser();
     }
   }, [page]);
 
@@ -384,13 +391,18 @@ function OrdersPg() {
         setOpen={error?.message ? setOpenToastForOrderListError : 'true'}
         title={error?.message ? error?.message : t('orderAdded')}
       ></ToastExample>
-      {!load && !loading && !loadUptade && (
+      {role === 'admin' && !load && !loading && !loadUptade && (
         <div
           style={{
+            position: 'fixed',
+            bottom: 15,
+            left: 0,
             width: '100%',
             display: 'flex',
             justifyContent: 'flex-end',
-            marginTop: 20,
+            padding: '10px 0',
+            zIndex: 999,
+            paddingLeft: 90,
           }}
         >
           <Pagination
