@@ -83,8 +83,9 @@ import { StyleCategoryInfo } from './StyleCategoryInfo';
 import FoodQuontity from '../../../../Components/FoodQuontity';
 import ToastExample from '../../../../Components/Toast';
 import { StyleCategoryInfoo } from './StyleInfo';
-import { ADD_FOODS } from '../../../Foods/api';
+import { ADD_FOODS, DELETE_FOOD, UPDATE_FOOD } from '../../../Foods/api';
 import AddFood from '../../../../Components/AddFood';
+import DeleteFoodModalAlert from '../../../../Components/ConfrimDeleteAlert';
 
 function CategoryInfo() {
   const { t } = useTranslation();
@@ -97,14 +98,32 @@ function CategoryInfo() {
   const navigate = useNavigate('');
   const [role, setRole] = useState('');
   const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
+  const [openToastForUpdateFood, setOpenToastForUpdateFood] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
   const [openQuontity, setOpenQuontity] = useState(false);
   const [open, setOpen] = useState(false);
   const [openToast, setOpenToast] = useState(false);
+  const [editedFoodId, setEditedFoodId] = useState(null);
+  const [openForUpdate, setOpenForUptade] = useState(false);
+  const [clickedDelete, setClickedDelete] = useState(false);
+  const [deletedFoodId, setDeletedFoodId] = useState(null);
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [openToastForDelete, setOpenToastForDeleteFood] = useState(false);
 
-  const { id } = useParams();
+  const updatedIsComplated = () => {
+    setOpenToastForUpdateFood(true);
+  };
+
   const [createFood, { data: AddFoodData, error: AddFoodErr }] =
     useMutation(ADD_FOODS);
+  const [updateFood, { data: updateFoodData, error: updateFoodErr }] =
+    useMutation(UPDATE_FOOD, { onCompleted: updatedIsComplated });
+  const [
+    deleteFood,
+    { data: deleteFoodData, error: deleteFoodErr, load: deleteFoodLoading },
+  ] = useMutation(DELETE_FOOD);
+
+  const { id } = useParams();
 
   useEffect(() => {
     const stored = localStorage.getItem('authStore');
@@ -127,8 +146,9 @@ function CategoryInfo() {
     },
   });
 
-  const [fetchCategoryById, { data, loading, error }] = useLazyQuery(
-    GET_FOODS_BY_CATEGORY
+  const [fetchCategoryById, { data, loading, error, refetch }] = useLazyQuery(
+    GET_FOODS_BY_CATEGORY,
+    { fetchPolicy: 'network-only' }
   );
   const [createCard, { data: createCardData }] = useMutation(CREATE_CARD);
 
@@ -174,7 +194,36 @@ function CategoryInfo() {
 
   const handleAddFood = async (formData) => {
     try {
+      // setLoad(true);
       const token = localStorage.getItem('token') || '';
+
+      if (editedFoodId) {
+        const { image, ...rest } = formData;
+
+        await updateFood({
+          variables: {
+            foodId: editedFoodId,
+            food: {
+              ...rest,
+              price: formData.price ? Number(formData.price) : 0,
+              discount: formData.discount ? Number(formData.discount) : 0,
+            },
+          },
+          context: {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          },
+        });
+
+        refetch();
+
+        setOpen(false);
+        setEditedFoodId(null);
+        // setLoad(false);
+        setOpenToast(true);
+        return;
+      }
 
       await createFood({
         variables: {
@@ -196,10 +245,36 @@ function CategoryInfo() {
       });
 
       setOpen(false);
+      setOpenToast(true);
+      // setLoad(false);
     } catch (err) {
       console.error(err);
     }
   };
+
+  const handleClickDeleteFood = (foodId) => {
+    setDeletedFoodId(foodId);
+    setClickedDelete(true);
+  };
+
+  const handleClickEditFood = (foodId) => {
+    setEditedFoodId(foodId);
+    setOpenForUptade(true);
+  };
+
+  useEffect(() => {
+    if (isDeleted && deletedFoodId) {
+      deleteFood({ variables: { foodId: deletedFoodId } })
+        .then(() => refetch())
+        .finally(() => {
+          setIsDeleted(false);
+          setClickedDelete(false);
+          setDeletedFoodId(null);
+        });
+      setOpenToastForDeleteFood(true);
+    }
+  }, [isDeleted]);
+
   return (
     <HeaderDashborad>
       <Container maxWidth="xl">
@@ -228,6 +303,8 @@ function CategoryInfo() {
                   key={category._id}
                   isSpeacial={true}
                   food={category}
+                  handleClickEditFood={handleClickEditFood}
+                  handleClickDeleteFood={handleClickDeleteFood}
                 />
               ))
             ) : (
@@ -277,6 +354,33 @@ function CategoryInfo() {
           }
           open={openToast}
           setOpen={setOpenToast}
+        />
+        <AddFood
+          editedFoodId={editedFoodId}
+          open={openForUpdate}
+          setOpen={setOpenForUptade}
+          onAdd={handleAddFood}
+        />
+        <DeleteFoodModalAlert
+          open={clickedDelete}
+          setOpen={setClickedDelete}
+          setIsDeleted={setIsDeleted}
+        />
+        <ToastExample
+          status={updateFoodData?.updateFoodById?.payload ? 'success' : 'error'}
+          title={
+            updateFoodData?.updateFoodById?.payload ? t('updatedFood') : ''
+          }
+          open={openToastForUpdateFood}
+          setOpen={setOpenToastForUpdateFood}
+        ></ToastExample>
+        <ToastExample
+          status={deleteFoodData?.deleteFoodById?.payload ? 'success' : 'error'}
+          title={
+            deleteFoodErr?.message ? deleteFoodErr?.message : t('foodIsDeleted')
+          }
+          open={openToastForDelete}
+          setOpen={setOpenToastForDeleteFood}
         />
       </Container>
     </HeaderDashborad>

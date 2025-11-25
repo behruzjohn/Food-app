@@ -41,7 +41,7 @@ function HeaderDashborad({ children }) {
 
   return (
     <StyledLayoutWrapper>
-      <StyleHeaderDashboard openHeaderDashboard={openHeaderDashboard}>
+      <StyleHeaderDashboard $openHeaderDashboard={openHeaderDashboard}>
         <img onClick={handleClickLogo} src={logo} alt="Logo" />
         <div className="header-nav">
           <ul>

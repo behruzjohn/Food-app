@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 
 import Loader from '../Loader';
+import { Login } from '@mui/icons-material';
 const GET_ALL_CATAGORIES = gql`
   query GetAllCategories {
     getAllCategories {
@@ -50,7 +51,7 @@ const GET_FOOD_BY_ID = gql`
   }
 `;
 
-function AddFood({ open, setOpen, onAdd, editedFoodId, externalReset }) {
+function AddFood({ open, setOpen, onAdd, editedFoodId, foods }) {
   const { t } = useTranslation();
   const [getFoodById, { data: foodData, loading: foodLoading, err }] =
     useLazyQuery(GET_FOOD_BY_ID);
@@ -85,22 +86,32 @@ function AddFood({ open, setOpen, onAdd, editedFoodId, externalReset }) {
   });
 
   useEffect(() => {
-    if (foodData && !foodLoading) {
+    if (foodData && editedFoodId) {
       const food = foodData?.getFoodById?.payload;
 
-      if (food) {
-        reset({
-          name: food?.name || '',
-
-          description: food?.description || '',
-          price: food?.price || '',
-          discount: food?.discount || '',
-          category: food?.category?._id || '',
-          image: food?.image || '',
-        });
-      }
+      reset({
+        name: food?.name || '',
+        description: food?.description || '',
+        price: food?.price || '',
+        discount: food?.discount || '',
+        category: food?.category?._id || '',
+        image: food?.image || '',
+      });
     }
-  }, [foodData, foodLoading]);
+  }, [foodData]);
+
+  useEffect(() => {
+    if (open && !editedFoodId) {
+      reset({
+        name: '',
+        description: '',
+        price: '',
+        discount: '',
+        category: '',
+        image: '',
+      });
+    }
+  }, [open]);
 
   const onSubmit = (data) => {
     onAdd(data);

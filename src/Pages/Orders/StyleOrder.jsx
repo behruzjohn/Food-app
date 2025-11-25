@@ -12,6 +12,7 @@ export const StyleOrder = styled.div`
     margin-top: 20px;
   }
   .orders-list-scroll {
+    padding-bottom: 50px;
     overflow-x: auto;
     width: 100%;
   }
@@ -59,8 +60,9 @@ export const StyleOrder = styled.div`
     background-color: #fff;
   }
 
-  tbody tr {
+  table tbody tr {
     cursor: pointer;
+    height: 48px !important;
     margin-top: 20px;
     transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
   }
@@ -134,5 +136,26 @@ export const StyleOrder = styled.div`
       width: 150px;
       height: 30px;
     }
+    table {
+      font-size: 10px;
+    }
+  }
+`;
+
+export const PaginationWrapper = styled.div`
+  position: relative;
+  bottom: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 0;
+  padding-left: 90px;
+  z-index: 999;
+
+  @media (max-width: 768px) {
+    bottom: 0;
+    justify-content: center;
+    padding-left: 0;
+    padding: 5px 0;
   }
 `;

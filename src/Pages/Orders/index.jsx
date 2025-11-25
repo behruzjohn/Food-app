@@ -27,7 +27,7 @@ import PendingActionsOutlinedIcon from '@mui/icons-material/PendingActionsOutlin
 import Loader from '../../Components/Loader';
 import { useLocation, useNavigate } from 'react-router-dom';
 import GuardComponent from '../../Components/CheckRole/CheckRole';
-import { StyleOrder } from './StyleOrder';
+import { PaginationWrapper, StyleOrder } from './StyleOrder';
 import { formatPrice } from '../../helpers/formatters';
 import {
   CREATE_ORDER,
@@ -73,7 +73,6 @@ function OrdersPg() {
         page: page,
         limit: 10,
       },
-      fetchPolicy: 'network-only',
     }
   );
   const navigate = useNavigate('');
@@ -189,7 +188,6 @@ function OrdersPg() {
 
   return (
     <HeaderDashborad>
-      {/* <Loader load={loading || loadUptade || load}></Loader> */}
       <AddOrder
         open={openAddOrder}
         setOpen={setOpenAddOrder}
@@ -259,7 +257,7 @@ function OrdersPg() {
                         {orders.map((orderItem, orderIndex) => (
                           <tr
                             onClick={() =>
-                              navigate(`orderItems/${orderItem._id}`)
+                              navigate(`/orderItems/${orderItem._id}`)
                             }
                             key={orderItem._id}
                           >
@@ -275,7 +273,9 @@ function OrdersPg() {
                               <td>{orderItem?.createdBy?.name || 'No name'}</td>
                             )}
                             {role === 'admin' && (
-                              <td>{locations[orderItem._id] || '-'}</td>
+                              <td>
+                                {locations[orderItem._id]?.slice(0, -20) || '-'}
+                              </td>
                             )}
                             <td style={{ fontFamily: 'sans-serif' }}>
                               {formatPrice(orderItem?.totalPrice)}
@@ -299,11 +299,12 @@ function OrdersPg() {
                             {role === 'admin' && (
                               <td>
                                 <MoreHoriz
-                                  onClick={(e) =>
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     setAnchorEl({
                                       [orderItem._id]: e.currentTarget,
-                                    })
-                                  }
+                                    });
+                                  }}
                                   style={{ cursor: 'pointer' }}
                                 />
                                 <Menu
@@ -329,7 +330,10 @@ function OrdersPg() {
                                   }}
                                 >
                                   <MenuItem
-                                    onClick={() => handleClickStatus('pending')}
+                                    onClick={(e) => {
+                                      e.stopPropagation(),
+                                        handleClickStatus('pending');
+                                    }}
                                   >
                                     <ListItemIcon>
                                       <PendingActionsOutlinedIcon color="warning" />
@@ -338,7 +342,10 @@ function OrdersPg() {
                                   </MenuItem>
 
                                   <MenuItem
-                                    onClick={() => handleClickStatus('cooking')}
+                                    onClick={(e) => {
+                                      e.stopPropagation(),
+                                        handleClickStatus('cooking');
+                                    }}
                                   >
                                     <ListItemIcon>
                                       <BlenderOutlinedIcon color="error" />
@@ -347,9 +354,10 @@ function OrdersPg() {
                                   </MenuItem>
 
                                   <MenuItem
-                                    onClick={() =>
-                                      handleClickStatus('delivering')
-                                    }
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleClickStatus('delivering');
+                                    }}
                                   >
                                     <ListItemIcon>
                                       <LocalShippingOutlinedIcon color="primary" />
@@ -358,9 +366,10 @@ function OrdersPg() {
                                   </MenuItem>
 
                                   <MenuItem
-                                    onClick={() =>
-                                      handleClickStatus('received')
-                                    }
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleClickStatus('received');
+                                    }}
                                   >
                                     <ListItemIcon>
                                       <TaskAltOutlinedIcon color="success" />
@@ -392,19 +401,7 @@ function OrdersPg() {
         title={error?.message ? error?.message : t('orderAdded')}
       ></ToastExample>
       {role === 'admin' && !load && !loading && !loadUptade && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: 15,
-            left: 0,
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'flex-end',
-            padding: '10px 0',
-            zIndex: 999,
-            paddingLeft: 90,
-          }}
-        >
+        <PaginationWrapper>
           <Pagination
             page={page}
             onChange={handleChange}
@@ -412,7 +409,7 @@ function OrdersPg() {
             color="primary"
             shape="rounded"
           />
-        </div>
+        </PaginationWrapper>
       )}
     </HeaderDashborad>
   );

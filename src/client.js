@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSSR } from 'react-i18next';
 
 const httpLink = new HttpLink({
-  uri: 'http://localhost:8000/api',
+  uri: 'https://radiative-marlin-unplayed.ngrok-free.dev/api',
 });
 
 const authLink = setContext((_, { headers }) => {

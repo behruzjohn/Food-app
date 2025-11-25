@@ -42,6 +42,7 @@ function Foods() {
   const [selectedFood, setSelectedFood] = useState(null);
   const [editedFoodId, setEditedFoodId] = useState(null);
   const [openToastForUpdateFood, setOpenToastForUpdateFood] = useState(false);
+  const [openToastForDelete, setOpenToastForDeleteFood] = useState(false);
   const [createCard, { data: createCardData }] = useMutation(CREATE_CARD);
   const [addToFavourites, { data: favouriteData, error: favouriteError }] =
     useMutation(ADD_FOOD_FAVOURITES);
@@ -55,11 +56,7 @@ function Foods() {
 
   const [
     deleteFood,
-    {
-      data: deleteFoodData,
-      loadingdeleteFoodData: deleteFoodLoading,
-      refetch: deleteFoodRef,
-    },
+    { data: deleteFoodData, error: deleteFoodErr, load: deleteFoodLoading },
   ] = useMutation(DELETE_FOOD);
 
   const [createFood, { data: AddFoodData, error: AddFoodErr }] =
@@ -68,7 +65,9 @@ function Foods() {
     useMutation(UPDATE_FOOD, { onCompleted: updatedIsComplated });
   const [quontityLen, setQuontityLen] = useState(0);
 
-  const { data, loading, error, refetch } = useQuery(GET_ALL_FOODS);
+  const { data, loading, error, refetch } = useQuery(GET_ALL_FOODS, {
+    fetchPolicy: 'network-only',
+  });
   useEffect(() => {
     refetch();
 
@@ -208,36 +207,9 @@ function Foods() {
           setClickedDelete(false);
           setDeletedFoodId(null);
         });
+      setOpenToastForDeleteFood(true);
     }
   }, [isDeleted]);
-
-  // useEffect(() => {
-  //   if (open) {
-  //     if (editedFoodId) {
-  //       const food = foods.find((f) => f._id === editedFoodId);
-  //       if (!food) return;
-  //       reset({
-  //         name: food?.name || '',
-  //         shortName: food?.shortName || '',
-  //         description: food?.description || '',
-  //         price: food?.price || '',
-  //         discount: food?.discount || '',
-  //         category: food?.category || '',
-  //         image: null,
-  //       });
-  //     } else {
-  //       reset({
-  //         name: '',
-  //         shortName: '',
-  //         description: '',
-  //         price: '',
-  //         discount: '',
-  //         category: '',
-  //         image: null,
-  //       });
-  //     }
-  //   }
-  // }, [open, editedFoodId, foods]);
 
   return (
     <HeaderDashborad>
@@ -315,6 +287,7 @@ function Foods() {
       />
 
       <AddFood
+        foods={foods}
         editedFoodId={editedFoodId}
         open={open}
         setOpen={setOpen}
@@ -342,6 +315,14 @@ function Foods() {
         open={openToastForUpdateFood}
         setOpen={setOpenToastForUpdateFood}
       ></ToastExample>
+      <ToastExample
+        status={deleteFoodData?.deleteFoodById?.payload ? 'success' : 'error'}
+        title={
+          deleteFoodErr?.message ? deleteFoodErr?.message : t('foodIsDeleted')
+        }
+        open={openToastForDelete}
+        setOpen={setOpenToastForDeleteFood}
+      />
     </HeaderDashborad>
   );
 }

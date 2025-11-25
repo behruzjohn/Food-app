@@ -32,7 +32,9 @@ export const StyleHeaderDashboard = styled.div`
     background-color: lightgreen;
     color: green;
     border-radius: 8px;
+    padding: 10px !important;
   }
+
   .header-nav {
     padding: 30px;
   }
@@ -98,20 +100,20 @@ export const StyleHeaderDashboard = styled.div`
   }
 
   @media (max-width: 800px) {
-    width: ${(props) => (props.openHeaderDashboard ? '280px' : '80px')};
+    width: ${(props) => (props.$openHeaderDashboard ? '280px' : '80px')};
     padding: 0;
     #span-title {
-      display: ${(props) => (props.openHeaderDashboard ? 'flex' : 'none')};
+      display: ${(props) => (props.$openHeaderDashboard ? 'flex' : 'none')};
     }
     img {
-      width: ${(props) => (props.openHeaderDashboard ? '150px' : '65px')};
-      height: ${(props) => (props.openHeaderDashboard ? '150px' : '65px')};
-      margin-left: ${(props) => (props.openHeaderDashboard ? '35px' : '8px')};
+      width: ${(props) => (props.$openHeaderDashboard ? '150px' : '65px')};
+      height: ${(props) => (props.$openHeaderDashboard ? '150px' : '65px')};
+      margin-left: ${(props) => (props.$openHeaderDashboard ? '35px' : '8px')};
     }
     button {
-      width: ${(props) => (props.openHeaderDashboard ? '220px' : '20px')};
+      width: ${(props) => (props.$openHeaderDashboard ? '220px' : '20px')};
       height: 40px;
-      margin-left: ${(props) => (props.openHeaderDashboard ? '28px' : '5px')};
+      margin-left: ${(props) => (props.$openHeaderDashboard ? '28px' : '5px')};
       padding-left: 30px;
     }
     .header-nav ul li a svg {
@@ -120,6 +122,22 @@ export const StyleHeaderDashboard = styled.div`
     .header-nav ul li {
       padding: 10px;
       padding-left: 0px;
+    }
+  }
+  @media (max-width: 800px) {
+    .header-nav ul li.active {
+      padding: 18px !important;
+      background-color: #9ae6b4;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      margin-left: -8px;
+    }
+
+    .header-nav ul li.active a {
+      padding: 0 !important;
+      justify-content: center;
+      display: flex;
     }
   }
 `;

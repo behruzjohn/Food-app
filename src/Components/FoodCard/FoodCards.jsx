@@ -18,6 +18,7 @@ function FoodCard({
   handleClickRemoveFav,
   isFavourite,
   isSpeacial,
+  buttonsStatus,
   food,
   handleClickDeleteFood,
   handleClickEditFood,
@@ -90,40 +91,29 @@ function FoodCard({
         <img src={food?.image ? food.image : defulatFoodImg} alt={food.name} />
 
         <h2>{food?.name}</h2>
-        <p>{food?.description?.slice(0, 50) + '.'}</p>
+        <p style={{ marginLeft: 25 }}>
+          {food?.description?.slice(0, 50) + '.'}
+        </p>
         <p>
           <strong>{t('price')}: </strong>
           {food?.price} {food?.discount > 0 ? `(${food.discount}%)` : null}
         </p>
-
-        <div className="buttons">
-          <GuardComponent role={role} section="foodCard" action="edit">
-            <div className="btn">
-              <Button
-                onClick={() => handleClickEditFood(food?._id)}
-                id="edit"
-                variant="contained"
-                color="success"
-              >
-                <EditSquareIcon fontSize="small" />
-              </Button>
-              <p>{t('edit')}</p>
-            </div>
-          </GuardComponent>
-          {isFavourite ? (
-            <div className="btn">
-              <Button
-                onClick={() => handleClickDeleteFood(food?._id)}
-                id="delete"
-                variant="contained"
-                color="error"
-              >
-                <DeleteIcon fontSize="small" />
-              </Button>
-              <p>{t('delete')}</p>
-            </div>
-          ) : (
-            <GuardComponent role={role} section="foodCard" action="delete">
+        {!buttonsStatus && (
+          <div className="buttons">
+            <GuardComponent role={role} section="foodCard" action="edit">
+              <div className="btn">
+                <Button
+                  onClick={() => handleClickEditFood(food?._id)}
+                  id="edit"
+                  variant="contained"
+                  color="success"
+                >
+                  <EditSquareIcon fontSize="small" />
+                </Button>
+                <p>{t('edit')}</p>
+              </div>
+            </GuardComponent>
+            {isFavourite ? (
               <div className="btn">
                 <Button
                   onClick={() => handleClickDeleteFood(food?._id)}
@@ -135,27 +125,41 @@ function FoodCard({
                 </Button>
                 <p>{t('delete')}</p>
               </div>
-            </GuardComponent>
-          )}
-
-          <GuardComponent role={role} section="foodCard" action="addToCard">
-            {food?.quantity ? (
-              <></>
             ) : (
-              <div className="btn">
-                <Button
-                  onClick={() => handleAddToCart(food?._id)}
-                  id="save"
-                  variant="contained"
-                  color="success"
-                >
-                  <AddShoppingCartIcon fontSize="small" />
-                </Button>
-                <p>{t('addToCard')}</p>
-              </div>
+              <GuardComponent role={role} section="foodCard" action="delete">
+                <div className="btn">
+                  <Button
+                    onClick={() => handleClickDeleteFood(food?._id)}
+                    id="delete"
+                    variant="contained"
+                    color="error"
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </Button>
+                  <p>{t('delete')}</p>
+                </div>
+              </GuardComponent>
             )}
-          </GuardComponent>
-        </div>
+
+            <GuardComponent role={role} section="foodCard" action="addToCard">
+              {food?.quantity ? (
+                <></>
+              ) : (
+                <div className="btn">
+                  <Button
+                    onClick={() => handleAddToCart(food?._id)}
+                    id="save"
+                    variant="contained"
+                    color="success"
+                  >
+                    <AddShoppingCartIcon fontSize="small" />
+                  </Button>
+                  <p>{t('addToCard')}</p>
+                </div>
+              )}
+            </GuardComponent>
+          </div>
+        )}
       </StyleFoodCard>
     </>
   );

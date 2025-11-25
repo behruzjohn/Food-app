@@ -5,6 +5,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import ToastExample from '../../Components/Toast';
+import NoCategory from '../../assets/no category.png';
 import CheckToken from '../../Components/CheckToken';
 import { StyleCategories } from './Categories.style';
 import OrderSearch from '../../Components/OrderSearch/index';
@@ -52,7 +53,10 @@ function CategoriesPage() {
       onCompleted: refetch,
     });
   };
-
+  const handleClickDelete = (id) => {
+    setDeletedCategoryId(id);
+    setClickedDelete(true);
+  };
   const handleDeleteCategory = () => {
     if (isDeleteModalOpen && deletedCategoryId) {
       setOpenToastDelete(true);
@@ -109,20 +113,26 @@ function CategoriesPage() {
                     </Button>
                   </GuardComponent>
                 </header>
+
                 <div
                   style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}
                   className="card"
                 >
-                  {categories?.map((category) => {
-                    return (
+                  {categories && categories.length > 0 ? (
+                    categories.map((category) => (
                       <CategoryCard
+                        key={category.id}
                         setClickedDelete={setClickedDelete}
                         setOpenToast={setOpenToastDelete}
                         category={category}
                         setDeletedCategoryId={setDeletedCategoryId}
-                      ></CategoryCard>
-                    );
-                  })}
+                      />
+                    ))
+                  ) : (
+                    <div className="defualtImage">
+                      <img src={NoCategory} alt="No Category" />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -31,6 +31,7 @@ createRoot(document.getElementById('root')).render(
           return <Route path={route?.path} element={route?.component} />;
         })}
         <Route path="/categoriesById/:id" element={<CategoryInfo />} />
+        <Route path="/orderItems/:id" element={<OrderItem />} />
       </Routes>
     </BrowserRouter>
   </ApolloProvider>

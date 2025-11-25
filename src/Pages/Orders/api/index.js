@@ -119,3 +119,35 @@ export const GET_ORDER_PRODUCT = gql`
     }
   }
 `;
+export const GET_ORDER_ITEMS = gql`
+  query GetOrderById($orderId: ID!) {
+    getOrderById(orderId: $orderId) {
+      payload {
+        _id
+        totalPrice
+        status
+        address
+        createdAt
+        updatedAt
+        orderItems {
+          _id
+          quantity
+          price
+          discount
+          user
+          food {
+            _id
+            shortName
+            name
+            image
+            description
+            price
+            discount
+            likes
+            isFavorite
+          }
+        }
+      }
+    }
+  }
+`;
