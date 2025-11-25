@@ -41,13 +41,28 @@ export default function DeleteFoodModalAlert({
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            width: '90%',
+            maxWidth: 400,
+            p: 4,
+            boxSizing: 'border-box',
+            borderRadius: '12px',
+          }}
+        >
           <div
             style={{
               display: 'flex',
               flexDirection: 'column',
               gap: 20,
               alignItems: 'center',
+              width: '100%',
             }}
             className="nav"
           >
