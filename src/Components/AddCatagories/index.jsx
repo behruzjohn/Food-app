@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Button,
   TextField,
@@ -13,7 +12,6 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 function AddCatagories({ open, setOpen, onAdd }) {
   const { t } = useTranslation();
-
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       name: '',
@@ -25,6 +23,7 @@ function AddCatagories({ open, setOpen, onAdd }) {
       image: '',
     },
   });
+
   const onSubmit = (data) => {
     console.log(data.image);
     onAdd(data);
@@ -44,7 +43,7 @@ function AddCatagories({ open, setOpen, onAdd }) {
               name="name"
               control={control}
               rules={{
-                required: { value: true, message: 'Category name is required' },
+                required: { value: true, message: t('categoryNameReq') },
               }}
               render={({ field, fieldState: { error } }) => (
                 <TextField

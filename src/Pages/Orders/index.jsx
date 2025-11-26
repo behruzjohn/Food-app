@@ -36,6 +36,7 @@ import {
   UPDATE_ORDER_STATUS,
 } from './api';
 import { lime } from '@mui/material/colors';
+import SelectOrderStatus from './components/SelectOrderStatus';
 
 function OrdersPg() {
   const { t } = useTranslation();
@@ -43,16 +44,17 @@ function OrdersPg() {
   const [page, setPage] = useState(1);
   const [load, setLoad] = useState(false);
   const [orders, setOrders] = useState([]);
+  const [status, setStatus] = useState('all');
   const [locations, setLocations] = useState({});
+  const [menuOrderId, setMenuOrderId] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+
   const [openAddOrder, setOpenAddOrder] = useState(false);
-  const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [openToastForOrderListError, setOpenToastForOrderListError] =
     useState(false);
   const localToken = JSON.parse(localStorage.getItem('authStore')) || '';
   const role = localToken?.state?.role;
 
-  const open = Boolean(anchorEl);
   const [addOrder, { loading, error }] = useMutation(CREATE_ORDER);
   const [updateStatus, { loading: loadUptade }] =
     useMutation(UPDATE_ORDER_STATUS);
@@ -70,6 +72,7 @@ function OrdersPg() {
     GET_ORDER_FOR_ADMIN,
     {
       variables: {
+        statuses: status,
         page: page,
         limit: 10,
       },
@@ -92,31 +95,29 @@ function OrdersPg() {
   }, [location.state]);
 
   const handleClickStatus = async (status) => {
-    setAnchorEl(null);
-
     try {
+      if (!menuOrderId) {
+        console.error("ID yo'q!");
+        return;
+      }
+
       await updateStatus({
         variables: {
-          orderId: selectedOrderId,
+          orderId: menuOrderId,
           status: status,
         },
       });
+
+      setMenuOrderId(null);
+      setAnchorEl(null);
+
       if (role === 'admin') {
-        getOrderForAdmin({
-          variables: {
-            page: 1,
-            limit: 10,
-          },
-        });
+        getOrderForAdmin({ variables: { page, limit: 10 } });
       } else {
-        getOrderForUser({
-          variables: {
-            page: page,
-            limit: 10,
-          },
-        });
+        getOrderForUser({ variables: { page, limit: 10 } });
       }
     } catch (err) {
+      console.error(err);
       setOpenToastForOrderListError(true);
     }
   };
@@ -151,35 +152,33 @@ function OrdersPg() {
   }, [orderData, orderDataAdmin]);
 
   useEffect(() => {
-    if (role === 'admin') {
-      if (!location.state?.openAddOrder) {
-        const fetchLocations = async () => {
-          const newLocations = {};
-          for (const orderItem of orders) {
-            if (orderItem.address?.length === 2) {
-              const [lat, lng] = orderItem.address;
-              try {
-                setLoad(true);
-                const res = await fetch(
-                  `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=uz`
-                );
-                const data = await res.json();
-                newLocations[orderItem._id] = data.display_name;
-              } catch {
-                newLocations[orderItem._id] = '-';
-              } finally {
-                setLoad(false);
-              }
-            } else {
-              newLocations[orderItem._id] = '-';
-            }
-          }
-          setLocations(newLocations);
-        };
+    if (role !== 'admin') return;
 
-        if (orders.length > 0) fetchLocations();
+    const fetchLocations = async () => {
+      const newLocations = { ...locations };
+
+      for (const orderItem of orders) {
+        if (!newLocations[orderItem._id] && orderItem.address?.length === 2) {
+          const [lat, lng] = orderItem.address;
+          try {
+            setLoad(true);
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=uz`
+            );
+            const data = await res.json();
+            newLocations[orderItem._id] = data.display_name;
+          } catch {
+            newLocations[orderItem._id] = '-';
+          } finally {
+            setLoad(false);
+          }
+        }
       }
-    }
+
+      setLocations(newLocations);
+    };
+
+    if (orders.length > 0) fetchLocations();
   }, [orders]);
 
   const handleChange = (event, value) => {
@@ -209,6 +208,7 @@ function OrdersPg() {
                     : t('orderDescription')}
                 </p>
               </div>
+
               <GuardComponent role={role} section="order" action="addOrder">
                 <div className="order-header-btns">
                   <Button
@@ -220,6 +220,7 @@ function OrdersPg() {
                   </Button>
                 </div>
               </GuardComponent>
+              <SelectOrderStatus status={status} setStatus={setStatus} />
             </div>
 
             <div style={{ marginTop: 40 }} className="orders-list">
@@ -301,16 +302,18 @@ function OrdersPg() {
                                 <MoreHoriz
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    setAnchorEl({
-                                      [orderItem._id]: e.currentTarget,
-                                    });
+                                    setMenuOrderId(orderItem._id);
+                                    setAnchorEl(e.currentTarget);
                                   }}
                                   style={{ cursor: 'pointer' }}
                                 />
                                 <Menu
-                                  anchorEl={anchorEl?.[orderItem._id] || null}
-                                  open={Boolean(anchorEl?.[orderItem._id])}
-                                  onClose={() => setAnchorEl(null)}
+                                  anchorEl={anchorEl}
+                                  open={menuOrderId === orderItem._id}
+                                  onClose={() => {
+                                    setMenuOrderId(null);
+                                    setAnchorEl(null);
+                                  }}
                                   PaperProps={{
                                     elevation: 3,
                                     sx: {

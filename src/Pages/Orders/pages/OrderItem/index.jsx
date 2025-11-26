@@ -87,9 +87,11 @@ function OrderItem() {
                 className="card"
               >
                 {orderItems?.map((food) => {
-                  console.log(food);
+                  console.log(food?.food);
 
-                  return <FoodCard buttonsStatus={true} food={food}></FoodCard>;
+                  return (
+                    <FoodCard buttonsStatus={true} food={food?.food}></FoodCard>
+                  );
                 })}
               </div>
             </div>

@@ -146,6 +146,9 @@ i18n
           withBehruzCard: 'With Behruz Card:',
           withOutBehruzCard: 'Without Behruz Card:',
           product: 'product',
+          all: 'All',
+          status: 'Status',
+          
         },
       },
       uz: {
@@ -288,6 +291,8 @@ i18n
           withBehruzCard: 'Behruz karta bilan:',
           withOutBehruzCard: 'Behruz kartasiz:',
           product: 'Mahsulot',
+          all: 'Hammasi',
+          status: 'Holat',
         },
       },
       ru: {
@@ -428,6 +433,8 @@ i18n
           withBehruzCard: 'С картой Behruz:',
           withOutBehruzCard: 'Без карты Behruz:',
           product: 'Продукт',
+          all: 'Все',
+          status: 'Статус',
         },
       },
     },

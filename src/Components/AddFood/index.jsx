@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   Button,
   TextField,
@@ -9,47 +9,13 @@ import {
   MenuItem,
   InputAdornment,
   CircularProgress,
-  Container,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { gql } from '@apollo/client';
-import { useLazyQuery, useMutation } from '@apollo/client/react';
+import { useLazyQuery } from '@apollo/client/react';
 import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
-
-import Loader from '../Loader';
-import { Login } from '@mui/icons-material';
-const GET_ALL_CATAGORIES = gql`
-  query GetAllCategories {
-    getAllCategories {
-      payload {
-        _id
-        name
-        image
-      }
-    }
-  }
-`;
-const GET_FOOD_BY_ID = gql`
-  query GetFoodById($foodId: ID!) {
-    getFoodById(foodId: $foodId) {
-      payload {
-        _id
-        shortName
-        name
-        image
-        description
-        price
-        discount
-        likes
-        isFavorite
-        category {
-          _id
-        }
-      }
-    }
-  }
-`;
+import { GET_ALL_CATAGORIES, GET_FOOD_BY_ID } from './api';
 
 function AddFood({ open, setOpen, onAdd, editedFoodId, foods }) {
   const { t } = useTranslation();
