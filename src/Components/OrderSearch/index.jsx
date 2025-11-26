@@ -11,71 +11,21 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { useLang } from '../../useLang';
 import { StyleOrders } from './StyleOrders';
-import { Search } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
+import { Search } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useLazyQuery } from '@apollo/client/react';
+import GuardComponent from '../CheckRole/CheckRole';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PasswordIcon from '@mui/icons-material/Password';
-import { useNavigate } from 'react-router-dom';
-import { gql } from '@apollo/client';
-import { useLazyQuery, useQuery } from '@apollo/client/react';
+import { GET_ALL_FAVOURITE_FOODS, GET_FOODS_BY_SEARCH } from './api';
 import LocalGroceryStoreOutlinedIcon from '@mui/icons-material/LocalGroceryStoreOutlined';
-import ToastExample from '../Toast';
-import GuardComponent from '../CheckRole/CheckRole';
-import { useTranslation } from 'react-i18next';
-import { create } from 'zustand';
-import { useLang } from '../../useLang';
-import Loader from '../Loader';
-
-const GET_FOODS_BY_SEARCH = gql`
-  query GetAllFoods($name: String!) {
-    getAllFoods(name: $name) {
-      payload {
-        _id
-        shortName
-        name
-        image
-        description
-        price
-        discount
-        likes
-        isFavorite
-        category {
-          _id
-          name
-          image
-        }
-      }
-    }
-  }
-`;
-
-const GET_ALL_FAVOURITE_FOODS = gql`
-  query GetFavoriteFoods {
-    getFavoriteFoods {
-      payload {
-        _id
-        shortName
-        name
-        image
-        description
-        price
-        discount
-        likes
-        isFavorite
-        category {
-          _id
-          name
-          image
-        }
-      }
-    }
-  }
-`;
 
 function OrderSearch({
   setLoadSearch,
-  loadSearch,
   quontityLen,
   setFoods,
   allFoodsForSearch,
@@ -83,70 +33,24 @@ function OrderSearch({
   refetchItem,
 }) {
   const { t } = useTranslation();
-  const [searchInput, setSearchInput] = useState('');
+  const naivagte = useNavigate('');
   const { lang, setLang } = useLang();
+  const [role, setRole] = useState('');
+  const [open, setopen] = useState(null);
+  const [searchInput, setSearchInput] = useState('');
+
+  const name = localStorage.getItem('userName') || '';
+  const upperCaseName = name ? name[0]?.toUpperCase() : '';
+
+  const [getSearchedFood, { data }] = useLazyQuery(GET_FOODS_BY_SEARCH);
+  const [getFavouriteLength, { data: FavouriteFood }] = useLazyQuery(
+    GET_ALL_FAVOURITE_FOODS
+  );
 
   const handleChange = (event) => {
     const newLang = event.target.value;
     setLang(newLang);
   };
-
-  const [getSearchedFood, { data, loading, error }] =
-    useLazyQuery(GET_FOODS_BY_SEARCH);
-
-  const [getFavouriteLength, { data: FavouriteFood }] = useLazyQuery(
-    GET_ALL_FAVOURITE_FOODS
-  );
-  const [role, setRole] = useState('');
-
-  useEffect(() => {
-    const stored = localStorage.getItem('authStore');
-
-    const a = JSON.parse(stored || '{}');
-
-    console.log(a?.state?.role);
-
-    setRole(a?.state?.role);
-  }, []);
-
-  useEffect(() => {
-    getFavouriteLength();
-  }, [FavouriteFood]);
-
-  useEffect(() => {
-    if (action === 'foods') {
-      console.log(searchInput === '');
-
-      if (
-        searchInput === '' ||
-        searchInput === null ||
-        searchInput === undefined
-      ) {
-        refetchItem();
-        setFoods(allFoodsForSearch || []);
-      } else {
-        getSearchedFood({ variables: { name: searchInput } });
-      }
-    }
-  }, [searchInput, action]);
-
-  useEffect(() => {
-    if (data?.getAllFoods?.payload) {
-      setFoods(data.getAllFoods.payload);
-    }
-  }, [data, setFoods]);
-
-  const changedInput = (e) => {
-    setLoadSearch(true);
-    setTimeout(() => {
-      setSearchInput(e.target.value);
-      setLoadSearch(false);
-    }, 300);
-  };
-  const [open, setopen] = useState(null);
-  const naivagte = useNavigate('');
-  const name = localStorage.getItem('userName') || '';
-  const upperCaseName = name ? name[0]?.toUpperCase() : '';
 
   const handleAvatarClick = (event) => {
     setopen(event.currentTarget);
@@ -166,10 +70,47 @@ function OrderSearch({
   };
 
   const handleClickFavourite = () => {
-    // if (quontityLen > 0) {
     naivagte('/food-cart');
-    // }
   };
+
+  const changedInput = (e) => {
+    setLoadSearch(true);
+    setTimeout(() => {
+      setSearchInput(e.target.value);
+      setLoadSearch(false);
+    }, 300);
+  };
+
+  useEffect(() => {
+    getFavouriteLength();
+  }, [FavouriteFood]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('authStore');
+    const a = JSON.parse(stored || '{}');
+    setRole(a?.state?.role);
+  }, []);
+
+  useEffect(() => {
+    if (data?.getAllFoods?.payload) {
+      setFoods(data.getAllFoods.payload);
+    }
+  }, [data, setFoods]);
+
+  useEffect(() => {
+    if (action === 'foods') {
+      if (
+        searchInput === '' ||
+        searchInput === null ||
+        searchInput === undefined
+      ) {
+        refetchItem();
+        setFoods(allFoodsForSearch || []);
+      } else {
+        getSearchedFood({ variables: { name: searchInput } });
+      }
+    }
+  }, [searchInput, action]);
 
   return (
     <StyleOrders>
@@ -205,7 +146,7 @@ function OrderSearch({
             </div>
           </GuardComponent>
           <FormControl className="selectId">
-            <InputLabel id="lang-select-label">Lang</InputLabel>
+            <InputLabel id="lang-select-label">{t('lang')}</InputLabel>
             <Select
               className="select"
               style={{ height: 40 }}
@@ -214,6 +155,10 @@ function OrderSearch({
               value={lang}
               label="Lang"
               onChange={handleChange}
+              MenuProps={{
+                disableScrollLock: true,
+                disableAutoFocusItem: true,
+              }}
             >
               <MenuItem value="en">En</MenuItem>
               <MenuItem value="uz">Uz</MenuItem>

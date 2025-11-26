@@ -1,59 +1,44 @@
 import {
-  Autocomplete,
-  Box,
   Button,
   FormControl,
   IconButton,
-  Input,
   InputAdornment,
   InputLabel,
   MenuItem,
-  Modal,
   TextField,
-  Typography,
 } from '@mui/material';
-import { StyleContainer } from '../../../ContainerCss';
-
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { StyleSignUp } from './StyleSign-up';
-import { Controller, useForm } from 'react-hook-form';
-import { MuiTelInput } from 'mui-tel-input';
-import PhoneIcon from '@mui/icons-material/Phone';
-import { useMutation } from '@apollo/client/react';
-import PersonIcon from '@mui/icons-material/Person';
-import { gql } from '@apollo/client';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Loader from '../../Components/Loader/index';
-import { useLang } from '../../useLang';
 import { Select } from '@mui/material';
+import { useLang } from '../../useLang';
+import { MuiTelInput } from 'mui-tel-input';
+import { StyleSignUp } from './StyleSign-up';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { CONFIRM_SIGN_UP, SIGN_UP } from './api';
+import { useMutation } from '@apollo/client/react';
+import Loader from '../../Components/Loader/index';
+import PersonIcon from '@mui/icons-material/Person';
+import { Controller, useForm } from 'react-hook-form';
+import { StyleContainer } from '../../../ContainerCss';
+import SentCode from '../../Components/SentCodeSignUp';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import SentCode from '../../Components/SentCodeSignUp';
 
 function SignUp() {
-  const [open, setOpen] = useState(false);
-  const [code, setCode] = useState(0);
-  const [confirmError, setConfirmError] = useState('');
-  const [erorFetch, setErorFetch] = useState('');
-  const [loaderr, setLoad] = useState(false);
-  const navigate = useNavigate('');
-  const { lang, setLang } = useLang();
   const { t } = useTranslation();
+  const navigate = useNavigate('');
+  const [code, setCode] = useState(0);
+  const { lang, setLang } = useLang();
+  const [open, setOpen] = useState(false);
+  const [loaderr, setLoad] = useState(false);
   const [isHide, setIsHide] = useState(false);
   const [isHide2, setIsHide2] = useState(false);
+  const [erorFetch, setErorFetch] = useState('');
+  const [confirmError, setConfirmError] = useState('');
 
-  const SIGN_UP = gql`
-    mutation SignUp($name: String!, $phone: String!, $password: String!) {
-      signUp(data: { name: $name, phone: $phone, password: $password }) {
-        token
-      }
-    }
-  `;
-
-  const [fetch, { data, loading, error }] = useMutation(SIGN_UP);
+  const [fetch, { data }] = useMutation(SIGN_UP);
+  const [fetchConfirm] = useMutation(CONFIRM_SIGN_UP);
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -63,6 +48,17 @@ function SignUp() {
       confirmPassword: '',
     },
   });
+
+  const handleChange = (event) => {
+    const newLang = event.target.value;
+    setLang(newLang);
+  };
+  function handleClickShowPassword() {
+    setIsHide((prev) => !prev);
+  }
+  function handleClickShowPassword2() {
+    setIsHide2((prev) => !prev);
+  }
 
   const onSubmit = async (formData) => {
     if (formData.password !== formData.confirmPassword) {
@@ -86,26 +82,6 @@ function SignUp() {
       setLoad(false);
     }
   };
-
-  const CONFIRM_SIGN_UP = gql`
-    mutation ConfirmSignUp($code: String!, $token: String!) {
-      confirmSignUp(data: { code: $code, token: $token }) {
-        token
-        user {
-          _id
-          name
-          phone
-          role
-          photo
-          telegramId
-          createdAt
-          updatedAt
-        }
-      }
-    }
-  `;
-  const [fetchConfirm, { val, load, err }] = useMutation(CONFIRM_SIGN_UP);
-  console.log(err);
 
   async function handleClickConfirm() {
     try {
@@ -131,16 +107,6 @@ function SignUp() {
       setLoad(false);
     }
   }
-  const handleChange = (event) => {
-    const newLang = event.target.value;
-    setLang(newLang);
-  };
-  function handleClickShowPassword() {
-    setIsHide((prev) => !prev);
-  }
-  function handleClickShowPassword2() {
-    setIsHide2((prev) => !prev);
-  }
 
   return (
     <>
@@ -160,7 +126,7 @@ function SignUp() {
             style={{ backgroundColor: 'azure', borderRadius: 10 }}
             className="selectId"
           >
-            <InputLabel id="lang-select-label">Lang</InputLabel>
+            <InputLabel id="lang-select-label">{t('lang')}</InputLabel>
             <Select
               className="select"
               style={{ height: 40 }}
@@ -169,6 +135,10 @@ function SignUp() {
               value={lang}
               label="Lang"
               onChange={handleChange}
+              MenuProps={{
+                disableScrollLock: true,
+                disableAutoFocusItem: true,
+              }}
             >
               <MenuItem value="en">En</MenuItem>
               <MenuItem value="uz">Uz</MenuItem>

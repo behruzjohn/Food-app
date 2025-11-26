@@ -1,29 +1,30 @@
-import {
-  Box,
-  Button,
-  Grid,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Snackbar,
-} from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditSquareIcon from '@mui/icons-material/EditSquare';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import { StyleCategoryCardS } from './StyleCategory';
-import TheaterComedyIcon from '@mui/icons-material/TheaterComedy';
-import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { Menu, MenuItem } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { MoreHoriz } from '@mui/icons-material';
 import GuardComponent from '../CheckRole/CheckRole';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { StyleCategoryCardS } from './StyleCategory';
 
 function CategoryCard({ category, setDeletedCategoryId, setClickedDelete }) {
+  const navigate = useNavigate();
+
+  const [role, setRole] = useState('');
   const [openOption, setopenOption] = useState(null);
   const open = Boolean(openOption);
-  const [role, setRole] = useState('');
+
+  const handleClick = (event) => {
+    setopenOption(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setopenOption(null);
+  };
+
+  const handleClickDelete = (id) => {
+    setDeletedCategoryId(id);
+    setClickedDelete(true);
+  };
 
   useEffect(() => {
     const stored = localStorage.getItem('authStore');
@@ -34,20 +35,6 @@ function CategoryCard({ category, setDeletedCategoryId, setClickedDelete }) {
 
     setRole(a?.state?.role);
   }, []);
-
-  const handleClick = (event) => {
-    setopenOption(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setopenOption(null);
-  };
-
-  const navigate = useNavigate();
-  const handleClickDelete = (id) => {
-    setDeletedCategoryId(id);
-    setClickedDelete(true);
-  };
   return (
     <StyleCategoryCardS className="card">
       <div className="card__content">

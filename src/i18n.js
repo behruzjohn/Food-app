@@ -148,7 +148,8 @@ i18n
           product: 'product',
           all: 'All',
           status: 'Status',
-          
+          change: 'Change',
+          orderProduct: 'Order products',
         },
       },
       uz: {
@@ -293,6 +294,8 @@ i18n
           product: 'Mahsulot',
           all: 'Hammasi',
           status: 'Holat',
+          change: "O'zgartirish",
+          orderProduct: 'Mahsulotlarni buyurtma qilish',
         },
       },
       ru: {
@@ -435,6 +438,8 @@ i18n
           product: 'Продукт',
           all: 'Все',
           status: 'Статус',
+          change: 'Изменить',
+          orderProduct: 'Заказать продукты',
         },
       },
     },

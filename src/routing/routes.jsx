@@ -1,6 +1,4 @@
-import { Favorite } from '@mui/icons-material';
 import CategoriesPage from '../Pages/Categories';
-import CategoryInfo from '../Pages/Categories/pages/Info';
 import Customers from '../Pages/Customers';
 import Foods from '../Pages/Foods';
 import ForgotPasswordPage from '../Pages/ForgotPassword';
@@ -45,10 +43,6 @@ export const routes = [
     path: ROUTE_PATHS.categories,
     component: <CategoriesPage />,
   },
-  // {
-  //   path: `${ROUTE_PATHS.categoryById}/:id`,
-  //   component: <CategoryInfo />,
-  // },
   {
     path: ROUTE_PATHS.favourite,
     component: <FavouriteFood />,

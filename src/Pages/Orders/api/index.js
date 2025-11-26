@@ -41,7 +41,7 @@ export const GET_ORDER_BY_ID = gql`
 `;
 
 export const GET_ORDER_FOR_ADMIN = gql`
-  query GetOrders($statuses: String, $page: Int, $limit: Int) {
+  query GetOrders($statuses: [String], $page: Int, $limit: Int) {
     getOrders(statuses: $statuses, page: $page, limit: $limit) {
       payload {
         _id

@@ -1,4 +1,3 @@
-import { PropaneSharp } from '@mui/icons-material';
 import styled from 'styled-components';
 
 export const StyleLoader = styled.div`

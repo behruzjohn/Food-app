@@ -1,140 +1,69 @@
-import { gql } from '@apollo/client';
 import {
   useLazyQuery,
   useMutation,
   useQuery,
 } from '@apollo/client/react/compiled';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import FoodCard from '../../../../Components/FoodCard/FoodCards';
 import { Button, Container } from '@mui/material';
 import HeaderDashborad from '../../../../Components/HeaderDashboard/index';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import AddIcon from '@mui/icons-material/Add';
 import FastfoodOutlinedIcon from '@mui/icons-material/FastfoodOutlined';
 import undefindImg from '../../../../assets/noFound.png';
 import { useTranslation } from 'react-i18next';
-
-const GET_FOODS_BY_CATEGORY = gql`
-  query GetAllFoods($categories: [ID]) {
-    getAllFoods(categories: $categories) {
-      totalDocs
-      limit
-      totalPages
-      page
-      pagingCounter
-      hasPrevPage
-      hasNextPage
-      prevPage
-      nextPage
-      payload {
-        _id
-        shortName
-        name
-        image
-        description
-        price
-        discount
-        likes
-        isFavorite
-      }
-    }
-  }
-`;
-const GET_CATEOGRY_BY_ID = gql`
-  query GetCategoryById($categoryId: ID!) {
-    getCategoryById(categoryId: $categoryId) {
-      payload {
-        _id
-        name
-        image
-      }
-    }
-  }
-`;
-const CREATE_CARD = gql`
-  mutation CreateCartItem($data: CartItemInput!) {
-    createCartItem(data: $data) {
-      payload {
-        _id
-        quantity
-        price
-        discount
-        user
-        food {
-          _id
-          shortName
-          name
-          image
-          description
-          price
-          discount
-          likes
-          isFavorite
-        }
-      }
-    }
-  }
-`;
 
 import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
 import GuardComponent from '../../../../Components/CheckRole/CheckRole';
 import { StyleCategoryInfo } from './StyleCategoryInfo';
 import FoodQuontity from '../../../../Components/FoodQuontity';
 import ToastExample from '../../../../Components/Toast';
-import { StyleCategoryInfoo } from './StyleInfo';
 import { ADD_FOODS, DELETE_FOOD, UPDATE_FOOD } from '../../../Foods/api';
 import AddFood from '../../../../Components/AddFood';
 import DeleteFoodModalAlert from '../../../../Components/ConfrimDeleteAlert';
+import {
+  CREATE_CARD,
+  GET_CATEOGRY_BY_ID,
+  GET_FOODS_BY_CATEGORY,
+} from '../../api';
 
 function CategoryInfo() {
+  const { id } = useParams();
   const { t } = useTranslation();
-  const location = useLocation();
-  const localToken = JSON.parse(localStorage.getItem('authStore') || '');
-  const token = localToken?.state?.token;
-  const [categoryCard, setCategoryCard] = useState([]);
-  const params = new URLSearchParams(location.search);
-  const categoryId = params.get('id');
   const navigate = useNavigate('');
   const [role, setRole] = useState('');
-  const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
-  const [openToastForUpdateFood, setOpenToastForUpdateFood] = useState(false);
-  const [selectedFood, setSelectedFood] = useState(null);
-  const [openQuontity, setOpenQuontity] = useState(false);
   const [open, setOpen] = useState(false);
   const [openToast, setOpenToast] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [categoryCard, setCategoryCard] = useState([]);
+  const [selectedFood, setSelectedFood] = useState(null);
   const [editedFoodId, setEditedFoodId] = useState(null);
+  const [openQuontity, setOpenQuontity] = useState(false);
+  const [deletedFoodId, setDeletedFoodId] = useState(null);
   const [openForUpdate, setOpenForUptade] = useState(false);
   const [clickedDelete, setClickedDelete] = useState(false);
-  const [deletedFoodId, setDeletedFoodId] = useState(null);
-  const [isDeleted, setIsDeleted] = useState(false);
+  const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
+  const localToken = JSON.parse(localStorage.getItem('authStore') || '');
   const [openToastForDelete, setOpenToastForDeleteFood] = useState(false);
+  const [openToastForUpdateFood, setOpenToastForUpdateFood] = useState(false);
 
+  const token = localToken?.state?.token;
+  const [createFood, { data: AddFoodData, error: AddFoodErr }] =
+    useMutation(ADD_FOODS);
   const updatedIsComplated = () => {
     setOpenToastForUpdateFood(true);
   };
 
-  const [createFood, { data: AddFoodData, error: AddFoodErr }] =
-    useMutation(ADD_FOODS);
-  const [updateFood, { data: updateFoodData, error: updateFoodErr }] =
-    useMutation(UPDATE_FOOD, { onCompleted: updatedIsComplated });
-  const [
-    deleteFood,
-    { data: deleteFoodData, error: deleteFoodErr, load: deleteFoodLoading },
-  ] = useMutation(DELETE_FOOD);
-
-  const { id } = useParams();
-
-  useEffect(() => {
-    const stored = localStorage.getItem('authStore');
-
-    const a = JSON.parse(stored || '{}');
-
-    console.log(a?.state?.role);
-
-    setRole(a?.state?.role);
-  }, []);
-
+  const [updateFood, { data: updateFoodData }] = useMutation(UPDATE_FOOD, {
+    onCompleted: updatedIsComplated,
+  });
+  const [deleteFood, { data: deleteFoodData, error: deleteFoodErr }] =
+    useMutation(DELETE_FOOD);
+  const [fetchCategoryById, { data, refetch }] = useLazyQuery(
+    GET_FOODS_BY_CATEGORY,
+    { fetchPolicy: 'network-only' }
+  );
+  const [createCard] = useMutation(CREATE_CARD);
   const { data: dataTitle, loading: LoadTitle } = useQuery(GET_CATEOGRY_BY_ID, {
     variables: {
       categoryId: id,
@@ -146,37 +75,21 @@ function CategoryInfo() {
     },
   });
 
-  const [fetchCategoryById, { data, loading, error, refetch }] = useLazyQuery(
-    GET_FOODS_BY_CATEGORY,
-    { fetchPolicy: 'network-only' }
-  );
-  const [createCard, { data: createCardData }] = useMutation(CREATE_CARD);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token') || '';
-
-    if (id) {
-      fetchCategoryById({
-        variables: { categories: [id] },
-        context: {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        },
-      });
-    }
-  }, [id]);
-
-  useEffect(() => {
-    if (data?.getAllFoods?.payload) {
-      setCategoryCard(data.getAllFoods.payload);
-    }
-  }, [data]);
-
   const handleAddToCart = (food) => {
     setSelectedFood(food);
     setOpenQuontity(true);
   };
+
+  const handleClickDeleteFood = (foodId) => {
+    setDeletedFoodId(foodId);
+    setClickedDelete(true);
+  };
+
+  const handleClickEditFood = (foodId) => {
+    setEditedFoodId(foodId);
+    setOpenForUptade(true);
+  };
+
   const handleConfirmQuontity = (quontity) => {
     createCard({
       variables: {
@@ -194,11 +107,10 @@ function CategoryInfo() {
 
   const handleAddFood = async (formData) => {
     try {
-      // setLoad(true);
       const token = localStorage.getItem('token') || '';
 
       if (editedFoodId) {
-        const { image, ...rest } = formData;
+        const { ...rest } = formData;
 
         await updateFood({
           variables: {
@@ -220,7 +132,7 @@ function CategoryInfo() {
 
         setOpen(false);
         setEditedFoodId(null);
-        // setLoad(false);
+
         setOpenToast(true);
         return;
       }
@@ -237,30 +149,34 @@ function CategoryInfo() {
           },
           image: formData.image,
         },
-        context: {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        },
       });
 
       setOpen(false);
       setOpenToast(true);
-      // setLoad(false);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleClickDeleteFood = (foodId) => {
-    setDeletedFoodId(foodId);
-    setClickedDelete(true);
-  };
+  useEffect(() => {
+    const stored = localStorage.getItem('authStore');
+    const a = JSON.parse(stored || '{}');
+    setRole(a?.state?.role);
+  }, []);
 
-  const handleClickEditFood = (foodId) => {
-    setEditedFoodId(foodId);
-    setOpenForUptade(true);
-  };
+  useEffect(() => {
+    if (id) {
+      fetchCategoryById({
+        variables: { categories: [id] },
+      });
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (data?.getAllFoods?.payload) {
+      setCategoryCard(data.getAllFoods.payload);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (isDeleted && deletedFoodId) {

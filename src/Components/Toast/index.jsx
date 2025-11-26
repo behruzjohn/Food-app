@@ -2,6 +2,7 @@ import React from 'react';
 import { Snackbar, Alert } from '@mui/material';
 
 function ToastCompact({ status = 'success', title = '', open, setOpen }) {
+  
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') return;
     setOpen(false);

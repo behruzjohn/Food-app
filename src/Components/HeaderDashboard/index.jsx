@@ -3,30 +3,19 @@ import {
   StyleHeaderDashboard,
 } from './StyleHeaderDashboard';
 import { Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { SIDEBAR_LINKS } from './constants';
-import { useEffect, useState } from 'react';
-import GuardComponent from '../CheckRole/CheckRole';
-import { useTranslation } from 'react-i18next';
 import logo from '../../assets/img.png';
+import { useEffect, useState } from 'react';
+import { SIDEBAR_LINKS } from './constants';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import GuardComponent from '../CheckRole/CheckRole';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 function HeaderDashborad({ children }) {
-  const [openHeaderDashboard, setOpenHeaderDashboard] = useState(false);
-  const navigate = useNavigate('');
   const { t } = useTranslation();
-
+  const navigate = useNavigate('');
   const [role, setRole] = useState('');
-
-  useEffect(() => {
-    const stored = localStorage.getItem('authStore');
-
-    const a = JSON.parse(stored || '{}');
-
-    console.log(a?.state?.role);
-
-    setRole(a?.state?.role);
-  }, []);
+  const [openHeaderDashboard, setOpenHeaderDashboard] = useState(false);
 
   function handleClickLogOut() {
     localStorage.clear();
@@ -38,6 +27,12 @@ function HeaderDashborad({ children }) {
       setOpenHeaderDashboard((prev) => !prev);
     }
   }
+
+  useEffect(() => {
+    const stored = localStorage.getItem('authStore');
+    const a = JSON.parse(stored || '{}');
+    setRole(a?.state?.role);
+  }, []);
 
   return (
     <StyledLayoutWrapper>

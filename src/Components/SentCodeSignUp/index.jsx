@@ -19,8 +19,8 @@ const style = {
 };
 
 function SentCode({ setOpen, setCode, handleClickConfirm, confirmError }) {
-    
   const { t } = useTranslation();
+
   return (
     <div className="modal">
       <Modal

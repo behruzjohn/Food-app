@@ -1,6 +1,3 @@
-import { useState, useRef, useEffect } from 'react';
-import maplibregl from 'maplibre-gl';
-import { Controller, useForm } from 'react-hook-form';
 import {
   Button,
   TextField,
@@ -9,16 +6,21 @@ import {
   DialogContent,
   DialogTitle,
 } from '@mui/material';
+import { t } from 'i18next';
+import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { useState, useRef, useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 function AddOrder({ open, setOpen, onAdd }) {
-  const { control, handleSubmit, reset, setValue, watch } = useForm({
-    defaultValues: { address: '', lat: '', lng: '' },
-  });
+  const markerRef = useRef(null);
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
   const [marker, setMarker] = useState(null);
-  const markerRef = useRef(null);
+
+  const { control, handleSubmit, reset, setValue } = useForm({
+    defaultValues: { address: '', lat: '', lng: '' },
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -126,9 +128,9 @@ function AddOrder({ open, setOpen, onAdd }) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose}>{t('cancel')}</Button>
           <Button type="submit" variant="contained" color="success">
-            Add
+            {t('add')}
           </Button>
         </DialogActions>
       </form>

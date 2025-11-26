@@ -1,58 +1,40 @@
-import {
-  Autocomplete,
-  Button,
-  IconButton,
-  Input,
-  InputAdornment,
-  TextField,
-} from '@mui/material';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { Controller, useForm } from 'react-hook-form';
-import { MuiTelInput } from 'mui-tel-input';
-import { StyleForgotPassword } from './StyleForgotPassword';
-import { gql } from '@apollo/client';
-import { useMutation } from '@apollo/client/react';
 import { useState } from 'react';
-import { StyleContainer } from '../../../ContainerCss';
+import { FORGOT_PASSWORD } from './api';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@apollo/client/react';
+import { Controller, useForm } from 'react-hook-form';
+import { StyleContainer } from '../../../ContainerCss';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import { StyleForgotPassword } from './StyleForgotPassword';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { useTranslation } from 'react-i18next';
+import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
 import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
 
-const FORGOT_PASSWORD = gql`
-  mutation ChangeUserPasswordById($data: UpdateUserPasswordInput!) {
-    changeUserPasswordById(data: $data) {
-      payload {
-        _id
-        name
-        phone
-        role
-        photo
-        telegramId
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
 function ForgotPasswordPage() {
-  const navigate = useNavigate('');
-  const [isHide, setIsHide] = useState(false);
-  const [isHide2, setIsHide2] = useState(false);
   const { t } = useTranslation();
-  const [changePassword, { data, loading, error }] =
-    useMutation(FORGOT_PASSWORD);
+  const navigate = useNavigate('');
   const [succsesMessage, setSuccsesMessage] = useState('');
+  const [newPasswordHide, setnewPasswordHide] = useState(false);
+  const [oldPasswordHide, setoldPasswordHide] = useState(false);
   const { control, handleSubmit } = useForm({
     defaultValues: {
       oldPassword: '',
       newPassword: '',
     },
   });
-  const onSumbut = async (formDate) => {
-    console.log(formDate, formDate);
 
+  const [changePassword, { error }] = useMutation(FORGOT_PASSWORD);
+
+  function handleClickShowPassword() {
+    setnewPasswordHide((prev) => !prev);
+  }
+  function handleClickShowPassword2() {
+    setoldPasswordHide((prev) => !prev);
+  }
+
+  const onSumbut = async (formDate) => {
     try {
       const res = await changePassword({
         variables: {
@@ -70,12 +52,6 @@ function ForgotPasswordPage() {
       console.log(error);
     }
   };
-  function handleClickShowPassword() {
-    setIsHide((prev) => !prev);
-  }
-  function handleClickShowPassword2() {
-    setIsHide2((prev) => !prev);
-  }
 
   return (
     <StyleForgotPassword className="signIn">
@@ -109,7 +85,7 @@ function ForgotPasswordPage() {
                     render={({ field, fieldState: { error } }) => (
                       <TextField
                         {...field}
-                        type={isHide2 ? 'text' : 'password'}
+                        type={oldPasswordHide ? 'text' : 'password'}
                         error={Boolean(error)}
                         id="outlined-controlled"
                         helperText={error?.message}
@@ -129,7 +105,7 @@ function ForgotPasswordPage() {
                                 onClick={handleClickShowPassword2}
                                 edge="end"
                               >
-                                {isHide2 ? (
+                                {oldPasswordHide ? (
                                   <VisibilityOffIcon />
                                 ) : (
                                   <VisibilityIcon />
@@ -154,7 +130,7 @@ function ForgotPasswordPage() {
                     render={({ field, fieldState: { error } }) => (
                       <TextField
                         {...field}
-                        type={isHide ? 'text' : 'password'}
+                        type={newPasswordHide ? 'text' : 'password'}
                         error={Boolean(error)}
                         id="outlined-controlled"
                         helperText={error?.message}
@@ -174,7 +150,7 @@ function ForgotPasswordPage() {
                                 onClick={handleClickShowPassword}
                                 edge="end"
                               >
-                                {isHide ? (
+                                {newPasswordHide ? (
                                   <VisibilityOffIcon />
                                 ) : (
                                   <VisibilityIcon />
@@ -188,7 +164,7 @@ function ForgotPasswordPage() {
                   ></Controller>
 
                   <Button type="submit" color="success" variant="contained">
-                    CHANGE
+                    {t('change')}
                   </Button>
                 </div>
               </form>

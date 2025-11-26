@@ -1,6 +1,6 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import { useState } from 'react';
+import { InputLabel, MenuItem, Select } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { StyledSelectWrapper } from './StyleOrderStatus';
 
 function SelectOrderStatus({ status, setStatus }) {
   const { t } = useTranslation();
@@ -8,23 +8,26 @@ function SelectOrderStatus({ status, setStatus }) {
   const handleChange = (event) => {
     setStatus(event.target.value);
   };
+
   return (
-    <FormControl style={{ width: 130 }}>
-      <InputLabel id="demo-simple-select-label">{t('status')}</InputLabel>
+    <StyledSelectWrapper className="l" size="small" variant="outlined">
+      <InputLabel id="select-label">{t('status')}</InputLabel>
+
       <Select
-        labelId="demo-simple-select-label"
-        id="demo-simple-select"
+        className="select"
+        labelId="select-label"
         value={status}
-        label="Age"
         onChange={handleChange}
+        label={t('status')}
       >
-        <MenuItem value={'all'}>{t('all')}</MenuItem>
+        <MenuItem value={null}>{t('all')}</MenuItem>
         <MenuItem value={'pending'}>{t('pending')}</MenuItem>
         <MenuItem value={'cooking'}>{t('cooking')}</MenuItem>
         <MenuItem value={'delivering'}>{t('deleviring')}</MenuItem>
         <MenuItem value={'received'}>{t('received')}</MenuItem>
       </Select>
-    </FormControl>
+    </StyledSelectWrapper>
   );
 }
+
 export default SelectOrderStatus;

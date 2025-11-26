@@ -1,20 +1,17 @@
-import { Button, CircularProgress, Container } from '@mui/material';
-import OrderSearch from '../../Components/OrderSearch/index';
 import { StyleFoods } from './StyleFoods';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import FoodCard from '../../Components/FoodCard/FoodCards';
-import AddFood from '../../Components/AddFood/index';
-import { useEffect, useRef, useState } from 'react';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { useMutation, useQuery } from '@apollo/client/react';
-import Loader from '../../Components/Loader/index';
-import HeaderDashborad from '../../Components/HeaderDashboard/index';
-import ToastExample from '../../Components/Toast';
-import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
-import GuardComponent from '../../Components/CheckRole/CheckRole';
-import FoodQuontity from '../../Components/FoodQuontity';
-import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
+import { useTranslation } from 'react-i18next';
+import ToastExample from '../../Components/Toast';
+import AddFood from '../../Components/AddFood/index';
+import FoodQuontity from '../../Components/FoodQuontity';
+import FoodCard from '../../Components/FoodCard/FoodCards';
+import OrderSearch from '../../Components/OrderSearch/index';
+import { useMutation, useQuery } from '@apollo/client/react';
+import GuardComponent from '../../Components/CheckRole/CheckRole';
+import { Button, CircularProgress, Container } from '@mui/material';
+import HeaderDashborad from '../../Components/HeaderDashboard/index';
+import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
 import {
   ADD_FOOD_FAVOURITES,
   ADD_FOODS,
@@ -27,47 +24,43 @@ import {
 
 function Foods() {
   const { t } = useTranslation();
-
+  const [role, setRole] = useState('');
   const [open, setOpen] = useState(false);
-  const [load, setLoad] = useState(false);
   const [foods, setFoods] = useState([]);
-  const [clickedDelete, setClickedDelete] = useState(false);
-  const [deletedFoodId, setDeletedFoodId] = useState(null);
   const [isDeleted, setIsDeleted] = useState(false);
   const [openToast, setOpenToast] = useState(false);
-  const [role, setRole] = useState('');
+  const [quontityLen, setQuontityLen] = useState(0);
   const [loadSearch, setLoadSearch] = useState(false);
-  const [openQuontity, setOpenQuontity] = useState(false);
-  const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
   const [editedFoodId, setEditedFoodId] = useState(null);
-  const [openToastForUpdateFood, setOpenToastForUpdateFood] = useState(false);
+  const [openQuontity, setOpenQuontity] = useState(false);
+  const [deletedFoodId, setDeletedFoodId] = useState(null);
+  const [clickedDelete, setClickedDelete] = useState(false);
+  const [allFoodsForSearch, setAllFoodsForSearch] = useState([]);
+  const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
   const [openToastForDelete, setOpenToastForDeleteFood] = useState(false);
-  const [createCard, { data: createCardData }] = useMutation(CREATE_CARD);
+  const [openToastForUpdateFood, setOpenToastForUpdateFood] = useState(false);
+
+  const [createCard] = useMutation(CREATE_CARD);
   const [addToFavourites, { data: favouriteData, error: favouriteError }] =
     useMutation(ADD_FOOD_FAVOURITES);
-  const [allFoodsForSearch, setAllFoodsForSearch] = useState([]);
-  const [deleteFoodById, { data: deleteFavData, error: deleteFoodError }] =
-    useMutation(DELETE_FOOD_FROM_FAVOURITES);
+  const [deleteFoodById] = useMutation(DELETE_FOOD_FROM_FAVOURITES);
+  const [deleteFood, { data: deleteFoodData, error: deleteFoodErr }] =
+    useMutation(DELETE_FOOD);
+  const [createFood, { data: AddFoodData, error: AddFoodErr }] =
+    useMutation(ADD_FOODS);
 
   const updatedIsComplated = () => {
     setOpenToastForUpdateFood(true);
   };
 
-  const [
-    deleteFood,
-    { data: deleteFoodData, error: deleteFoodErr, load: deleteFoodLoading },
-  ] = useMutation(DELETE_FOOD);
-
-  const [createFood, { data: AddFoodData, error: AddFoodErr }] =
-    useMutation(ADD_FOODS);
-  const [updateFood, { data: updateFoodData, error: updateFoodErr }] =
-    useMutation(UPDATE_FOOD, { onCompleted: updatedIsComplated });
-  const [quontityLen, setQuontityLen] = useState(0);
-
-  const { data, loading, error, refetch } = useQuery(GET_ALL_FOODS, {
+  const [updateFood, { data: updateFoodData }] = useMutation(UPDATE_FOOD, {
+    onCompleted: updatedIsComplated,
+  });
+  const { data, loading, refetch } = useQuery(GET_ALL_FOODS, {
     fetchPolicy: 'network-only',
   });
+
   useEffect(() => {
     refetch();
 
@@ -78,16 +71,8 @@ function Foods() {
   }, [data]);
 
   useEffect(() => {
-    refetch();
-  }, []);
-
-  useEffect(() => {
     const stored = localStorage.getItem('authStore');
-
     const a = JSON.parse(stored || '{}');
-
-    console.log(a?.state?.role);
-
     setRole(a?.state?.role);
   }, []);
 
@@ -98,9 +83,11 @@ function Foods() {
         foodId: clickedFoodId,
       },
     });
-
-    console.log(favouriteError?.errors[0]?.message);
   };
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   const handleClickRemoveFav = (clickedFoodId) => {
     deleteFoodById({ variables: { foodId: clickedFoodId } });
@@ -120,7 +107,6 @@ function Foods() {
         },
       },
     });
-    console.log(createCardData);
     setQuontityLen((prev) => prev + 1);
 
     setOpenQuontity(false);
@@ -135,11 +121,10 @@ function Foods() {
 
   const handleAddFood = async (formData) => {
     try {
-      setLoad(true);
       const token = localStorage.getItem('token') || '';
 
       if (editedFoodId) {
-        const { image, ...rest } = formData;
+        const { ...rest } = formData;
 
         await updateFood({
           variables: {
@@ -161,7 +146,6 @@ function Foods() {
 
         setOpen(false);
         setEditedFoodId(null);
-        setLoad(false);
         setOpenToast(true);
         return;
       }
@@ -178,16 +162,11 @@ function Foods() {
           },
           image: formData.image,
         },
-        context: {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        },
       });
 
       setOpen(false);
+      refetch();
       setOpenToast(true);
-      setLoad(false);
     } catch (err) {
       console.error(err);
     }

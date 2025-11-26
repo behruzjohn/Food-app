@@ -4,6 +4,7 @@ export const StyleOrder = styled.div`
   width: 100%;
 
   .main-header {
+    align-items: center;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
       Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
       sans-serif;

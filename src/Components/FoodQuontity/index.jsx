@@ -1,6 +1,8 @@
-import { Box, Button, Modal } from '@mui/material';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import CloseIcon from '@mui/icons-material/Close';
+import { Box, Button, Modal } from '@mui/material';
+import StyleFoodQuontity from './StyleFoodQuontity';
 
 const style = {
   position: 'absolute',
@@ -17,12 +19,14 @@ const style = {
 
 function FoodQuontity({ open, setOpen, onConfirm }) {
   const { t } = useTranslation();
-
-  const handleClose = () => setOpen(false);
   const [count, setCount] = useState(1);
 
+  const handleClose = () => setOpen(false);
+
   const handleClickMinus = () => {
-    if (count > 0) setCount((prev) => prev - 1);
+    if (count > 1) {
+      setCount((prev) => prev - 1);
+    }
   };
 
   const handleClickPlus = () => {
@@ -30,86 +34,44 @@ function FoodQuontity({ open, setOpen, onConfirm }) {
   };
 
   return (
-    <Modal open={open} onClose={handleClose}>
-      <Box sx={style}>
-        <h2 style={{ fontWeight: 600, marginBottom: 20 }}>{t('howMuchAdd')}</h2>
-
-        <div
-          style={{
-            display: 'flex',
-            gap: 15,
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginBottom: 25,
-          }}
-        >
-          <button
-            onClick={handleClickMinus}
+    <StyleFoodQuontity>
+      <Modal open={open} onClose={handleClose}>
+        <Box sx={style}>
+          <div
+            onClick={() => setOpen(false)}
             style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
               cursor: 'pointer',
-              width: 45,
-              height: 45,
-              borderRadius: '50%',
-              backgroundColor: '#ff4d4f',
-              border: 'none',
-              color: '#fff',
-              fontSize: 22,
-              fontWeight: 'bold',
-              boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
             }}
           >
-            -
-          </button>
+            <CloseIcon />
+          </div>
+          <h2 id="box-h2">{t('howMuchAdd')}</h2>
 
-          <input
-            value={count}
-            readOnly
-            style={{
-              width: 70,
-              height: 45,
-              fontSize: 20,
-              textAlign: 'center',
-              borderRadius: 10,
-              border: '1px solid #ccc',
-            }}
-            type="number"
-          />
+          <div className="btn-dev">
+            <button id="minusBtn" onClick={handleClickMinus}>
+              -
+            </button>
 
-          <button
-            onClick={handleClickPlus}
-            style={{
-              cursor: 'pointer',
-              width: 45,
-              height: 45,
-              borderRadius: '50%',
-              backgroundColor: '#1677ff',
-              border: 'none',
-              color: '#fff',
-              fontSize: 22,
-              fontWeight: 'bold',
-              boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
-            }}
+            <input value={count} readOnly type="number" />
+
+            <button id="plusBtn" onClick={handleClickPlus}>
+              +
+            </button>
+          </div>
+
+          <Button
+            id="addBtn"
+            onClick={() => onConfirm(count)}
+            variant="contained"
+            color="success"
           >
-            +
-          </button>
-        </div>
-
-        <Button
-          onClick={() => onConfirm(count)}
-          variant="contained"
-          color="success"
-          sx={{
-            width: '100%',
-            padding: '10px 0',
-            borderRadius: '10px',
-            fontSize: '16px',
-            fontWeight: 600,
-          }}
-        >
-          {t('add')}
-        </Button>
-      </Box>
-    </Modal>
+            {t('add')}
+          </Button>
+        </Box>
+      </Modal>
+    </StyleFoodQuontity>
   );
 }
 

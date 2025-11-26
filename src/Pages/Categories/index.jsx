@@ -26,7 +26,7 @@ function CategoriesPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [createCategory] = useMutation(CREATE_CATEGORIES);
-  const { data, loading, refetch } = useQuery(GET_ALL_CATEGORIES);
+  const { data, refetch } = useQuery(GET_ALL_CATEGORIES);
 
   const handleDeleteCompleted = () => {
     refetch();
@@ -34,10 +34,7 @@ function CategoriesPage() {
     setIsDeleteModalOpen(false);
   };
 
-  const [
-    deleteCategory,
-    { data: deleteData, loading: deleteLoading, error: deleteError },
-  ] = useMutation(DELETE_CATEGORY, {
+  const [deleteCategory] = useMutation(DELETE_CATEGORY, {
     onCompleted: handleDeleteCompleted,
   });
 
@@ -53,10 +50,7 @@ function CategoriesPage() {
       onCompleted: refetch,
     });
   };
-  const handleClickDelete = (id) => {
-    setDeletedCategoryId(id);
-    setClickedDelete(true);
-  };
+
   const handleDeleteCategory = () => {
     if (isDeleteModalOpen && deletedCategoryId) {
       setOpenToastDelete(true);
@@ -68,11 +62,7 @@ function CategoriesPage() {
 
   useEffect(() => {
     const stored = localStorage.getItem('authStore');
-
     const a = JSON.parse(stored || '{}');
-
-    console.log(a?.state?.role);
-
     setRole(a?.state?.role);
   }, []);
 

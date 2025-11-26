@@ -5,7 +5,7 @@ export const StyleOrders = styled.div`
 
   .orders-search {
     display: flex;
-    flex-wrap: wrap; /* kichik ekranlarda pastga tushadi */
+    flex-wrap: wrap;
     gap: 10px;
     width: 100%;
     box-sizing: border-box;

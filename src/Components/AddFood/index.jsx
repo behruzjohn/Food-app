@@ -11,16 +11,27 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
-import { gql } from '@apollo/client';
 import { useLazyQuery } from '@apollo/client/react';
 import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import { GET_ALL_CATAGORIES, GET_FOOD_BY_ID } from './api';
 
-function AddFood({ open, setOpen, onAdd, editedFoodId, foods }) {
+function AddFood({ open, setOpen, onAdd, editedFoodId }) {
   const { t } = useTranslation();
-  const [getFoodById, { data: foodData, loading: foodLoading, err }] =
-    useLazyQuery(GET_FOOD_BY_ID);
+
+  const [getFoodById, { data: foodData }] = useLazyQuery(GET_FOOD_BY_ID);
+  const [getCategories, { data, loading }] = useLazyQuery(GET_ALL_CATAGORIES);
+
+  const { control, handleSubmit, reset } = useForm({
+    defaultValues: {
+      name: '',
+      description: '',
+      price: '',
+      discount: '',
+      category: '',
+      image: '',
+    },
+  });
 
   useEffect(() => {
     if (editedFoodId) {
@@ -32,24 +43,11 @@ function AddFood({ open, setOpen, onAdd, editedFoodId, foods }) {
     }
   }, [editedFoodId, getFoodById]);
 
-  const [getCategories, { data, loading }] = useLazyQuery(GET_ALL_CATAGORIES);
-
   useEffect(() => {
     if (open) {
       getCategories();
     }
   }, [open]);
-
-  const { control, handleSubmit, reset, getValues } = useForm({
-    defaultValues: {
-      name: '',
-      description: '',
-      price: '',
-      discount: '',
-      category: '',
-      image: '',
-    },
-  });
 
   useEffect(() => {
     if (foodData && editedFoodId) {
@@ -89,6 +87,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId, foods }) {
     setOpen(false);
     reset();
   };
+
   const categories = data?.getAllCategories?.payload || [];
 
   return (

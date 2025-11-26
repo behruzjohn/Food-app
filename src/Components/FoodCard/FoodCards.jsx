@@ -1,15 +1,14 @@
-import { Box, Button, Grid, Snackbar } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditSquareIcon from '@mui/icons-material/EditSquare';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleFoodCard } from './StyleFoodCard';
 import defulatFoodImg from '../../assets/23.png';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import { useEffect, useState } from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
 import GuardComponent from '../CheckRole/CheckRole';
-import { useTranslation } from 'react-i18next';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import { Box, Button, Grid, Snackbar } from '@mui/material';
+import EditSquareIcon from '@mui/icons-material/EditSquare';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 
 function FoodCard({
   isFoodCard,
@@ -23,22 +22,17 @@ function FoodCard({
   handleClickDeleteFood,
   handleClickEditFood,
 }) {
+  const { t } = useTranslation();
+  const [role, setRole] = useState('');
   const [isLiked, setLiked] = useState(food?.isFavorite || false);
 
   useEffect(() => {
     setLiked(food?.isFavorite || false);
   }, [food?.isFavorite]);
 
-  const { t } = useTranslation();
-  const [role, setRole] = useState('');
-
   useEffect(() => {
     const stored = localStorage.getItem('authStore');
-
     const a = JSON.parse(stored || '{}');
-
-    console.log(a?.state?.role);
-
     setRole(a?.state?.role);
   }, []);
 
@@ -52,16 +46,8 @@ function FoodCard({
           className="card"
         >
           {food?.quantity ? (
-            <div
-              style={{
-                backgroundColor: 'red',
-                padding: 15,
-                position: 'relative',
-                bottom: 15,
-                left: 110,
-              }}
-            >
-              <span style={{ color: '#fff' }}>{food.quantity}</span>
+            <div className="quontity">
+              <span>{food.quantity}</span>
             </div>
           ) : null}
           <GuardComponent role={role} section="foodCard" action="addFavourite">

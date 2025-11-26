@@ -10,33 +10,36 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import { StyleContainer } from '../../../ContainerCss';
-import { StyleSignIn } from './StyleSign-in';
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { Controller, useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { gql } from '@apollo/client';
-import { useLazyQuery } from '@apollo/client/react';
-import { useEffect, useState } from 'react';
+import { SIGN_IN } from './api';
+import { useState } from 'react';
+import { useLang } from '../../useLang';
 import { MuiTelInput } from 'mui-tel-input';
-import Loader from '../../Components/Loader/index';
-import { useTranslation } from 'react-i18next';
+import { StyleSignIn } from './StyleSign-in';
 import { useUserStore } from '../../../store';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import Loader from '../../Components/Loader/index';
+import { useLazyQuery } from '@apollo/client/react';
+import { Controller, useForm } from 'react-hook-form';
+import { StyleContainer } from '../../../ContainerCss';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { useLang } from '../../useLang';
+
 const options = ['user', 'admin'];
+
 function SignIn() {
-  const [load, setLoad] = useState(false);
-  const navigate = useNavigate('');
-  const [signInFetchEror, setSignInFetchEror] = useState('');
-  const [isHide, setHide] = useState(false);
-  const { lang, setLang } = useLang();
   const { t } = useTranslation();
+  const navigate = useNavigate('');
+  const { lang, setLang } = useLang();
+  const [load, setLoad] = useState(false);
+  const [isHide, setHide] = useState(false);
+  const [signInFetchEror, setSignInFetchEror] = useState('');
 
   const setUserRole = useUserStore((state) => state.setUserRole);
   const setToken = useUserStore((state) => state.setToken);
+
+  const [fetchSignIn, { loading }] = useLazyQuery(SIGN_IN);
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -45,20 +48,6 @@ function SignIn() {
       password: '',
     },
   });
-  const SIGN_IN = gql`
-    query SignIn($phone: String!, $password: String!, $role: RoleEnum!) {
-      signIn(data: { phone: $phone, password: $password }, role: $role) {
-        token
-        user {
-          _id
-          name
-          phone
-          role
-        }
-      }
-    }
-  `;
-  const [fetchSignIn, { data, loading, error }] = useLazyQuery(SIGN_IN);
 
   const onSubmit = async (formData) => {
     try {
@@ -123,7 +112,7 @@ function SignIn() {
             style={{ backgroundColor: 'azure', borderRadius: 10 }}
             className="selectId"
           >
-            <InputLabel id="lang-select-label">Lang</InputLabel>
+            <InputLabel id="lang-select-label">{t('lang')}</InputLabel>
 
             <Select
               className="select"
@@ -133,6 +122,10 @@ function SignIn() {
               value={lang}
               label="Lang"
               onChange={handleChange}
+              MenuProps={{
+                disableScrollLock: true,
+                disableAutoFocusItem: true,
+              }}
             >
               <MenuItem value="en">En</MenuItem>
               <MenuItem value="uz">Uz</MenuItem>

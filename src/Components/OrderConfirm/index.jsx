@@ -1,11 +1,11 @@
-import { Button } from '@mui/material';
-import { StyleOrderConfirm } from './StyleConfrimOrder';
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import pay from '../../assets/pay.jpg';
+import { Button, Container } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { StyleOrderConfirm } from './StyleConfrimOrder';
 
 function ConfirmOrder({ data, setOpen }) {
   const { t } = useTranslation();
+
   const quantity = data?.getCartItemsByUserId?.payload?.items.reduce(
     (total, item) => {
       return (total += item?.quantity);

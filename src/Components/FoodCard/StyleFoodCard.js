@@ -80,4 +80,14 @@ export const StyleFoodCard = styled.div`
     color: #333;
     margin-top: 5px;
   }
+  .quontity {
+    background-color: red;
+    padding: 15px;
+    position: relative;
+    bottom: 15px;
+    left: 110px;
+  }
+  .quontity span {
+    color: #fff;
+  }
 `;

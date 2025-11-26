@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Menu,
   MenuItem,
@@ -10,45 +10,42 @@ import {
   Container,
   CircularProgress,
 } from '@mui/material';
-import { MoreHoriz } from '@mui/icons-material';
-import { StyleOrders } from '../../Components/OrderSearch/StyleOrders';
-import OrderSearch from '../../Components/OrderSearch/index';
-import AddOrder from '../../Components/AddOrder/index';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react';
-import HeaderDashborad from '../../Components/HeaderDashboard/index';
-import CheckToken from '../../Components/CheckToken';
-import ToastExample from '../../Components/Toast';
+
+import noOrder from '../../assets/noRd.png';
 import { useTranslation } from 'react-i18next';
+import { MoreHoriz } from '@mui/icons-material';
+import ToastExample from '../../Components/Toast';
+import { formatPrice } from '../../helpers/formatters';
+import AddOrder from '../../Components/AddOrder/index';
+import { useLocation, useNavigate } from 'react-router-dom';
+import OrderSearch from '../../Components/OrderSearch/index';
+import { PaginationWrapper, StyleOrder } from './StyleOrder';
+import { useMutation, useQuery } from '@apollo/client/react';
+import GuardComponent from '../../Components/CheckRole/CheckRole';
+import HeaderDashborad from '../../Components/HeaderDashboard/index';
 import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 import BlenderOutlinedIcon from '@mui/icons-material/BlenderOutlined';
-import noOrder from '../../assets/noRd.png';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import PendingActionsOutlinedIcon from '@mui/icons-material/PendingActionsOutlined';
-import Loader from '../../Components/Loader';
-import { useLocation, useNavigate } from 'react-router-dom';
-import GuardComponent from '../../Components/CheckRole/CheckRole';
-import { PaginationWrapper, StyleOrder } from './StyleOrder';
-import { formatPrice } from '../../helpers/formatters';
 import {
   CREATE_ORDER,
   GET_ORDER_BY_ID,
   GET_ORDER_FOR_ADMIN,
   UPDATE_ORDER_STATUS,
 } from './api';
-import { lime } from '@mui/material/colors';
 import SelectOrderStatus from './components/SelectOrderStatus';
 
 function OrdersPg() {
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate('');
   const [page, setPage] = useState(1);
   const [load, setLoad] = useState(false);
   const [orders, setOrders] = useState([]);
-  const [status, setStatus] = useState('all');
+  const [status, setStatus] = useState(null);
   const [locations, setLocations] = useState({});
-  const [menuOrderId, setMenuOrderId] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
-
+  const [menuOrderId, setMenuOrderId] = useState(null);
   const [openAddOrder, setOpenAddOrder] = useState(false);
   const [openToastForOrderListError, setOpenToastForOrderListError] =
     useState(false);
@@ -58,6 +55,7 @@ function OrdersPg() {
   const [addOrder, { loading, error }] = useMutation(CREATE_ORDER);
   const [updateStatus, { loading: loadUptade }] =
     useMutation(UPDATE_ORDER_STATUS);
+
   const { data: orderData, refetch: getOrderForUser } = useQuery(
     GET_ORDER_BY_ID,
     {
@@ -68,6 +66,7 @@ function OrdersPg() {
       fetchPolicy: 'network-only',
     }
   );
+
   const { data: orderDataAdmin, refetch: getOrderForAdmin } = useQuery(
     GET_ORDER_FOR_ADMIN,
     {
@@ -78,7 +77,6 @@ function OrdersPg() {
       },
     }
   );
-  const navigate = useNavigate('');
 
   useEffect(() => {
     if (role === 'admin') {
@@ -120,6 +118,10 @@ function OrdersPg() {
       console.error(err);
       setOpenToastForOrderListError(true);
     }
+  };
+
+  const handleChange = (event, value) => {
+    setPage(value);
   };
 
   const handleAddOrder = async (formData) => {
@@ -181,10 +183,6 @@ function OrdersPg() {
     if (orders.length > 0) fetchLocations();
   }, [orders]);
 
-  const handleChange = (event, value) => {
-    setPage(value);
-  };
-
   return (
     <HeaderDashborad>
       <AddOrder
@@ -208,7 +206,6 @@ function OrdersPg() {
                     : t('orderDescription')}
                 </p>
               </div>
-
               <GuardComponent role={role} section="order" action="addOrder">
                 <div className="order-header-btns">
                   <Button
@@ -220,7 +217,11 @@ function OrdersPg() {
                   </Button>
                 </div>
               </GuardComponent>
-              <SelectOrderStatus status={status} setStatus={setStatus} />
+              {role === 'admin' && (
+                <>
+                  <SelectOrderStatus status={status} setStatus={setStatus} />
+                </>
+              )}
             </div>
 
             <div style={{ marginTop: 40 }} className="orders-list">

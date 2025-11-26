@@ -1,104 +1,39 @@
-import { useEffect, useState } from 'react';
-import { StyleFoods } from '../Foods/StyleFoods';
-import Loader from '../../Components/Loader';
-import HeaderDashborad from '../../Components/HeaderDashboard';
 import { Container } from '@mui/material';
-import OrderSearch from '../../Components/OrderSearch';
-import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert/index';
-import { gql } from '@apollo/client';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react';
-import FoodCard from '../../Components/FoodCard/FoodCards';
+import { useEffect, useState } from 'react';
+import Loader from '../../Components/Loader';
+import { useTranslation } from 'react-i18next';
+import { StyleFoods } from '../Foods/StyleFoods';
 import ToastExample from '../../Components/Toast';
 import undefindImg from '../../assets/noFound.png';
+import OrderSearch from '../../Components/OrderSearch';
 import FoodQuontity from '../../Components/FoodQuontity';
-import { useTranslation } from 'react-i18next';
-const GET_ALL_FAVOURITE_FOODS = gql`
-  query GetFavoriteFoods {
-    getFavoriteFoods {
-      payload {
-        _id
-        shortName
-        name
-        image
-        description
-        price
-        discount
-        likes
-        isFavorite
-        category {
-          _id
-          name
-          image
-        }
-      }
-    }
-  }
-`;
-const DELETE_FOOD_FROM_FAVOURITES = gql`
-  mutation RemoveFoodFromFavorites($foodId: ID!) {
-    removeFoodFromFavorites(foodId: $foodId) {
-      payload {
-        _id
-        shortName
-        name
-        image
-        description
-        price
-        discount
-        likes
-        isFavorite
-      }
-    }
-  }
-`;
-const CREATE_CARD = gql`
-  mutation CreateCartItem($data: CartItemInput!) {
-    createCartItem(data: $data) {
-      payload {
-        _id
-        quantity
-        price
-        discount
-        user
-        food {
-          _id
-          shortName
-          name
-          image
-          description
-          price
-          discount
-          likes
-          isFavorite
-        }
-      }
-    }
-  }
-`;
+import FoodCard from '../../Components/FoodCard/FoodCards';
+import { useMutation, useQuery } from '@apollo/client/react';
+import HeaderDashborad from '../../Components/HeaderDashboard';
+import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert/index';
+import {
+  CREATE_CARD,
+  DELETE_FOOD_FROM_FAVOURITES,
+  GET_ALL_FAVOURITE_FOODS,
+} from './api';
+
 function FavouriteFood() {
-  const [foods, setFoods] = useState([]);
   const { t } = useTranslation();
+  const [foods, setFoods] = useState([]);
   const [openQuontity, setOpenQuontity] = useState(false);
   const [clickedDelete, setClickedDelete] = useState(false);
   const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
   const [openToast, setOpenToast] = useState(false);
   const [allFoodsForSearch, setAllFoodsForSearch] = useState([]);
-  const [createCard, { data: createCardData }] = useMutation(CREATE_CARD);
+  const [createCard] = useMutation(CREATE_CARD);
   const [deleteFoodById, { data: deleteFavData, error: deleteFoodError }] =
     useMutation(DELETE_FOOD_FROM_FAVOURITES);
   const [deletedFoodId, setId] = useState(null);
 
-  const { data, loading, error, refetch } = useQuery(GET_ALL_FAVOURITE_FOODS, {
+  const { data, loading, refetch } = useQuery(GET_ALL_FAVOURITE_FOODS, {
     fetchPolicy: 'network-only',
   });
-
-  useEffect(() => {
-    if (data?.getFavoriteFoods?.payload) {
-      setFoods(data.getFavoriteFoods.payload);
-      setAllFoodsForSearch(data.getFavoriteFoods.payload);
-    }
-  }, [data]);
 
   const handleClickDeleteFood = (clickedFoodId) => {
     setId(clickedFoodId);
@@ -117,16 +52,11 @@ function FavouriteFood() {
     }
   };
 
-  useEffect(() => {
-    if (deleteFavData?.removeFoodFromFavorites?.payload) {
-      setClickedDelete(false);
-    }
-  }, [deleteFavData]);
-
   const handleAddToCart = (food) => {
     setSelectedFood(food);
     setOpenQuontity(true);
   };
+
   const handleConfirmQuontity = (quontity) => {
     createCard({
       variables: {
@@ -141,6 +71,19 @@ function FavouriteFood() {
     setSelectedFood(null);
     setOpenToastForAddCard(true);
   };
+
+  useEffect(() => {
+    if (data?.getFavoriteFoods?.payload) {
+      setFoods(data.getFavoriteFoods.payload);
+      setAllFoodsForSearch(data.getFavoriteFoods.payload);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (deleteFavData?.removeFoodFromFavorites?.payload) {
+      setClickedDelete(false);
+    }
+  }, [deleteFavData]);
 
   return (
     <HeaderDashborad>
