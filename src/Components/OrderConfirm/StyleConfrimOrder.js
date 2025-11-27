@@ -3,7 +3,8 @@ import styled from 'styled-components';
 export const StyleOrderConfirm = styled.div`
   font-family: sans-serif;
   width: 100%;
-  max-width: 800px;
+  max-width: 340px;
+  max-height: 500px;
   padding: 20px;
   height: auto;
   margin: 20px auto;
@@ -49,8 +50,9 @@ export const StyleOrderConfirm = styled.div`
   }
 
   button {
-    margin-top: 25px;
+    margin-top: 35px;
     width: 100%;
+    height: 35px;
     max-width: 100%;
     padding: 10px;
     font-size: 1rem;
