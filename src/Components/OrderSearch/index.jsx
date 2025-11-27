@@ -149,12 +149,12 @@ function OrderSearch({
             <InputLabel id="lang-select-label">{t('lang')}</InputLabel>
             <Select
               className="select"
-              style={{ height: 40 }}
               labelId="lang-select-label"
               id="lang-select"
               value={lang}
-              label="Lang"
+              label={t('lang')}
               onChange={handleChange}
+              style={{ height: 40 }}
               MenuProps={{
                 disableScrollLock: true,
                 disableAutoFocusItem: true,
@@ -165,6 +165,7 @@ function OrderSearch({
               <MenuItem value="ru">Ru</MenuItem>
             </Select>
           </FormControl>
+
           <p>
             {t('greeting')} <strong>{name}</strong>
           </p>

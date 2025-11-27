@@ -9,6 +9,7 @@ import { Box, Button, Grid, Snackbar } from '@mui/material';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import { formatPrice } from '/src/helpers/formatters.js';
 
 function FoodCard({
   isFoodCard,
@@ -84,9 +85,10 @@ function FoodCard({
           <p style={{ marginLeft: 25 }}>
             {food?.description?.slice(0, 50) + '.'}
           </p>
-          <p>
+          <p style={{ fontFamily: 'sans-serif' }}>
             <strong>{t('price')}: </strong>
-            {food?.price} {food?.discount > 0 ? `(${food.discount}%)` : null}
+            {formatPrice(food?.price)}{' '}
+            {food?.discount > 0 ? `(${food.discount}%)` : null}
           </p>
           {!buttonsStatus && (
             <div className="buttons">

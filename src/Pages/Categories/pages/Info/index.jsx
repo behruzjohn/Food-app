@@ -64,7 +64,11 @@ function CategoryInfo() {
     { fetchPolicy: 'network-only' }
   );
   const [createCard] = useMutation(CREATE_CARD);
-  const { data: dataTitle, loading: LoadTitle } = useQuery(GET_CATEOGRY_BY_ID, {
+  const {
+    data: dataTitle,
+    loading: LoadTitle,
+    refetch: refetchCategoryTitle,
+  } = useQuery(GET_CATEOGRY_BY_ID, {
     variables: {
       categoryId: id,
     },
@@ -129,7 +133,7 @@ function CategoryInfo() {
         });
 
         refetch();
-
+        refetchCategoryTitle();
         setOpen(false);
         setEditedFoodId(null);
 
@@ -150,6 +154,7 @@ function CategoryInfo() {
           image: formData.image,
         },
       });
+      refetch();
 
       setOpen(false);
       setOpenToast(true);

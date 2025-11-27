@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Button, Modal } from '@mui/material';
+import { Box, Button, Container, Modal } from '@mui/material';
 import StyleFoodQuontity from './StyleFoodQuontity';
+import StyleFoodQuantity from './StyleFoodQuontity';
 
 const style = {
   position: 'absolute',
@@ -34,44 +35,44 @@ function FoodQuontity({ open, setOpen, onConfirm }) {
   };
 
   return (
-    <StyleFoodQuontity>
+    <div style={{ padding: 20 }}>
       <Modal open={open} onClose={handleClose}>
-        <Box sx={style}>
-          <div
-            onClick={() => setOpen(false)}
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              cursor: 'pointer',
-            }}
-          >
-            <CloseIcon />
-          </div>
-          <h2 id="box-h2">{t('howMuchAdd')}</h2>
+        <StyleFoodQuantity>
+          <Box className="box" sx={style}>
+            <div
+              onClick={() => setOpen(false)}
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                cursor: 'pointer',
+              }}
+            >
+              <CloseIcon />
+            </div>
+            <h2 id="box-h2">{t('howMuchAdd')}</h2>
 
-          <div className="btn-dev">
-            <button id="minusBtn" onClick={handleClickMinus}>
-              -
-            </button>
+            <div className="btn-dev">
+              <button id="minusBtn" onClick={handleClickMinus}>
+                -
+              </button>
+              <input value={count} readOnly type="number" />
+              <button id="plusBtn" onClick={handleClickPlus}>
+                +
+              </button>
+            </div>
 
-            <input value={count} readOnly type="number" />
-
-            <button id="plusBtn" onClick={handleClickPlus}>
-              +
-            </button>
-          </div>
-
-          <Button
-            id="addBtn"
-            onClick={() => onConfirm(count)}
-            variant="contained"
-            color="success"
-          >
-            {t('add')}
-          </Button>
-        </Box>
+            <Button
+              id="addBtn"
+              onClick={() => onConfirm(count)}
+              variant="contained"
+              color="success"
+            >
+              {t('add')}
+            </Button>
+          </Box>
+        </StyleFoodQuantity>
       </Modal>
-    </StyleFoodQuontity>
+    </div>
   );
 }
 
