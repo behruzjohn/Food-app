@@ -258,9 +258,11 @@ function OrdersPg() {
                       <tbody>
                         {orders.map((orderItem, orderIndex) => (
                           <tr
-                            onClick={() =>
-                              navigate(`/orderItems/${orderItem._id}`)
-                            }
+                            onClick={() => {
+                              if (role === 'admin') {
+                                navigate(`/orderItems/${orderItem._id}`);
+                              }
+                            }}
                             key={orderItem._id}
                           >
                             <td>#{orderIndex + 1}</td>
