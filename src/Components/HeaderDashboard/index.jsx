@@ -15,17 +15,10 @@ function HeaderDashborad({ children }) {
   const { t } = useTranslation();
   const navigate = useNavigate('');
   const [role, setRole] = useState('');
-  const [openHeaderDashboard, setOpenHeaderDashboard] = useState(false);
 
   function handleClickLogOut() {
     localStorage.clear();
     navigate('/sign-in');
-  }
-
-  function handleClickLogo() {
-    if (window.innerWidth <= 800) {
-      setOpenHeaderDashboard((prev) => !prev);
-    }
   }
 
   useEffect(() => {
@@ -36,8 +29,8 @@ function HeaderDashborad({ children }) {
 
   return (
     <StyledLayoutWrapper>
-      <StyleHeaderDashboard $openHeaderDashboard={openHeaderDashboard}>
-        <img onClick={handleClickLogo} src={logo} alt="Logo" />
+      <StyleHeaderDashboard>
+        <img src={logo} alt="Logo" />
         <div className="header-nav">
           <ul>
             {SIDEBAR_LINKS?.map((item) => {
