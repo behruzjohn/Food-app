@@ -406,17 +406,19 @@ function OrdersPg() {
         setOpen={error?.message ? setOpenToastForOrderListError : 'true'}
         title={error?.message ? error?.message : t('orderAdded')}
       ></ToastExample>
-      {role === 'admin' && !load && !loading && !loadUptade && (
-        <PaginationWrapper>
-          <Pagination
-            page={page}
-            onChange={handleChange}
-            count={10}
-            color="primary"
-            shape="rounded"
-          />
-        </PaginationWrapper>
-      )}
+      <Container maxWidth="xl">
+        {role === 'admin' && !load && !loading && !loadUptade && (
+          <PaginationWrapper>
+            <Pagination
+              page={page}
+              onChange={handleChange}
+              count={10}
+              color="primary"
+              shape="rounded"
+            />
+          </PaginationWrapper>
+        )}
+      </Container>
     </HeaderDashborad>
   );
 }

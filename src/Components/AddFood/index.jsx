@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import { GET_ALL_CATAGORIES, GET_FOOD_BY_ID } from './api';
 
-function AddFood({ open, setOpen, onAdd, editedFoodId }) {
+function AddFood({ open, onAdd, editedFoodId, onClose }) {
   const { t } = useTranslation();
 
   const [getFoodById, { data: foodData }] = useLazyQuery(GET_FOOD_BY_ID);
@@ -84,7 +84,7 @@ function AddFood({ open, setOpen, onAdd, editedFoodId }) {
   };
 
   const handleClose = () => {
-    setOpen(false);
+    onClose();
     reset();
   };
 

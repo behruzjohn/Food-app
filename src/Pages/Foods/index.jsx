@@ -177,6 +177,11 @@ function Foods() {
     setClickedDelete(true);
   };
 
+  const handleCloseFoodModal = () => {
+    setOpen((prev) => !prev);
+    setEditedFoodId(null);
+  };
+
   useEffect(() => {
     if (isDeleted && deletedFoodId) {
       deleteFood({ variables: { foodId: deletedFoodId } })
@@ -228,6 +233,7 @@ function Foods() {
                   display: 'flex',
                   justifyContent: 'center',
                   padding: 20,
+                  width: 100,
                   marginTop: 150,
                 }}
               >
@@ -266,11 +272,11 @@ function Foods() {
       />
 
       <AddFood
-        foods={foods}
-        editedFoodId={editedFoodId}
         open={open}
-        setOpen={setOpen}
+        foods={foods}
         onAdd={handleAddFood}
+        editedFoodId={editedFoodId}
+        onClose={handleCloseFoodModal}
       />
       <DeleteFoodModalAlert
         open={clickedDelete}

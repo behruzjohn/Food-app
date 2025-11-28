@@ -31,6 +31,7 @@ export const StyleFoods = styled.div`
   .food-cards {
     display: flex;
   }
+
   @media screen and (max-width: 480px) {
     .food-cards {
       flex-direction: column;

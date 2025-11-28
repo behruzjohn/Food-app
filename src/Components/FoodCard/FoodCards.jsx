@@ -86,7 +86,7 @@ function FoodCard({
             {food?.description?.slice(0, 50) + '.'}
           </p>
           <p style={{ fontFamily: 'sans-serif' }}>
-            <strong>{t('price')}: </strong>
+            <strong>{t('price')} </strong>
             {formatPrice(food?.price)}{' '}
             {food?.discount > 0 ? `(${food.discount}%)` : null}
           </p>
