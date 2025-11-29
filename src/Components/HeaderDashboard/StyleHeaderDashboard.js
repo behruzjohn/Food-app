@@ -21,20 +21,25 @@ export const StyledLayoutWrapper = styled.div`
 `;
 
 export const StyleHeaderDashboard = styled.div`
+  font-family: 'Poppins', sans-serif;
+  font-weight: 200;
+  font-style: normal;
   position: fixed;
-  width: 290px;
-  padding: 20px;
+  width: 280px;
+  padding: 0px;
   height: 100%;
   z-index: 1 !important;
   background-color: #fff;
 
   .active {
     background-color: lightgreen;
-    color: green;
-    border-radius: 8px;
-    padding: 10px !important;
+    border-radius: 5px;
+    color: #fff;
+    padding: 13px !important;
   }
-
+  #activeA {
+    color: #fff;
+  }
   .header-nav {
     padding: 30px;
   }
@@ -55,8 +60,7 @@ export const StyleHeaderDashboard = styled.div`
     margin-top: 0px;
     display: flex;
     flex-direction: column;
-
-    gap: 50px;
+    gap: 30px;
   }
   .header-nav ul li {
     padding: 10px;

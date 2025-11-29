@@ -11,7 +11,14 @@ export const StyleOrders = styled.div`
     box-sizing: border-box;
     justify-content: space-between;
   }
-
+  .input {
+    width: 100%;
+    max-width: 100%;
+  }
+  #order-special {
+    min-width: 0;
+    flex: 1;
+  }
   .input input {
     width: 100%;
     height: 45px;
@@ -19,8 +26,9 @@ export const StyleOrders = styled.div`
     box-sizing: border-box;
     border-radius: 8px;
   }
-  .input input {
-    width: 100%;
+
+  #activeA span {
+    color: #fff;
   }
 
   .card {

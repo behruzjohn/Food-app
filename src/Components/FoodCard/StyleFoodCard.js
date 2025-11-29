@@ -3,91 +3,169 @@ import styled from 'styled-components';
 export const StyleFoodCard = styled.div`
   margin-top: 20px;
   background-color: ${(props) =>
-    props.isSpeacial
-      ? '#fff'
-      : props.isFavourite
+    props.isSpeacial || props.isFavourite
       ? '#fff'
       : props.isFoodCard
-      ? '#fbcce6'
+      ? '#fff0f6'
       : '#fff'};
   width: 270px;
-  height: auto;
   border-radius: 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 16px;
-  transition: all 0.3s ease;
+  padding: 14px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
   cursor: pointer;
+  position: relative;
 
   &:hover {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(16, 24, 40, 0.12);
   }
 
-  img {
-    width: 150px;
-    height: 150px;
-    border-radius: 20%;
-    object-fit: cover;
+  .imageWrapper {
+    width: 220px;
+    height: 220px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f7f7f9;
     margin-bottom: 12px;
   }
 
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  #unicBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 10px rgba(16, 24, 40, 0.08);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  #unicBtn button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  #unicBtn:hover {
+    transform: scale(1.06);
+  }
+
+  .quontity {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background-color: #ef4444;
+    color: #fff;
+    font-weight: 700;
+    min-width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    z-index: 6;
+    box-shadow: 0 4px 10px rgba(16, 24, 40, 0.08);
+    font-size: 13px;
+  }
+
   h2 {
-    margin: 8px 0;
-    font-size: 20px;
+    margin: 6px 0 4px;
+    font-size: 18px;
+    text-align: center;
+    color: #111827;
+  }
+  .optionsMenuIcon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 5;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    padding: 4px;
   }
 
-  p {
-    color: #666;
-    margin-bottom: 16px;
+  p.desc {
+    color: #6b7280;
+    margin: 0 16px 10px;
+    font-size: 13px;
+    text-align: left;
+    width: 100%;
+    line-height: 1.25;
   }
 
-  span {
-    color: green;
-    font-weight: bold;
+  p.priceRow {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #111827;
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 0 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
   }
 
   .buttons {
     display: flex;
-    flex-direction: row;
+    gap: 8px;
+    margin-top: 8px;
+    width: 100%;
+    padding: 0 12px 12px;
     justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin-top: auto;
   }
-  #unicBtn {
-    position: relative;
-    left: 105px;
+  #edit {
+    width: 100%;
+    height: 40px;
   }
   .btn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    width: 100%;
   }
 
-  .btn button {
-    width: 40px !important;
-    height: 36px !important;
-    min-width: 30px !important;
-    border-radius: 6px;
-    padding: 0 !important;
-  }
-
-  .btn p {
+  .btn > p {
     font-size: 12px;
-    color: #333;
-    margin-top: 5px;
+    color: #374151;
+    margin: 0;
   }
-  .quontity {
-    background-color: red;
-    padding: 15px;
-    position: relative;
-    bottom: 15px;
-    left: 110px;
+
+  .btn .addToCartBtn {
+    width: 100%;
+    min-width: 120px;
+    height: 38px;
+    border-radius: 8px !important;
+    padding: 4px 8px !important;
   }
-  .quontity span {
-    color: #fff;
+  .btn button span {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 `;

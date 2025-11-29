@@ -9,7 +9,7 @@ import FoodCard from '../../Components/FoodCard/FoodCards';
 import OrderSearch from '../../Components/OrderSearch/index';
 import { useMutation, useQuery } from '@apollo/client/react';
 import GuardComponent from '../../Components/CheckRole/CheckRole';
-import { Button, CircularProgress, Container } from '@mui/material';
+import { Button, CircularProgress, Container, Slider } from '@mui/material';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
 import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
 import {
@@ -21,6 +21,7 @@ import {
   GET_ALL_FOODS,
   UPDATE_FOOD,
 } from './api';
+import SliderImages from '../../Components/Slider';
 
 function Foods() {
   const { t } = useTranslation();
@@ -208,10 +209,10 @@ function Foods() {
             allFoods={allFoodsForSearch}
             action="foods"
           />
+          <SliderImages />
           <div className="foods-header">
             <div>
               <h2>{t('foodsName')}</h2>
-              <p>{t('foodsDescription')}</p>
             </div>
             <div id="special">
               <GuardComponent role={role} section="newMenu" action="create">

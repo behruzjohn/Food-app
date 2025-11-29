@@ -13,8 +13,12 @@ import VerificationCode from '../Pages/Sign-up/pages/Verification-Code';
 
 export const routes = [
   {
+    path: ROUTE_PATHS.foods,
+    component: <Foods />,
+  },
+  {
     path: ROUTE_PATHS.mainPg,
-    component: <OrdersPg />,
+    component: <Foods />,
   },
   {
     path: ROUTE_PATHS.orders,
@@ -35,10 +39,6 @@ export const routes = [
   {
     path: ROUTE_PATHS.customer,
     component: <Customers />,
-  },
-  {
-    path: ROUTE_PATHS.foods,
-    component: <Foods />,
   },
   {
     path: ROUTE_PATHS.categories,

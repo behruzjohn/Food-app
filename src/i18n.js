@@ -151,6 +151,8 @@ i18n
           status: 'Status',
           change: 'Change',
           orderProduct: 'Order products',
+          addToSavat: 'Add to Cart',
+          remove: 'Remove',
         },
       },
       uz: {
@@ -297,6 +299,8 @@ i18n
           status: 'Holat',
           change: "O'zgartirish",
           orderProduct: 'Mahsulotlarni buyurtma qilish',
+          addToSavat: "Savatga qo'shish",
+          remove: "Yo'q qilish",
         },
       },
       ru: {
@@ -441,6 +445,8 @@ i18n
           status: 'Статус',
           change: 'Изменить',
           orderProduct: 'Заказать продукты',
+          addToSavat: 'Добавить в корзину',
+          remove: 'Удалить',
         },
       },
     },

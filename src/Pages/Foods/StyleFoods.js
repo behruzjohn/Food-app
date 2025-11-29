@@ -8,6 +8,7 @@ export const StyleFoods = styled.div`
   }
   .food-cards-nav {
     display: flex;
+    margin-left: 20px;
     gap: 15px;
     flex-wrap: wrap;
     width: 100%;

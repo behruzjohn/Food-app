@@ -66,7 +66,7 @@ function SignIn() {
       if (res?.data?.signIn?.token) {
         setToken(res?.data?.signIn?.token);
         localStorage.setItem('userName', res?.data?.signIn?.user?.name);
-        navigate('/order-list');
+        navigate('/foods');
       }
       if (!formData.role) {
         setSignInFetchEror('Please select a role');
@@ -119,9 +119,9 @@ function SignIn() {
                 disableAutoFocusItem: true,
               }}
             >
-              <MenuItem value="en">En</MenuItem>
-              <MenuItem value="uz">Uz</MenuItem>
-              <MenuItem value="ru">Ru</MenuItem>
+              <MenuItem value="en">English</MenuItem>
+              <MenuItem value="uz">Uzbekcha</MenuItem>
+              <MenuItem value="ru">Russian</MenuItem>
             </Select>
           </FormControl>
         </div>

@@ -202,7 +202,7 @@ function CategoryInfo() {
         <StyleCategoryInfo>
           <div className="continer">
             <Button
-              onClick={() => navigate('/categories')}
+              onClick={() => navigate(-1)}
               variant="outlined"
               startIcon={<ArrowBackIosNewOutlinedIcon />}
             >

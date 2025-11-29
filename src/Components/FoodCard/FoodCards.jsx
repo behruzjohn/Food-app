@@ -5,11 +5,13 @@ import defulatFoodImg from '../../assets/23.png';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GuardComponent from '../CheckRole/CheckRole';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import { Box, Button, Grid, Snackbar } from '@mui/material';
+import { Box, Button, Grid, Menu, MenuItem, Snackbar } from '@mui/material';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { formatPrice } from '/src/helpers/formatters.js';
+import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
+import { MoreHoriz } from '@mui/icons-material';
 
 function FoodCard({
   isFoodCard,
@@ -26,6 +28,16 @@ function FoodCard({
   const { t } = useTranslation();
   const [role, setRole] = useState('');
   const [isLiked, setLiked] = useState(food?.isFavorite || false);
+  const [openOption, setopenOption] = useState(null);
+  const open = Boolean(openOption);
+
+  const handleClose = () => {
+    setopenOption(null);
+  };
+
+  const handleClick = (event) => {
+    setopenOption(event.currentTarget);
+  };
 
   useEffect(() => {
     setLiked(food?.isFavorite || false);
@@ -46,66 +58,97 @@ function FoodCard({
           isFoodCard={isFoodCard}
           className="card"
         >
-          {food?.quantity ? (
-            <div className="quontity">
-              <span>{food.quantity}</span>
-            </div>
-          ) : null}
-          <GuardComponent role={role} section="foodCard" action="addFavourite">
-            {isSpeacial || isFavourite ? (
-              <></>
-            ) : (
-              <div id="unicBtn" className="btn">
-                <h2
-                  onClick={() => {
-                    if (isLiked) {
-                      handleClickRemoveFav(food?._id);
-                      setLiked(false);
-                    } else {
-                      handleClickFavourite(food?._id);
-                      setLiked(true);
-                    }
-                  }}
-                >
-                  {isLiked ? (
-                    <FavoriteIcon color="error" fontSize="medium" />
-                  ) : (
-                    <FavoriteBorderIcon fontSize="medium" />
-                  )}
-                </h2>
+          <div className="imageWrapper">
+            {food?.quantity && (
+              <div className="quontity">
+                <span>{food.quantity}</span>
               </div>
             )}
-          </GuardComponent>
-          <img
-            src={food?.image ? food?.image : defulatFoodImg}
-            alt={food?.name}
-          />
+
+            <GuardComponent role={role} section="foodCard" action="delete">
+              <MoreHoriz onClick={handleClick} className="optionsMenuIcon" />
+              <Menu
+                anchorEl={openOption}
+                open={open}
+                onClose={handleClose}
+                PaperProps={{
+                  elevation: 3,
+                  sx: { mt: 1, borderRadius: '12px', minWidth: 120, p: 0 },
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+              >
+                <MenuItem
+                  onClick={() => {
+                    handleClickDeleteFood(food?._id);
+                    handleClose();
+                  }}
+                  sx={{ gap: 1, px: 2 }}
+                >
+                  <DeleteIcon fontSize="small" color="error" />
+                  {t('delete')}
+                </MenuItem>
+              </Menu>
+            </GuardComponent>
+
+            <GuardComponent
+              role={role}
+              section="foodCard"
+              action="addFavourite"
+            >
+              {isSpeacial || isFavourite ? null : (
+                <div id="unicBtn">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (isLiked) {
+                        handleClickRemoveFav(food?._id);
+                        setLiked(false);
+                      } else {
+                        handleClickFavourite(food?._id);
+                        setLiked(true);
+                      }
+                    }}
+                  >
+                    {isLiked ? (
+                      <FavoriteIcon color="error" fontSize="small" />
+                    ) : (
+                      <FavoriteBorderIcon fontSize="small" />
+                    )}
+                  </button>
+                </div>
+              )}
+            </GuardComponent>
+
+            <img src={food?.image || defulatFoodImg} alt={food?.name} />
+          </div>
 
           <h2>{food?.name}</h2>
           <p style={{ marginLeft: 25 }}>
             {food?.description?.slice(0, 50) + '.'}
           </p>
-          <p style={{ fontFamily: 'sans-serif' }}>
+          <p style={{ fontFamily: 'sans-serif', marginTop: 15 }}>
             <strong>{t('price')} </strong>
             {formatPrice(food?.price)}{' '}
             {food?.discount > 0 ? `(${food.discount}%)` : null}
           </p>
           {!buttonsStatus && (
-            <div className="buttons">
+            <div style={{ marginTop: 15 }} className="buttons">
               <GuardComponent role={role} section="foodCard" action="edit">
                 <div className="btn">
                   <Button
+                    fullWidth
+                    startIcon={<EditSquareIcon fontSize="small" />}
                     onClick={() => handleClickEditFood(food?._id)}
                     id="edit"
                     variant="contained"
                     color="success"
                   >
-                    <EditSquareIcon fontSize="small" />
+                    {t('edit')}
                   </Button>
-                  <p>{t('edit')}</p>
                 </div>
               </GuardComponent>
-              {isFavourite ? (
+              {isFavourite && (
                 <div className="btn">
                   <Button
                     onClick={() => handleClickDeleteFood(food?._id)}
@@ -117,20 +160,6 @@ function FoodCard({
                   </Button>
                   <p>{t('delete')}</p>
                 </div>
-              ) : (
-                <GuardComponent role={role} section="foodCard" action="delete">
-                  <div className="btn">
-                    <Button
-                      onClick={() => handleClickDeleteFood(food?._id)}
-                      id="delete"
-                      variant="contained"
-                      color="error"
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </Button>
-                    <p>{t('delete')}</p>
-                  </div>
-                </GuardComponent>
               )}
 
               <GuardComponent role={role} section="foodCard" action="addToCard">
@@ -139,14 +168,17 @@ function FoodCard({
                 ) : (
                   <div className="btn">
                     <Button
+                      fullWidth
                       onClick={() => handleAddToCart(food?._id)}
                       id="save"
                       variant="contained"
                       color="success"
                     >
-                      <AddShoppingCartIcon fontSize="small" />
+                      <span>
+                        <ShoppingBagOutlinedIcon fontSize="small" />
+                        {t('addToSavat')}
+                      </span>
                     </Button>
-                    <p>{t('addToCard')}</p>
                   </div>
                 )}
               </GuardComponent>

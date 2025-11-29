@@ -16,6 +16,7 @@ import {
   DELETE_FOOD_FROM_FAVOURITES,
   GET_ALL_FAVOURITE_FOODS,
 } from './api';
+import FavouriteCard from './pages/FavouriteCard';
 
 function FavouriteFood() {
   const { t } = useTranslation();
@@ -98,7 +99,7 @@ function FavouriteFood() {
           <div className="foods-header">
             <div className="text">
               <h2>{t('favouriteFoodTitle')}</h2>
-              <p>{t('favouriteDesc')}</p>
+              {/* <p>{t('favouriteDesc')}</p> */}
             </div>
             <div
               style={{ display: 'flex', alignItems: 'center', gap: 15 }}
@@ -106,15 +107,13 @@ function FavouriteFood() {
           </div>
           <div className="food-cards">
             <div className="food-cards-nav">
-              {foods.length ? (
-                foods.map((food) => (
-                  <FoodCard
-                    getAllFavouriteFoods={refetch}
-                    isFavourite={true}
+              {foods?.length ? (
+                foods?.map((foodItem) => (
+                  <FavouriteCard
                     handleClickDeleteFood={handleClickDeleteFood}
                     handleAddToCart={handleAddToCart}
-                    key={food._id}
-                    food={food}
+                    key={foodItem._id}
+                    food={foodItem}
                   />
                 ))
               ) : (

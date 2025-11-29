@@ -183,7 +183,7 @@ function AddFood({ open, onAdd, editedFoodId, onClose }) {
                   error={Boolean(error)}
                   helperText={error?.message}
                   margin="dense"
-                  label={t('foodPrice')}
+                  label={`${t('foodPrice')} (so'm)`}
                   fullWidth
                 />
               )}
@@ -201,7 +201,7 @@ function AddFood({ open, onAdd, editedFoodId, onClose }) {
                   error={Boolean(error)}
                   helperText={error?.message}
                   margin="dense"
-                  label={t('foodDiscount')}
+                  label={`${t('foodDiscount')} (%)`}
                   fullWidth
                 />
               )}

@@ -137,9 +137,9 @@ function SignUp() {
                 disableAutoFocusItem: true,
               }}
             >
-              <MenuItem value="en">En</MenuItem>
-              <MenuItem value="uz">Uz</MenuItem>
-              <MenuItem value="ru">Ru</MenuItem>
+              <MenuItem value="en">English</MenuItem>
+              <MenuItem value="uz">Uzbekcha</MenuItem>
+              <MenuItem value="ru">Russian</MenuItem>
             </Select>
           </FormControl>
         </div>
