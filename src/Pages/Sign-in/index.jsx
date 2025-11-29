@@ -97,25 +97,17 @@ function SignIn() {
     <>
       <Loader load={load}></Loader>
       <StyleSignIn className="signIn">
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            marginRight: 30,
-            position: 'relative',
-            top: 20,
-          }}
-          className="lang"
-        >
+        <div className="lang">
           <FormControl
             variant="outlined"
-            style={{ backgroundColor: 'azure', borderRadius: 10 }}
+            style={{ backgroundColor: '#fff', borderRadius: 10 }}
             className="selectId"
           >
             <InputLabel id="lang-select-label">{t('lang')}</InputLabel>
 
             <Select
               className="select"
+              defaultValue={'en'}
               style={{ height: 40 }}
               labelId="lang-select-label"
               id="lang-select"
@@ -146,26 +138,33 @@ function SignIn() {
                     <Controller
                       name="role"
                       control={control}
+                      defaultValue="user"
                       rules={{ required: t('roleIsReq') }}
                       render={({
                         fieldState: { error },
                         field: { onChange, value },
-                      }) => (
-                        <Autocomplete
-                          options={options}
-                          value={value}
-                          onChange={(_, newValue) => onChange(newValue)}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              error={Boolean(error)}
-                              label="User type"
-                              helperText={error?.message}
-                            />
-                          )}
-                          sx={{ width: 320 }}
-                        />
-                      )}
+                      }) => {
+                        const selectedOption =
+                          options.find((opt) => opt === value) || options[0];
+
+                        return (
+                          <Autocomplete
+                            options={options}
+                            getOptionLabel={(option) => option}
+                            value={selectedOption}
+                            onChange={(_, newValue) => onChange(newValue)}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                error={Boolean(error)}
+                                label={t('userType')}
+                                helperText={error?.message}
+                              />
+                            )}
+                            sx={{ width: 320 }}
+                          />
+                        );
+                      }}
                     />
                     <Controller
                       name="phone"
@@ -197,7 +196,7 @@ function SignIn() {
                       render={({ field, fieldState: { error } }) => (
                         <TextField
                           {...field}
-                          type={isHide ? 'password' : 'text'}
+                          type={isHide ? 'text' : 'password'}
                           error={Boolean(error)}
                           id="outlined-controlled"
                           helperText={error?.message}

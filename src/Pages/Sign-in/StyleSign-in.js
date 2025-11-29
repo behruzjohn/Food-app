@@ -13,9 +13,12 @@ export const StyleSignIn = styled.div`
   background-size: 100%;
   background-position: center;
   background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   .sign-in-nav {
     width: 400px;
-    margin-top: 145px;
   }
 
   .texts span {
@@ -24,6 +27,11 @@ export const StyleSignIn = styled.div`
   .texts {
     display: flex;
     gap: 10px;
+  }
+  .lang {
+    position: absolute;
+    top: 20px;
+    left: 20px;
   }
   .texts {
     flex-direction: column;
@@ -44,7 +52,7 @@ export const StyleSignIn = styled.div`
     margin-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
   }
 
   .form-nav {
@@ -55,6 +63,10 @@ export const StyleSignIn = styled.div`
     align-items: center;
     display: flex;
   }
+  form button {
+    margin-top: 10px;
+    height: 48px;
+  }
   @media (max-width: 800px) {
     background-image: url(${signInBg});
     position: absolute;
@@ -63,7 +75,11 @@ export const StyleSignIn = styled.div`
     background-repeat: no-repeat;
     .sign-in-nav {
       width: 100%;
-      margin-top: 150px;
+    }
+    .lang {
+      position: absolute;
+      top: 20px;
+      left: 20px;
     }
   }
 `;

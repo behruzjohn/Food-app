@@ -1,4 +1,4 @@
-import { Container } from '@mui/material';
+import { CircularProgress, Container } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { GET_ORDER_ITEMS } from '../../api';
 import { useParams } from 'react-router-dom';
@@ -15,7 +15,7 @@ function OrderItem() {
   const { t } = useTranslation();
   const [location, setLocation] = useState(null);
 
-  const { data } = useQuery(GET_ORDER_ITEMS, {
+  const { data, loading } = useQuery(GET_ORDER_ITEMS, {
     variables: {
       orderId: id,
     },
@@ -82,11 +82,28 @@ function OrderItem() {
                 style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}
                 className="card"
               >
-                {orderItems?.map((food) => {
-                  return (
-                    <FoodCard buttonsStatus={true} food={food?.food}></FoodCard>
-                  );
-                })}
+                {loading ? (
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      padding: 20,
+                      width: '100%',
+                    }}
+                  >
+                    <CircularProgress style={{ marginTop: 180 }} size={50} />
+                  </div>
+                ) : (
+                  orderItems?.map((food) => {
+                    return (
+                      <FoodCard
+                        key={food?.id}
+                        buttonsStatus={true}
+                        food={food?.food}
+                      />
+                    );
+                  })
+                )}
               </div>
             </div>
           </div>

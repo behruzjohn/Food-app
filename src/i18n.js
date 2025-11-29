@@ -8,6 +8,7 @@ i18n
   .init({
     debug: true,
     fallbackLng: 'en',
+
     resources: {
       en: {
         translation: {

@@ -13,10 +13,17 @@ export const StyleSignUp = styled.div`
   background-size: 100%;
   background-position: center;
   background-repeat: no-repeat;
+  #loginImg {
+    width: 500px;
+    height: 500px;
+  }
   .sign-up-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     width: 400px;
     max-width: 400px;
-    margin-top: 25px;
   }
 
   .texts span {
@@ -57,6 +64,14 @@ export const StyleSignUp = styled.div`
     align-items: center;
     display: flex;
   }
+  .lang {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+  }
+  form button {
+    height: 48px;
+  }
   @media (max-width: 800px) {
     background-image: url(${signInBg});
     position: absolute;
@@ -66,7 +81,12 @@ export const StyleSignUp = styled.div`
     .sign-up-nav {
       width: 100%;
       max-width: 100%;
-      margin-top: 120px;
+    }
+    .lang {
+      display: none;
+      position: absolute;
+      top: 8px;
+      left: 13px;
     }
   }
 `;

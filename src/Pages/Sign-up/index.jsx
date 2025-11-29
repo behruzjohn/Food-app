@@ -7,7 +7,7 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Select } from '@mui/material';
 import { useLang } from '../../useLang';
 import { MuiTelInput } from 'mui-tel-input';
@@ -35,6 +35,10 @@ function SignUp() {
   const [isHide, setIsHide] = useState(false);
   const [isHide2, setIsHide2] = useState(false);
   const [erorFetch, setErorFetch] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState(null);
+
+  const langFromDB = 'en';
+
   const [confirmError, setConfirmError] = useState('');
 
   const [fetch, { data }] = useMutation(SIGN_UP);
@@ -61,24 +65,28 @@ function SignUp() {
   }
 
   const onSubmit = async (formData) => {
+    setPhoneNumber(formData?.phone);
     if (formData.password !== formData.confirmPassword) {
       setErorFetch('Passwords do not match');
       return;
     }
     setErorFetch('');
+    setLoad(true);
+
     console.log(formData);
-
-    setOpen(true);
-
     try {
       const res = await fetch({ variables: formData });
+
       if (res.data?.signUp?.token) {
-        setOpen(true);
-        setLoad(false);
+        navigate('/verify', {
+          state: {
+            phone: phoneNumber,
+            token: res.data?.signUp?.token,
+          },
+        });
       }
     } catch (err) {
       setErorFetch(err.message || 'Something went wrong');
-      setOpen(false);
       setLoad(false);
     }
   };
@@ -112,29 +120,18 @@ function SignUp() {
     <>
       <Loader load={loaderr}></Loader>
       <StyleSignUp className="signUp">
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            marginRight: 30,
-            position: 'relative',
-            top: 20,
-          }}
-          className="lang"
-        >
+        <div className="lang">
           <FormControl
-            style={{ backgroundColor: 'azure', borderRadius: 10 }}
+            style={{ backgroundColor: '#fff', borderRadius: 10 }}
             className="selectId"
           >
             <InputLabel id="lang-select-label">{t('lang')}</InputLabel>
             <Select
-              className="select"
-              style={{ height: 40 }}
+              value={lang || 'en'}
               labelId="lang-select-label"
               id="lang-select"
-              value={lang}
-              label="Lang"
               onChange={handleChange}
+              style={{ height: 40 }}
               MenuProps={{
                 disableScrollLock: true,
                 disableAutoFocusItem: true,
@@ -199,6 +196,7 @@ function SignUp() {
                       }}
                       render={({ field, fieldState: { error } }) => (
                         <MuiTelInput
+                          defaultCountry="UZ"
                           {...field}
                           error={Boolean(error)}
                           helperText={error?.message}

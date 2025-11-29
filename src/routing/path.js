@@ -11,4 +11,5 @@ export const ROUTE_PATHS = {
   foodCart: '/food-cart',
   orderItems: '/orderItems',
   mainPg: '/',
+  verification:'/verify'
 };

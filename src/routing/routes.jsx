@@ -9,6 +9,7 @@ import { ROUTE_PATHS } from './path';
 import FavouriteFood from '../Pages/FavouritePage';
 import ShopCart from '../Pages/ShopCard';
 import OrderItem from '../Pages/Orders/pages/OrderItem';
+import VerificationCode from '../Pages/Sign-up/pages/Verification-Code';
 
 export const routes = [
   {
@@ -55,4 +56,5 @@ export const routes = [
     path: `${ROUTE_PATHS.orderItems}/:id`,
     component: <OrderItem />,
   },
+  { path: `${ROUTE_PATHS.verification}`, component: <VerificationCode /> },
 ];

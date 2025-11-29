@@ -23,6 +23,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import PasswordIcon from '@mui/icons-material/Password';
 import { GET_ALL_FAVOURITE_FOODS, GET_FOODS_BY_SEARCH } from './api';
 import LocalGroceryStoreOutlinedIcon from '@mui/icons-material/LocalGroceryStoreOutlined';
+import HeaderDashborad from '../HeaderDashboard';
 
 function OrderSearch({
   setLoadSearch,
@@ -112,6 +113,8 @@ function OrderSearch({
     }
   }, [searchInput, action]);
 
+  console.log(lang);
+
   return (
     <StyleOrders>
       <div className="orders-search">
@@ -148,10 +151,11 @@ function OrderSearch({
           <FormControl className="selectId">
             <InputLabel id="lang-select-label">{t('lang')}</InputLabel>
             <Select
+              defaultValue={'en'}
               className="select"
               labelId="lang-select-label"
               id="lang-select"
-              value={lang}
+              value={lang?.slice(0, 2)}
               label={t('lang')}
               onChange={handleChange}
               style={{ height: 40 }}
