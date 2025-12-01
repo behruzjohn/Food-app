@@ -23,17 +23,12 @@ export const ADD_FOODS = gql`
   }
 `;
 export const GET_ALL_FOODS = gql`
-  query GetAllFoods {
-    getAllFoods {
+  query GetAllFoods($page: Int, $limit: Int) {
+    getAllFoods(page: $page, limit: $limit) {
       totalDocs
       limit
       totalPages
       page
-      pagingCounter
-      hasPrevPage
-      hasNextPage
-      prevPage
-      nextPage
       payload {
         _id
         shortName
@@ -53,6 +48,7 @@ export const GET_ALL_FOODS = gql`
     }
   }
 `;
+
 export const ADD_FOOD_FAVOURITES = gql`
   mutation AddFoodToFavorites($foodId: ID!) {
     addFoodToFavorites(foodId: $foodId) {

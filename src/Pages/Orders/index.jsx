@@ -192,7 +192,10 @@ function OrdersPg() {
       ></AddOrder>
       <StyleOrder className="orders">
         <Container maxWidth="xl">
-          <div className="orders-nav">
+          <div
+            style={{ position: 'relative', height: '91vh' }}
+            className="orders-nav"
+          >
             <OrderSearch action="category"></OrderSearch>
 
             <div className="main-header">
@@ -259,9 +262,7 @@ function OrdersPg() {
                         {orders.map((orderItem, orderIndex) => (
                           <tr
                             onClick={() => {
-                              if (role === 'admin') {
-                                navigate(`/orderItems/${orderItem._id}`);
-                              }
+                              navigate(`/orderItems/${orderItem._id}`);
                             }}
                             key={orderItem._id}
                           >
@@ -286,6 +287,7 @@ function OrdersPg() {
                             </td>
                             <td>
                               <Chip
+                                style={{ borderRadius: 8 }}
                                 label={orderItem.status}
                                 color={
                                   orderItem.status === 'pending'
@@ -397,6 +399,17 @@ function OrdersPg() {
                 </div>
               </div>
             </div>
+            {role === 'admin' && !load && !loading && !loadUptade && (
+              <PaginationWrapper style={{ position: 'absolute', bottom: 0 }}>
+                <Pagination
+                  page={page}
+                  onChange={handleChange}
+                  count={orderDataAdmin?.getOrders?.totalPage}
+                  color="primary"
+                  shape="rounded"
+                />
+              </PaginationWrapper>
+            )}
           </div>
         </Container>
       </StyleOrder>
@@ -406,19 +419,6 @@ function OrdersPg() {
         setOpen={error?.message ? setOpenToastForOrderListError : 'true'}
         title={error?.message ? error?.message : t('orderAdded')}
       ></ToastExample>
-      <Container maxWidth="xl">
-        {role === 'admin' && !load && !loading && !loadUptade && (
-          <PaginationWrapper>
-            <Pagination
-              page={page}
-              onChange={handleChange}
-              count={10}
-              color="primary"
-              shape="rounded"
-            />
-          </PaginationWrapper>
-        )}
-      </Container>
     </HeaderDashborad>
   );
 }

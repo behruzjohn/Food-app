@@ -186,7 +186,10 @@ function OrderSearch({
               horizontal: 'right',
             }}
           >
-            <MenuItem onClick={handleChangePassword}>
+            <MenuItem
+              style={{ backgroundColor: 'white' }}
+              onClick={handleChangePassword}
+            >
               <ListItemIcon>
                 <PasswordIcon />
               </ListItemIcon>
@@ -194,7 +197,10 @@ function OrderSearch({
                 <Typography>{t('changePass')}</Typography>
               </ListItemText>
             </MenuItem>
-            <MenuItem onClick={handleLogout}>
+            <MenuItem
+              style={{ backgroundColor: 'white' }}
+              onClick={handleLogout}
+            >
               <ListItemIcon>
                 <LogoutIcon color="error" />
               </ListItemIcon>

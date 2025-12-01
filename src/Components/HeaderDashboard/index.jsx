@@ -66,10 +66,12 @@ function HeaderDashborad({ children }) {
           </ul>
         </div>
         <Button
+          id="logOut"
+          fullWidth
           onClick={() => handleClickLogOut()}
           startIcon={<LogoutOutlinedIcon />}
           color="error"
-          variant="outlined"
+          variant="text"
         >
           <span id="span-title">{t('logOut')}</span>
         </Button>

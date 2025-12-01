@@ -15,6 +15,7 @@ import { useLazyQuery } from '@apollo/client/react';
 import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import { GET_ALL_CATAGORIES, GET_FOOD_BY_ID } from './api';
+import { formatPrice } from '../../helpers/formatters';
 
 function AddFood({ open, onAdd, editedFoodId, onClose }) {
   const { t } = useTranslation();
@@ -87,6 +88,8 @@ function AddFood({ open, onAdd, editedFoodId, onClose }) {
     onClose();
     reset();
   };
+
+
 
   const categories = data?.getAllCategories?.payload || [];
 
@@ -175,18 +178,27 @@ function AddFood({ open, onAdd, editedFoodId, onClose }) {
               rules={{
                 required: { message: t('foodPriceReq') },
               }}
-              render={({ field, fieldState: { error } }) => (
-                <TextField
-                  type="number"
-                  required={true}
-                  {...field}
-                  error={Boolean(error)}
-                  helperText={error?.message}
-                  margin="dense"
-                  label={`${t('foodPrice')} (so'm)`}
-                  fullWidth
-                />
-              )}
+              render={({ field, fieldState: { error } }) => {
+                const handleChange = (e) => {
+                  const numericValue = e.target.value.replace(/\D/g, '');
+                  field.onChange(Number(numericValue));
+                };
+
+                return (
+                  <TextField
+                    type="text"
+                    required={true}
+                    {...field}
+                    value={field.value ? formatPrice(field.value) : ''}
+                    error={Boolean(error)}
+                    helperText={error?.message}
+                    margin="dense"
+                    label={`${t('foodPrice')} (so'm)`}
+                    fullWidth
+                    onChange={handleChange}
+                  />
+                );
+              }}
             ></Controller>
             <Controller
               name="discount"

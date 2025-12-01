@@ -23,6 +23,48 @@ export const StyleCategoryInfo = styled.div`
     height: 400px;
     object-fit: contain;
   }
+  .category-banner {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .category-banner::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+  }
+  .category-banner img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    transition: transform 0.3s ease;
+  }
+
+  .category-banner h2 {
+    position: relative;
+    z-index: 2;
+    color: #fff;
+    font-size: 80px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  }
 
   @media (max-width: 800px) {
     .img-with {

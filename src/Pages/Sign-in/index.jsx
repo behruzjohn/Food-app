@@ -150,6 +150,7 @@ function SignIn() {
                         return (
                           <Autocomplete
                             options={options}
+                            defaultValue="user"
                             getOptionLabel={(option) => option}
                             value={selectedOption}
                             onChange={(_, newValue) => onChange(newValue)}

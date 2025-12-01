@@ -12,10 +12,12 @@ import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { formatPrice } from '/src/helpers/formatters.js';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import { MoreHoriz } from '@mui/icons-material';
+import ToastExample from '../../Components/Toast/index';
+import { useMutation } from '@apollo/client/react';
+import { CREATE_CARD } from '../../Pages/Foods/api';
 
 function FoodCard({
   isFoodCard,
-  handleAddToCart,
   handleClickFavourite,
   handleClickRemoveFav,
   isFavourite,
@@ -30,6 +32,12 @@ function FoodCard({
   const [isLiked, setLiked] = useState(food?.isFavorite || false);
   const [openOption, setopenOption] = useState(null);
   const open = Boolean(openOption);
+  const [countQuontity, setQountityCount] = useState(1);
+  const [openQuontity, setOpenQuontity] = useState(false);
+  const [selectedFood, setSelectedFood] = useState(null);
+  const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
+  const [createCard, { data: addToCardData }] = useMutation(CREATE_CARD);
+  const [autoTimeout, setAutoTimeout] = useState(null);
 
   const handleClose = () => {
     setopenOption(null);
@@ -37,6 +45,39 @@ function FoodCard({
 
   const handleClick = (event) => {
     setopenOption(event.currentTarget);
+  };
+
+  const handleAddToCart = (food) => {
+    setSelectedFood(food);
+    setOpenQuontity(true);
+    startAutoAdd(food, countQuontity);
+  };
+
+  const startAutoAdd = (food, quantity) => {
+    if (!food) return;
+
+    if (autoTimeout) clearTimeout(autoTimeout);
+
+    const timeout = setTimeout(() => {
+      createCard({
+        variables: {
+          data: {
+            food: food,
+            quantity: quantity,
+          },
+        },
+      });
+
+      setOpenQuontity(false);
+      setQountityCount(1);
+      setAutoTimeout(null);
+      setOpenToastForAddCard(true);
+    }, 2000);
+    if (addToCardData?.createCartItem?.payload) {
+      setOpenToastForAddCard(true);
+    }
+
+    setAutoTimeout(timeout);
   };
 
   useEffect(() => {
@@ -79,6 +120,7 @@ function FoodCard({
                 anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
               >
                 <MenuItem
+                  style={{ backgroundColor: 'white' }}
                   onClick={() => {
                     handleClickDeleteFood(food?._id);
                     handleClose();
@@ -163,8 +205,31 @@ function FoodCard({
               )}
 
               <GuardComponent role={role} section="foodCard" action="addToCard">
-                {food?.quantity ? (
-                  <></>
+                {openQuontity ? (
+                  <div className="quontityAdd">
+                    <div
+                      onClick={() => {
+                        startAutoAdd(selectedFood, countQuontity);
+                        countQuontity > 1 &&
+                          setQountityCount((prev) => prev - 1);
+                      }}
+                      className="minus"
+                    >
+                      <p>-</p>
+                    </div>
+
+                    <p>{countQuontity}</p>
+
+                    <div
+                      onClick={() => {
+                        startAutoAdd(selectedFood, countQuontity);
+                        setQountityCount((prev) => prev + 1);
+                      }}
+                      className="plus"
+                    >
+                      <p>+</p>
+                    </div>
+                  </div>
                 ) : (
                   <div className="btn">
                     <Button
@@ -184,6 +249,12 @@ function FoodCard({
               </GuardComponent>
             </div>
           )}
+          <ToastExample
+            status="success"
+            title={t('addedNewCartFood')}
+            open={openToastForAddCard}
+            setOpen={setOpenToastForAddCard}
+          ></ToastExample>
         </StyleFoodCard>
       )}
     </>

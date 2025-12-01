@@ -24,6 +24,12 @@ export const StyleCategories = styled.div`
     height: auto;
     object-fit: contain;
   }
+  .card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 10px;
+  }
 
   @media screen and (max-width: 480px) {
     header {

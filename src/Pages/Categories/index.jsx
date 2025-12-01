@@ -1,7 +1,7 @@
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import { Button, Container } from '@mui/material';
-import { useMutation, useQuery } from '@apollo/client/react';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import ToastExample from '../../Components/Toast';
@@ -14,7 +14,13 @@ import GuardComponent from '../../Components/CheckRole/CheckRole';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
 import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
 import CategoryCard from '../../Components/CategegoryCard/CategoryCard';
-import { GET_ALL_CATEGORIES, CREATE_CATEGORIES, DELETE_CATEGORY } from './api';
+import {
+  GET_ALL_CATEGORIES,
+  CREATE_CATEGORIES,
+  DELETE_CATEGORY,
+  EDIT_CATEGORY,
+  GET_CATEOGRY_BY_ID,
+} from './api';
 
 function CategoriesPage() {
   const [role, setRole] = useState('');
@@ -23,9 +29,13 @@ function CategoriesPage() {
   const [openCategories, setOpenCategories] = useState(false);
   const [openToastDelete, setOpenToastDelete] = useState(false);
   const [deletedCategoryId, setDeletedCategoryId] = useState('');
+  const [editCategoryId, setEditCategoryId] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editedCategory, setEditedCategory] = useState([]);
 
   const [createCategory] = useMutation(CREATE_CATEGORIES);
+  const [getCategoryById, { data: getCategory }] =
+    useLazyQuery(GET_CATEOGRY_BY_ID);
   const { data, refetch } = useQuery(GET_ALL_CATEGORIES);
 
   const handleDeleteCompleted = () => {
@@ -38,17 +48,49 @@ function CategoriesPage() {
     onCompleted: handleDeleteCompleted,
   });
 
-  const handleAddCategory = (formData) => {
-    setClickedDelete(false);
-    setOpenToastC(true);
+  const [editCategory, { data: editCategoryData }] = useMutation(EDIT_CATEGORY);
 
-    createCategory({
-      variables: {
-        name: formData.name,
-        image: formData.image,
-      },
-      onCompleted: refetch,
-    });
+  const handleAddCategory = async (formData) => {
+    try {
+      if (editedCategory?.length) {
+        await editCategory({
+          variables: {
+            categoryId: editCategoryId,
+            category: {
+              name: formData.name,
+              image: formData.image,
+            },
+          },
+        });
+
+        refetch();
+        setEditedCategory(null);
+        setClickedDelete(false);
+        setOpenToastC(true);
+      } else {
+        await createCategory({
+          variables: {
+            name: formData.name,
+            image: formData.image,
+          },
+        });
+
+        refetch();
+        setClickedDelete(false);
+        setOpenToastC(true);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleClickEdit = (clickedCategoryId) => {
+    setEditCategoryId(clickedCategoryId);
+    getCategoryById({ variables: { categoryId: clickedCategoryId } });
+    if (getCategory?.getCategoryById?.payload) {
+      setEditedCategory(getCategory?.getCategoryById?.payload);
+      setOpenCategories(true);
+    }
   };
 
   const handleDeleteCategory = () => {
@@ -85,7 +127,6 @@ function CategoriesPage() {
                 <header>
                   <div>
                     <h2>{t('categoryPg')}</h2>
-                    <p>{t('categoryDescription')}</p>
                   </div>
                   <GuardComponent
                     role={role}
@@ -93,7 +134,7 @@ function CategoriesPage() {
                     action="addCategory"
                   >
                     <Button
-                      style={{ height: 38 }}
+                      style={{ height: 36 }}
                       onClick={() => setOpenCategories(true)}
                       color="success"
                       variant="contained"
@@ -104,13 +145,11 @@ function CategoriesPage() {
                   </GuardComponent>
                 </header>
 
-                <div
-                  style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}
-                  className="card"
-                >
+                <div className="card">
                   {categories && categories.length > 0 ? (
                     categories.map((category) => (
                       <CategoryCard
+                        handleClickEdit={handleClickEdit}
                         key={category.id}
                         setClickedDelete={setClickedDelete}
                         setOpenToast={setOpenToastDelete}
@@ -130,6 +169,8 @@ function CategoriesPage() {
         </Container>
       </StyleCategories>
       <AddCatagories
+        editedCategory={editedCategory}
+        setEditedCategory={setEditedCategory}
         open={openCategories}
         setOpen={setOpenCategories}
         onAdd={handleAddCategory}
@@ -140,7 +181,9 @@ function CategoriesPage() {
         setOpen={setOpenToastDelete}
       ></ToastExample>
       <ToastExample
-        title={t('categoryAddSuccessfull')}
+        title={
+          editCategoryData ? t('categoryEdited') : t('categoryAddSuccessfull')
+        }
         open={openToastC}
         setOpen={setOpenToastC}
       ></ToastExample>

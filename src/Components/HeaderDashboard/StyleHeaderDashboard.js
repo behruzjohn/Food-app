@@ -35,7 +35,7 @@ export const StyleHeaderDashboard = styled.div`
     background-color: lightgreen;
     border-radius: 5px;
     color: #fff;
-    padding: 13px !important;
+    padding: 10px !important;
   }
   #activeA {
     color: #fff;
@@ -103,6 +103,10 @@ export const StyleHeaderDashboard = styled.div`
     height: 90px;
   }
 
+  #logOut {
+    position: absolute;
+    bottom: 40px;
+  }
   @media (max-width: 800px) {
     width: ${(props) => (props.$openHeaderDashboard ? '280px' : '80px')};
     padding: 0;

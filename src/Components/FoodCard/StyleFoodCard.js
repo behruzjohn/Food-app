@@ -59,6 +59,36 @@ export const StyleFoodCard = styled.div`
     box-shadow: 0 4px 10px rgba(16, 24, 40, 0.08);
     transition: transform 0.15s ease, background 0.15s ease;
   }
+  .quontityAdd {
+    border-radius: 8px;
+    background-color: #f0f2f5;
+    padding: 4px;
+    width: 100%;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+  .plus {
+    border-radius: 8px;
+    font-size: 27px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+  }
+  .minus {
+    border-radius: 8px;
+    font-size: 30px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+  }
+
   #unicBtn button {
     border: none;
     background: transparent;

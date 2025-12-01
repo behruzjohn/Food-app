@@ -80,6 +80,7 @@ function Customers() {
                             </td>
                             <td>
                               <Chip
+                                style={{ borderRadius: 8 }}
                                 label={u.role}
                                 color={
                                   u.role === 'admin'

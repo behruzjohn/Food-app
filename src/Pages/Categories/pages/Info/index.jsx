@@ -59,10 +59,10 @@ function CategoryInfo() {
   });
   const [deleteFood, { data: deleteFoodData, error: deleteFoodErr }] =
     useMutation(DELETE_FOOD);
-  const [fetchCategoryById, { data, refetch }] = useLazyQuery(
-    GET_FOODS_BY_CATEGORY,
-    { fetchPolicy: 'network-only' }
-  );
+  const { data, refetch } = useQuery(GET_FOODS_BY_CATEGORY, {
+    fetchPolicy: 'network-only',
+    variables: { categories: [id] },
+  });
   const [createCard] = useMutation(CREATE_CARD);
   const {
     data: dataTitle,
@@ -71,11 +71,6 @@ function CategoryInfo() {
   } = useQuery(GET_CATEOGRY_BY_ID, {
     variables: {
       categoryId: id,
-    },
-    context: {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
     },
   });
 
@@ -171,16 +166,20 @@ function CategoryInfo() {
 
   useEffect(() => {
     if (id) {
-      fetchCategoryById({
+      refetch({
         variables: { categories: [id] },
       });
     }
   }, [id]);
 
   useEffect(() => {
-    if (data?.getAllFoods?.payload) {
-      setCategoryCard(data.getAllFoods.payload);
-    }
+    const fetchCategoryFood = async () => {
+      const { data } = await refetch();
+      if (data?.getAllFoods?.payload) {
+        setCategoryCard(data.getAllFoods.payload);
+      }
+    };
+    fetchCategoryFood();
   }, [data]);
 
   useEffect(() => {
@@ -209,10 +208,16 @@ function CategoryInfo() {
               {t('gooBack')}
             </Button>
           </div>
-          <h2>
-            <strong>{' ' + dataTitle?.getCategoryById?.payload?.name}</strong>{' '}
-            <FastfoodOutlinedIcon />
-          </h2>
+          <div className="category-banner">
+            <img
+              src={dataTitle?.getCategoryById?.payload?.image}
+              alt={dataTitle?.getCategoryById?.payload?.name}
+            />
+            <h2>
+              <strong>{dataTitle?.getCategoryById?.payload?.name}</strong>
+            </h2>
+          </div>
+
           <div
             style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}
             className="card"

@@ -9,7 +9,13 @@ import FoodCard from '../../Components/FoodCard/FoodCards';
 import OrderSearch from '../../Components/OrderSearch/index';
 import { useMutation, useQuery } from '@apollo/client/react';
 import GuardComponent from '../../Components/CheckRole/CheckRole';
-import { Button, CircularProgress, Container, Slider } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  Container,
+  Pagination,
+  Slider,
+} from '@mui/material';
 import HeaderDashborad from '../../Components/HeaderDashboard/index';
 import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
 import {
@@ -22,11 +28,13 @@ import {
   UPDATE_FOOD,
 } from './api';
 import SliderImages from '../../Components/Slider';
+import { PaginationWrapper } from '../Orders/StyleOrder';
 
 function Foods() {
   const { t } = useTranslation();
   const [role, setRole] = useState('');
   const [open, setOpen] = useState(false);
+  const [page, setPage] = useState(1);
   const [foods, setFoods] = useState([]);
   const [isDeleted, setIsDeleted] = useState(false);
   const [openToast, setOpenToast] = useState(false);
@@ -42,7 +50,6 @@ function Foods() {
   const [openToastForDelete, setOpenToastForDeleteFood] = useState(false);
   const [openToastForUpdateFood, setOpenToastForUpdateFood] = useState(false);
 
-  const [createCard] = useMutation(CREATE_CARD);
   const [addToFavourites, { data: favouriteData, error: favouriteError }] =
     useMutation(ADD_FOOD_FAVOURITES);
   const [deleteFoodById] = useMutation(DELETE_FOOD_FROM_FAVOURITES);
@@ -60,16 +67,26 @@ function Foods() {
   });
   const { data, loading, refetch } = useQuery(GET_ALL_FOODS, {
     fetchPolicy: 'network-only',
+    variables: { page: 1, limit: 12 },
   });
 
   useEffect(() => {
-    refetch();
+    const fetchFoods = async () => {
+      const { data } = await refetch({ page });
+      if (data?.getAllFoods?.payload) {
+        setFoods(data.getAllFoods.payload);
+        setAllFoodsForSearch(data.getAllFoods.payload);
+      }
+    };
 
-    if (data?.getAllFoods?.payload) {
-      setFoods(data?.getAllFoods?.payload);
-      setAllFoodsForSearch(data?.getAllFoods?.payload);
+    fetchFoods();
+  }, [page, refetch]);
+
+  useEffect(() => {
+    if (page) {
+      refetch({ page });
     }
-  }, [data]);
+  }, [page, refetch]);
 
   useEffect(() => {
     const stored = localStorage.getItem('authStore');
@@ -80,39 +97,28 @@ function Foods() {
   const handleClickFavourite = (clickedFoodId) => {
     setOpenToast(true);
     addToFavourites({
-      variables: {
-        foodId: clickedFoodId,
+      variables: { foodId: clickedFoodId },
+      onCompleted: () => {
+        setFoods((prevFoods) =>
+          prevFoods.map((food) =>
+            food._id === clickedFoodId ? { ...food, isFavorite: true } : food
+          )
+        );
       },
     });
   };
-
-  useEffect(() => {
-    refetch();
-  }, []);
 
   const handleClickRemoveFav = (clickedFoodId) => {
-    deleteFoodById({ variables: { foodId: clickedFoodId } });
-  };
-
-  const handleAddToCart = (food) => {
-    setOpenQuontity(false);
-    setSelectedFood(food);
-    setTimeout(() => setOpenQuontity(true), 0);
-  };
-  const handleConfirmQuontity = (quontity) => {
-    createCard({
-      variables: {
-        data: {
-          food: selectedFood,
-          quantity: quontity,
-        },
+    deleteFoodById({
+      variables: { foodId: clickedFoodId },
+      onCompleted: () => {
+        setFoods((prevFoods) =>
+          prevFoods.map((food) =>
+            food._id === clickedFoodId ? { ...food, isFavorite: false } : food
+          )
+        );
       },
     });
-    setQuontityLen((prev) => prev + 1);
-
-    setOpenQuontity(false);
-    setSelectedFood(null);
-    setOpenToastForAddCard(true);
   };
 
   const handleClickEditFood = (foodId) => {
@@ -122,8 +128,6 @@ function Foods() {
 
   const handleAddFood = async (formData) => {
     try {
-      const token = localStorage.getItem('token') || '';
-
       if (editedFoodId) {
         const { ...rest } = formData;
 
@@ -134,11 +138,6 @@ function Foods() {
               ...rest,
               price: formData.price ? Number(formData.price) : 0,
               discount: formData.discount ? Number(formData.discount) : 0,
-            },
-          },
-          context: {
-            headers: {
-              authorization: `Bearer ${token}`,
             },
           },
         });
@@ -171,6 +170,10 @@ function Foods() {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handleChange = (event, value) => {
+    setPage(value);
   };
 
   const handleClickDeleteFood = (foodId) => {
@@ -248,7 +251,6 @@ function Foods() {
                     handleClickEditFood={handleClickEditFood}
                     handleClickDeleteFood={handleClickDeleteFood}
                     handleClickFavourite={handleClickFavourite}
-                    handleAddToCart={handleAddToCart}
                     key={food._id}
                     food={food}
                   />
@@ -256,6 +258,15 @@ function Foods() {
               </div>
             )}
           </div>
+          <PaginationWrapper style={{ marginTop: 35 }}>
+            <Pagination
+              page={page}
+              onChange={handleChange}
+              count={data?.getAllFoods?.totalPages}
+              color="primary"
+              shape="rounded"
+            />
+          </PaginationWrapper>
         </Container>
       </StyleFoods>
       <ToastExample
@@ -284,11 +295,7 @@ function Foods() {
         setOpen={setClickedDelete}
         setIsDeleted={setIsDeleted}
       />
-      <FoodQuontity
-        onConfirm={handleConfirmQuontity}
-        open={openQuontity}
-        setOpen={setOpenQuontity}
-      ></FoodQuontity>
+
       <ToastExample
         status="success"
         title={t('addedNewCartFood')}

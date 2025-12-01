@@ -14,8 +14,8 @@ export const StyleFavouriteCard = styled.div`
     padding: 10px;
     border-radius: 10px;
     width: 100%;
-    border: 1px solid black;
     display: flex;
+    background-color: #fff;
     gap: 20px;
   }
   .texts {

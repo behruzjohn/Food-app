@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import { useState } from 'react';
-import { MoreHoriz } from '@mui/icons-material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { formatPrice } from '../../../../helpers/formatters';
 
 function FavouriteCard({ food, handleClickDeleteFood, handleAddToCart }) {
@@ -33,7 +33,7 @@ function FavouriteCard({ food, handleClickDeleteFood, handleAddToCart }) {
             className="div"
           >
             <h3>{food?.name}</h3>
-            <MoreHoriz
+            <MoreVertIcon
               onClick={handleClick}
               style={{ cursor: 'pointer' }}
               className="optionsMenuIcon"

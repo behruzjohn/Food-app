@@ -1,76 +1,76 @@
 import styled from 'styled-components';
 
 export const StyleCategoryCardS = styled.div`
-  margin-top: 20px;
-  background-color: #fff;
-  width: 273px;
-  height: 100px;
-  border-radius: 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px;
-  gap: 16px;
-  transition: all 0.3s ease;
+  width: 270px;
+  height: 150px;
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
   cursor: pointer;
-
-  .card__content {
-    display: flex;
-    gap: 16px;
-  }
+  background-color: #000;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+  transition: all 0.25s ease;
 
   &:hover {
-    transform: translateY(-5px);
+    transform: translateY(-5px) scale(1.01);
+  }
+
+  .card__content {
+    width: 100%;
+    height: 100%;
+    position: relative;
   }
 
   img {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    display: block;
   }
 
-  h2 {
-    font-size: 20px;
+  &::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.65),
+      rgba(0, 0, 0, 0.1)
+    );
+    z-index: 1;
   }
 
-  p {
-    color: #666;
+  #title-box {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    z-index: 2;
+    color: white;
   }
 
-  span {
-    color: green;
-    font-weight: bold;
+  h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
   }
 
-  .buttons {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin-top: auto;
+  svg {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 3;
+    color: white;
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 50%;
+    padding: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
   }
 
-  .btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .btn button {
-    width: 30px !important;
-    height: 36px !important;
-    min-width: 30px !important;
-    border-radius: 6px;
-    padding: 0 !important;
-  }
-
-  .btn p {
-    font-size: 12px;
-    color: #333;
+  svg:hover {
+    background: rgba(0, 0, 0, 0.7);
   }
 `;

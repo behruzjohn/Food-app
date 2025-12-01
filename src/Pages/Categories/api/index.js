@@ -96,3 +96,14 @@ export const CREATE_CARD = gql`
     }
   }
 `;
+export const EDIT_CATEGORY = gql`
+  mutation UpdateCategoryById($categoryId: ID!, $category: CategoryInput) {
+    updateCategoryById(categoryId: $categoryId, category: $category) {
+      payload {
+        _id
+        name
+        image
+      }
+    }
+  }
+`;

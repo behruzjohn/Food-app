@@ -5,8 +5,16 @@ import { MoreHoriz } from '@mui/icons-material';
 import GuardComponent from '../CheckRole/CheckRole';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { StyleCategoryCardS } from './StyleCategory';
+import { useTranslation } from 'react-i18next';
+import EditIcon from '@mui/icons-material/Edit';
 
-function CategoryCard({ category, setDeletedCategoryId, setClickedDelete }) {
+function CategoryCard({
+  category,
+  setDeletedCategoryId,
+  setClickedDelete,
+  handleClickEdit,
+}) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [role, setRole] = useState('');
@@ -37,45 +45,45 @@ function CategoryCard({ category, setDeletedCategoryId, setClickedDelete }) {
   }, []);
   return (
     <StyleCategoryCardS className="card">
-      <div className="card__content">
-        <img
-          onClick={() => navigate(`/categoriesById/${category._id}`)}
-          src={category?.image !== null ? category?.image : 'pgn.sda'}
-          alt={category.name}
-        />
-        <div onClick={() => navigate(`/categoriesById/${category._id}`)}>
-          <h4 style={{ marginTop: 18 }}>{category?.name}</h4>
+      <div
+        onClick={() => navigate(`/categoriesById/${category._id}`)}
+        className="card__content"
+      >
+        <img src={category?.image} alt={category.name} />
+        <div id="title-box">
+          <h4>{category?.name}</h4>
         </div>
       </div>
+
       <GuardComponent role={role} section="category" action="delete">
-        <MoreHoriz
-          style={{ cursor: 'pointer', position: 'relative', bottom: 34 }}
-          onClick={handleClick}
-        />
+        <MoreHoriz onClick={handleClick} style={{ cursor: 'pointer' }} />
         <Menu
           anchorEl={openOption}
           open={open}
           onClose={handleClose}
           PaperProps={{
             elevation: 3,
-            sx: { mt: 1.5, borderRadius: '16px', minWidth: 50, p: 1 },
-          }}
-          transformOrigin={{
-            horizontal: 'right',
-            vertical: 'top',
-          }}
-          anchorOrigin={{
-            horizontal: 'right',
-            vertical: 'bottom',
+            sx: { borderRadius: '14px', minWidth: 120 },
           }}
         >
-          <MenuItem id="menu" onClick={handleClose}>
-            <DeleteIcon
-              style={{ color: 'red' }}
-              className="iconDelete"
-              onClick={() => handleClickDelete(category?._id)}
-              fontSize="small"
-            />
+          <MenuItem
+            style={{ backgroundColor: 'white' }}
+            onClick={() => {
+              handleClickEdit(category?._id), handleClose();
+            }}
+          >
+            <EditIcon sx={{ color: 'green', mr: 1 }} />
+            {t('edit')}
+          </MenuItem>
+          <MenuItem
+            style={{ backgroundColor: 'white' }}
+            onClick={() => {
+              handleClickDelete(category?._id);
+              handleClose();
+            }}
+          >
+            <DeleteIcon sx={{ color: 'red', mr: 1 }} />
+            {t('delete')}
           </MenuItem>
         </Menu>
       </GuardComponent>

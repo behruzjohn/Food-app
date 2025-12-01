@@ -153,6 +153,8 @@ i18n
           orderProduct: 'Order products',
           addToSavat: 'Add to Cart',
           remove: 'Remove',
+          categoryEdited: 'Category Edited successfully',
+          categoryTitle: 'Edit Category',
         },
       },
       uz: {
@@ -301,6 +303,8 @@ i18n
           orderProduct: 'Mahsulotlarni buyurtma qilish',
           addToSavat: "Savatga qo'shish",
           remove: "Yo'q qilish",
+          categoryEdited: 'Kategoriya muvaffaqiyatli tahrirlandi',
+          categoryTitle: "Kategoriyani o'zgatirish",
         },
       },
       ru: {
@@ -447,6 +451,8 @@ i18n
           orderProduct: 'Заказать продукты',
           addToSavat: 'Добавить в корзину',
           remove: 'Удалить',
+          categoryEdited: 'Категория успешно отредактирована',
+          categoryTitle: 'Редактирование категории',
         },
       },
     },
