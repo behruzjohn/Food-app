@@ -97,7 +97,7 @@ function SignIn() {
     <>
       <Loader load={load}></Loader>
       <StyleSignIn className="signIn">
-        <div className="lang">
+        {/* <div className="lang">
           <FormControl
             variant="outlined"
             style={{ backgroundColor: '#fff', borderRadius: 10 }}
@@ -123,8 +123,8 @@ function SignIn() {
               <MenuItem value="uz">Uzbekcha</MenuItem>
               <MenuItem value="ru">Russian</MenuItem>
             </Select>
-          </FormControl>
-        </div>
+          </FormControl> */}
+        {/* </div> */}
         <StyleContainer>
           <div className="sign-in-nav">
             <div className="form">
@@ -152,8 +152,10 @@ function SignIn() {
                             options={options}
                             defaultValue="user"
                             getOptionLabel={(option) => option}
-                            value={selectedOption}
-                            onChange={(_, newValue) => onChange(newValue)}
+                            value={selectedOption || 'user'}
+                            onChange={(item, newValue) =>
+                              onChange(newValue || '')
+                            }
                             renderInput={(params) => (
                               <TextField
                                 {...params}
@@ -179,6 +181,7 @@ function SignIn() {
                       render={({ field, fieldState: { error } }) => (
                         <MuiTelInput
                           {...field}
+                          defaultCountry="UZ"
                           error={Boolean(error)}
                           helperText={error?.message}
                           placeholder={t('enterYourPhoneNUm')}

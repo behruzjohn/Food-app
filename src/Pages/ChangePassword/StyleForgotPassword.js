@@ -14,8 +14,10 @@ export const StyleForgotPassword = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   .sign-in-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 400px;
-    margin-top: 145px;
   }
 
   .texts span {
@@ -26,9 +28,9 @@ export const StyleForgotPassword = styled.div`
     gap: 10px;
   }
   .texts {
-    flex-direction: column;
     align-items: center;
     width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
   }
@@ -63,7 +65,6 @@ export const StyleForgotPassword = styled.div`
     background-repeat: no-repeat;
     .sign-in-nav {
       width: 100%;
-      margin-top: 145px;
     }
   }
 `;

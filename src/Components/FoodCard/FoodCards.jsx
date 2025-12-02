@@ -26,6 +26,7 @@ function FoodCard({
   food,
   handleClickDeleteFood,
   handleClickEditFood,
+  setOpenToastForAddCard,
 }) {
   const { t } = useTranslation();
   const [role, setRole] = useState('');
@@ -35,7 +36,6 @@ function FoodCard({
   const [countQuontity, setQountityCount] = useState(1);
   const [openQuontity, setOpenQuontity] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
-  const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
   const [createCard, { data: addToCardData }] = useMutation(CREATE_CARD);
   const [autoTimeout, setAutoTimeout] = useState(null);
 
@@ -217,9 +217,7 @@ function FoodCard({
                     >
                       <p>-</p>
                     </div>
-
                     <p>{countQuontity}</p>
-
                     <div
                       onClick={() => {
                         startAutoAdd(selectedFood, countQuontity);
@@ -239,7 +237,7 @@ function FoodCard({
                       variant="contained"
                       color="success"
                     >
-                      <span>
+                      <span id="btn-span">
                         <ShoppingBagOutlinedIcon fontSize="small" />
                         {t('addToSavat')}
                       </span>
@@ -249,12 +247,6 @@ function FoodCard({
               </GuardComponent>
             </div>
           )}
-          <ToastExample
-            status="success"
-            title={t('addedNewCartFood')}
-            open={openToastForAddCard}
-            setOpen={setOpenToastForAddCard}
-          ></ToastExample>
         </StyleFoodCard>
       )}
     </>

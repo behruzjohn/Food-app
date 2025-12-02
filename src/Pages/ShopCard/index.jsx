@@ -13,6 +13,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import HeaderDashborad from '../../Components/HeaderDashboard';
 import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
 import { CREATE_ORDER, DELETE_CART_ITEM, GET_CARD_FOOD } from './api';
+import FavouriteCard from '../FavouritePage/pages/FavouriteCard';
 
 function ShopCart() {
   const { t } = useTranslation();
@@ -103,11 +104,10 @@ function ShopCart() {
             refetchItem={refetch}
           />
           <div className="foods-header">
-            <div>
+            <div id="text">
               <h2 style={{ fontFamily: 'sans-serif' }}>
                 {t('cartFood')}
                 <span style={{ color: 'gray' }}>
-                  {' '}
                   , {quantity} {t('product')}
                 </span>
               </h2>
@@ -115,24 +115,30 @@ function ShopCart() {
             </div>
           </div>
           <div className="food-cards">
-            <div className="food-cards-nav">
+            <div id="shopCart-nav" className="food-cards-nav">
               {foods.length ? (
                 foods?.map((food) => (
-                  <FoodCard
-                    isFavourite={true}
-                    isFoodCard={true}
+                  <FavouriteCard
+                    checkElement={'user'}
+                    isShopCart={true}
                     handleClickDeleteFood={handleClickDeleteFood}
                     key={food._id}
                     food={food}
                   />
                 ))
               ) : (
-                <div className="defualtImage">
-                  <img id="def" src={undefindImg} alt="Undefined Image" />
+                <div className="noCart">
+                  <div className="defualtImage">
+                    <img id="def" src={undefindImg} alt="Undefined Image" />
+                  </div>
                 </div>
               )}
             </div>
-            {foods.length > 0 && <ConfirmOrder setOpen={setOpen} data={data} />}
+            {foods.length > 0 && (
+              <div className="confirmOrder">
+                <ConfirmOrder setOpen={setOpen} data={data} />
+              </div>
+            )}
           </div>
         </Container>
       </StyleFoods>

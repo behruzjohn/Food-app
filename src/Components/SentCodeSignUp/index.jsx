@@ -22,7 +22,7 @@ function SentCode({ setOpen, setCode, handleClickConfirm, confirmError }) {
   const { t } = useTranslation();
 
   return (
-    <div className="modal">
+    <div style={{ fontFamily: 'sans-serif' }} className="modal">
       <Modal
         open={open}
         onClose={() => setOpen(false)}

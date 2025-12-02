@@ -75,11 +75,22 @@ export const StyleSignIn = styled.div`
     background-repeat: no-repeat;
     .sign-in-nav {
       width: 100%;
+      max-width: 50%;
     }
     .lang {
       position: absolute;
       top: 20px;
       left: 20px;
+    }
+  }
+  @media (max-width: 750px) {
+    .sign-in-nav {
+      max-width: 70%;
+    }
+  }
+  @media (max-width: 520px) {
+    .sign-in-nav {
+      max-width: 100%;
     }
   }
 `;

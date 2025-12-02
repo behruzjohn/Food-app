@@ -6,7 +6,7 @@ export const StyledSelectWrapper = styled(FormControl)`
   width: 120px;
 
   @media (max-width: 768px) {
-    width: 100%;
+    width: 100px;
     margin-top: 16px;
   }
 

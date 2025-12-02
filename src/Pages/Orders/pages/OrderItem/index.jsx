@@ -9,6 +9,7 @@ import { formatPrice } from '../../../../helpers/formatters';
 import OrderSearch from '../../../../Components/OrderSearch';
 import FoodCard from '../../../../Components/FoodCard/FoodCards';
 import HeaderDashborad from '../../../../Components/HeaderDashboard';
+import FavouriteCard from '../../../FavouritePage/pages/FavouriteCard';
 
 function OrderItem() {
   const { id } = useParams();
@@ -96,9 +97,11 @@ function OrderItem() {
                 ) : (
                   orderItems?.map((food) => {
                     return (
-                      <FoodCard
+                      <FavouriteCard
+                        quantity={food?.quantity}
+                        user={food?.user}
+                        isOrderItem={true}
                         key={food?.id}
-                        buttonsStatus={true}
                         food={food?.food}
                       />
                     );

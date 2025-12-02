@@ -149,6 +149,7 @@ function CategoriesPage() {
                   {categories && categories.length > 0 ? (
                     categories.map((category) => (
                       <CategoryCard
+                      
                         handleClickEdit={handleClickEdit}
                         key={category.id}
                         setClickedDelete={setClickedDelete}

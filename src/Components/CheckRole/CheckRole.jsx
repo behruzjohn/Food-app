@@ -27,6 +27,22 @@ const SECTIONS = {
     admin: { addOrder: false },
     user: { addOrder: true },
   },
+  favouriteCard: {
+    admin: {
+      price: true,
+      customer: false,
+      addToCart: true,
+      menu: true,
+      quontity: false,
+    },
+    user: {
+      price: true,
+      customer: true,
+      addToCart: false,
+      menu: false,
+      quontity: true,
+    },
+  },
 };
 const GuardComponent = ({ role, section, action, children }) => {
   const hasAccess = SECTIONS[section]?.[role]?.[action];

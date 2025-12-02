@@ -43,11 +43,10 @@ function CategoryInfo() {
   const [openForUpdate, setOpenForUptade] = useState(false);
   const [clickedDelete, setClickedDelete] = useState(false);
   const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
-  const localToken = JSON.parse(localStorage.getItem('authStore') || '');
   const [openToastForDelete, setOpenToastForDeleteFood] = useState(false);
+  const [openToastForAddCart, setOpenToastForAddCart] = useState(false);
   const [openToastForUpdateFood, setOpenToastForUpdateFood] = useState(false);
 
-  const token = localToken?.state?.token;
   const [createFood, { data: AddFoodData, error: AddFoodErr }] =
     useMutation(ADD_FOODS);
   const updatedIsComplated = () => {
@@ -63,7 +62,10 @@ function CategoryInfo() {
     fetchPolicy: 'network-only',
     variables: { categories: [id] },
   });
-  const [createCard] = useMutation(CREATE_CARD);
+  const [createCard, { data: createCartData, error: createCartErr }] =
+    useMutation(CREATE_CARD, {
+      onCompleted: () => setOpenToastForAddCart(true),
+    });
   const {
     data: dataTitle,
     loading: LoadTitle,
@@ -203,7 +205,12 @@ function CategoryInfo() {
             <Button
               onClick={() => navigate(-1)}
               variant="outlined"
-              startIcon={<ArrowBackIosNewOutlinedIcon />}
+              startIcon={
+                <ArrowBackIosNewOutlinedIcon
+                  className="goBackIcon"
+                  fontSize="small"
+                />
+              }
             >
               {t('gooBack')}
             </Button>
@@ -307,6 +314,16 @@ function CategoryInfo() {
           }
           open={openToastForDelete}
           setOpen={setOpenToastForDeleteFood}
+        />
+        <ToastExample
+          status={createCartData?.createCartItem?.payload ? 'success' : 'error'}
+          title={
+            createCartErr?.message
+              ? createCartErr?.message
+              : t('addedNewCartFood')
+          }
+          open={openToastForAddCart}
+          setOpen={setOpenToastForAddCart}
         />
       </Container>
     </HeaderDashborad>

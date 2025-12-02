@@ -187,12 +187,13 @@ export const StyleFoodCard = styled.div`
 
   .btn .addToCartBtn {
     width: 100%;
+
     min-width: 120px;
     height: 38px;
     border-radius: 8px !important;
     padding: 4px 8px !important;
   }
-  .btn button span {
+  #save #btn-span {
     font-size: 13px;
     display: flex;
     align-items: center;

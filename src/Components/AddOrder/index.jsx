@@ -9,11 +9,14 @@ import {
 import { t } from 'i18next';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { useTranslation } from 'react-i18next';
+import AddIcon from '@mui/icons-material/Add';
 import { useState, useRef, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 function AddOrder({ open, setOpen, onAdd }) {
   const markerRef = useRef(null);
+  const { t } = useTranslation();
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
   const [marker, setMarker] = useState(null);
@@ -29,7 +32,9 @@ function AddOrder({ open, setOpen, onAdd }) {
       if (mapContainer.current) {
         const newMap = new maplibregl.Map({
           container: mapContainer.current,
-          style: 'https://demotiles.maplibre.org/style.json',
+          style:
+            'https://tiles.basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+
           center: [69.240562, 41.311081],
           zoom: 10,
         });
@@ -82,22 +87,10 @@ function AddOrder({ open, setOpen, onAdd }) {
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Add Order</DialogTitle>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      <DialogTitle>{t('addOrder')}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
-          <Controller
-            name="address"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Enter Address"
-                fullWidth
-                margin="dense"
-              />
-            )}
-          />
           <div
             ref={mapContainer}
             style={{
@@ -107,29 +100,15 @@ function AddOrder({ open, setOpen, onAdd }) {
               border: '1px solid #ccc',
             }}
           ></div>
-          <Controller
-            name="lat"
-            control={control}
-            render={({ field }) => (
-              <TextField {...field} label="Latitude" fullWidth margin="dense" />
-            )}
-          />
-          <Controller
-            name="lng"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Longitude"
-                fullWidth
-                margin="dense"
-              />
-            )}
-          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>{t('cancel')}</Button>
-          <Button type="submit" variant="contained" color="success">
+          <Button
+            startIcon={<AddIcon />}
+            type="submit"
+            variant="contained"
+            color="success"
+          >
             {t('add')}
           </Button>
         </DialogActions>

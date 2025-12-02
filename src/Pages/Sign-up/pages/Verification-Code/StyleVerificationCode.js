@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const StyleVerificationCode = styled.div`
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f0ff, #e0d4f7);
-
+  font-family: sans-serif;
   height: 100vh;
 
   display: flex;

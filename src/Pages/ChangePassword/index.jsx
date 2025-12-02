@@ -9,10 +9,16 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { StyleForgotPassword } from './StyleForgotPassword';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
+import {
+  Button,
+  Container,
+  IconButton,
+  InputAdornment,
+  TextField,
+} from '@mui/material';
 import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
 
-function ForgotPasswordPage() {
+function ChangePassword() {
   const { t } = useTranslation();
   const navigate = useNavigate('');
   const [succsesMessage, setSuccsesMessage] = useState('');
@@ -55,20 +61,12 @@ function ForgotPasswordPage() {
 
   return (
     <StyleForgotPassword className="signIn">
-      <Button
-        style={{ marginTop: 20, marginLeft: 20 }}
-        onClick={() => navigate('/order-list')}
-        variant="outlined"
-        startIcon={<ArrowBackIosNewOutlinedIcon />}
-      >
-        {t('gooBack')}
-      </Button>
-      <StyleContainer>
+      <Container maxWidth="xs">
         <div className="sign-in-nav">
           <div className="form">
             <div className="form-nav">
               <div className="texts">
-                <h1>Forgot-Password</h1>
+                <h1>{t('forgotPass')}</h1>
               </div>
               <form onSubmit={handleSubmit(onSumbut)}>
                 <div className="inputs">
@@ -168,15 +166,18 @@ function ForgotPasswordPage() {
                   </Button>
                 </div>
               </form>
+              <div className="error">
+                {error && <p style={{ color: 'red' }}>{error.message}</p>}
+                {succsesMessage && (
+                  <p style={{ color: 'green' }}>{succsesMessage}</p>
+                )}
+              </div>
             </div>
-            {error && <p style={{ color: 'red' }}>{error.message}</p>}
-            {succsesMessage && (
-              <p style={{ color: 'green' }}>{succsesMessage}</p>
-            )}
+            <p>{t('dontWontChange')}</p>
           </div>
         </div>
-      </StyleContainer>
+      </Container>
     </StyleForgotPassword>
   );
 }
-export default ForgotPasswordPage;
+export default ChangePassword;

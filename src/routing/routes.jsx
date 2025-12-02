@@ -1,7 +1,6 @@
 import CategoriesPage from '../Pages/Categories';
 import Customers from '../Pages/Customers';
 import Foods from '../Pages/Foods';
-import ForgotPasswordPage from '../Pages/ForgotPassword';
 import OrdersPg from '../Pages/Orders';
 import SignIn from '../Pages/Sign-in';
 import SignUp from '../Pages/Sign-up';
@@ -10,6 +9,7 @@ import FavouriteFood from '../Pages/FavouritePage';
 import ShopCart from '../Pages/ShopCard';
 import OrderItem from '../Pages/Orders/pages/OrderItem';
 import VerificationCode from '../Pages/Sign-up/pages/Verification-Code';
+import ChangePassword from '../Pages/ChangePassword';
 
 export const routes = [
   {
@@ -34,7 +34,7 @@ export const routes = [
   },
   {
     path: ROUTE_PATHS.forgotPass,
-    component: <ForgotPasswordPage />,
+    component: <ChangePassword />,
   },
   {
     path: ROUTE_PATHS.customer,

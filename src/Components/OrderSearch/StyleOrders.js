@@ -133,6 +133,7 @@ export const StyleOrders = styled.div`
     .main-header {
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
     }
     .order-header-text {
       font-size: 12px;

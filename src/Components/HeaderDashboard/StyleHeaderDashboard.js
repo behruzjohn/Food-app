@@ -32,12 +32,17 @@ export const StyleHeaderDashboard = styled.div`
   background-color: #fff;
 
   .active {
+    display: flex;
     background-color: lightgreen;
     border-radius: 5px;
     color: #fff;
     padding: 10px !important;
   }
   #activeA {
+    display: flex;
+    color: #fff;
+  }
+  #activeIcon {
     color: #fff;
   }
   .header-nav {
@@ -108,6 +113,12 @@ export const StyleHeaderDashboard = styled.div`
     bottom: 40px;
   }
   @media (max-width: 800px) {
+    .active {
+      padding: 2px;
+    }
+    #activeA {
+      display: none;
+    }
     width: ${(props) => (props.$openHeaderDashboard ? '280px' : '80px')};
     padding: 0;
     #span-title {

@@ -13,10 +13,29 @@ export const StyleFoods = styled.div`
     flex-wrap: wrap;
     width: 100%;
   }
-  .defualtImage {
-    width: 100%;
+  .food-cards {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .noCart {
     display: flex;
     justify-content: center;
+    align-items: center;
+    max-width: 100%;
+  }
+  .confirmOrder {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+  #shopCart-nav {
+    max-width: 800px;
+  }
+  .defualtImage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 20px;
   }
   .defualtImage img {
@@ -30,9 +49,15 @@ export const StyleFoods = styled.div`
     height: 330px;
   }
   .food-cards {
+    justify-content: center;
     display: flex;
+    flex-direction: row;
   }
-
+  @media screen and (max-width: 1080px) {
+    .food-cards {
+      flex-direction: column;
+    }
+  }
   @media screen and (max-width: 480px) {
     .food-cards {
       flex-direction: column;
@@ -41,7 +66,7 @@ export const StyleFoods = styled.div`
       display: flex;
       flex-direction: column;
       font-size: 14px;
-      gap: 20px;
+      gap: 0px;
     }
     .foods-header p {
       margin-top: 10px;

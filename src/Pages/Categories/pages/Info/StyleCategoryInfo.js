@@ -87,5 +87,18 @@ export const StyleCategoryInfo = styled.div`
       height: 35px;
       font-size: 12px;
     }
+    .category-banner {
+      height: 200px;
+    }
+    .category-banner h2 {
+      font-size: 50px;
+    }
+    .continer button {
+      width: 115px;
+      font-size: 11px;
+    }
+    .goBackIcon {
+      font-size: 13px !important;
+    }
   }
 `;

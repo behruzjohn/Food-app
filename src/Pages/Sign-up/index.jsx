@@ -37,8 +37,6 @@ function SignUp() {
   const [erorFetch, setErorFetch] = useState('');
   const [phoneNumber, setPhoneNumber] = useState(null);
 
-  const langFromDB = 'en';
-
   const [confirmError, setConfirmError] = useState('');
 
   const [fetch, { data }] = useMutation(SIGN_UP);
@@ -53,10 +51,6 @@ function SignUp() {
     },
   });
 
-  const handleChange = (event) => {
-    const newLang = event.target.value;
-    setLang(newLang);
-  };
   function handleClickShowPassword() {
     setIsHide((prev) => !prev);
   }
@@ -120,29 +114,6 @@ function SignUp() {
     <>
       <Loader load={loaderr}></Loader>
       <StyleSignUp className="signUp">
-        <div className="lang">
-          <FormControl
-            style={{ backgroundColor: '#fff', borderRadius: 10 }}
-            className="selectId"
-          >
-            <InputLabel id="lang-select-label">{t('lang')}</InputLabel>
-            <Select
-              value={lang || 'en'}
-              labelId="lang-select-label"
-              id="lang-select"
-              onChange={handleChange}
-              style={{ height: 40 }}
-              MenuProps={{
-                disableScrollLock: true,
-                disableAutoFocusItem: true,
-              }}
-            >
-              <MenuItem value="en">English</MenuItem>
-              <MenuItem value="uz">Uzbekcha</MenuItem>
-              <MenuItem value="ru">Russian</MenuItem>
-            </Select>
-          </FormControl>
-        </div>
         <StyleContainer>
           <div className="sign-up-nav">
             <div className="form">

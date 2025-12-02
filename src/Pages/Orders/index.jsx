@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 
 import noOrder from '../../assets/noRd.png';
+import AddIcon from '@mui/icons-material/Add';
 import { useTranslation } from 'react-i18next';
 import { MoreHoriz } from '@mui/icons-material';
 import ToastExample from '../../Components/Toast';
@@ -52,7 +53,13 @@ function OrdersPg() {
   const localToken = JSON.parse(localStorage.getItem('authStore')) || '';
   const role = localToken?.state?.role;
 
-  const [addOrder, { loading, error }] = useMutation(CREATE_ORDER);
+  const [addOrder, { loading, error }] = useMutation(CREATE_ORDER, {
+    onCompleted: () => {
+      getOrderForUser();
+      getOrderForAdmin();
+      setOpenToastForOrderListError(true);
+    },
+  });
   const [updateStatus, { loading: loadUptade }] =
     useMutation(UPDATE_ORDER_STATUS);
 
@@ -63,7 +70,6 @@ function OrdersPg() {
         page: page,
         limit: 10,
       },
-      fetchPolicy: 'network-only',
     }
   );
 
@@ -203,15 +209,11 @@ function OrdersPg() {
                 <h2>
                   {role === 'admin' ? t('orderTitleAdmin') : t('orderTitle')}
                 </h2>
-                <p>
-                  {role === 'admin'
-                    ? t('orderDescAdmin')
-                    : t('orderDescription')}
-                </p>
               </div>
               <GuardComponent role={role} section="order" action="addOrder">
                 <div className="order-header-btns">
                   <Button
+                    startIcon={<AddIcon />}
                     color="success"
                     onClick={() => setOpenAddOrder(true)}
                     variant="contained"
@@ -220,14 +222,15 @@ function OrdersPg() {
                   </Button>
                 </div>
               </GuardComponent>
+
               {role === 'admin' && (
-                <>
+                <div id="status" style={{ marginTop: 10 }}>
                   <SelectOrderStatus status={status} setStatus={setStatus} />
-                </>
+                </div>
               )}
             </div>
 
-            <div style={{ marginTop: 40 }} className="orders-list">
+            <div style={{ marginTop: 25 }} className="orders-list">
               <div className="orders-list-nav">
                 <div
                   className="orders-list-scroll"
@@ -287,7 +290,7 @@ function OrdersPg() {
                             </td>
                             <td>
                               <Chip
-                                style={{ borderRadius: 8 }}
+                                className="chip"
                                 label={orderItem.status}
                                 color={
                                   orderItem.status === 'pending'
@@ -400,7 +403,7 @@ function OrdersPg() {
               </div>
             </div>
             {role === 'admin' && !load && !loading && !loadUptade && (
-              <PaginationWrapper style={{ position: 'absolute', bottom: 0 }}>
+              <PaginationWrapper>
                 <Pagination
                   page={page}
                   onChange={handleChange}
@@ -416,7 +419,7 @@ function OrdersPg() {
       <ToastExample
         status={error?.message ? 'error' : 'success'}
         open={openToastForOrderListError}
-        setOpen={error?.message ? setOpenToastForOrderListError : 'true'}
+        setOpen={setOpenToastForOrderListError}
         title={error?.message ? error?.message : t('orderAdded')}
       ></ToastExample>
     </HeaderDashborad>

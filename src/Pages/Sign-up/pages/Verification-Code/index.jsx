@@ -9,6 +9,7 @@ import { CONFIRM_SIGN_UP } from '../../api';
 function VerificationCode() {
   const [code, setCode] = useState('');
   const [confirmError, setConfirmError] = useState('');
+
   const [timer, setTimer] = useState(60);
   const navigate = useNavigate();
   const [fetchConfirm] = useMutation(CONFIRM_SIGN_UP);
@@ -78,7 +79,7 @@ function VerificationCode() {
             }}
           />
         </div>
-        {!confirmError && <p id="timer">{formatTime(timer)}</p>}
+        <p id="timer">{formatTime(timer)}</p>
         {confirmError && (
           <p
             style={{
@@ -92,7 +93,11 @@ function VerificationCode() {
           </p>
         )}
         <div className="resultContainer">
-          <Button onClick={handleClickConfirm} variant="contained">
+          <Button
+            disabled={code.length < 5}
+            onClick={handleClickConfirm}
+            variant="contained"
+          >
             {confirmError ? 'Try Again' : 'Verify'}
           </Button>
           <p>

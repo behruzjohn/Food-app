@@ -41,7 +41,7 @@ function HeaderDashborad({ children }) {
                   key={item.key}
                   onClick={() => navigate(item.path)}
                 >
-                  <a id={isActive ? 'activeA' : ''}>
+                  <a id={isActive ? 'activeIcon' : ''}>
                     {item.icon}
                     <span id={isActive ? 'activeA' : 'span-title'}>
                       {t(item.key)}

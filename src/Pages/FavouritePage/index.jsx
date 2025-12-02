@@ -24,15 +24,12 @@ function FavouriteFood() {
   const [openQuontity, setOpenQuontity] = useState(false);
   const [clickedDelete, setClickedDelete] = useState(false);
   const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
-  const [selectedFood, setSelectedFood] = useState(null);
   const [openToast, setOpenToast] = useState(false);
-  const [allFoodsForSearch, setAllFoodsForSearch] = useState([]);
-  const [createCard] = useMutation(CREATE_CARD);
   const [deleteFoodById, { data: deleteFavData, error: deleteFoodError }] =
     useMutation(DELETE_FOOD_FROM_FAVOURITES);
   const [deletedFoodId, setId] = useState(null);
 
-  const { data, loading, refetch } = useQuery(GET_ALL_FAVOURITE_FOODS, {
+  const { data, refetch } = useQuery(GET_ALL_FAVOURITE_FOODS, {
     fetchPolicy: 'network-only',
   });
 
@@ -53,31 +50,14 @@ function FavouriteFood() {
     }
   };
 
-  const handleAddToCart = (food) => {
-    setSelectedFood(food);
-    setOpenQuontity(true);
-  };
-
-  const handleConfirmQuontity = (quontity) => {
-    createCard({
-      variables: {
-        data: {
-          food: selectedFood,
-          quantity: quontity,
-        },
-      },
-    });
-
-    setOpenQuontity(false);
-    setSelectedFood(null);
-    setOpenToastForAddCard(true);
-  };
-
   useEffect(() => {
-    if (data?.getFavoriteFoods?.payload) {
-      setFoods(data.getFavoriteFoods.payload);
-      setAllFoodsForSearch(data.getFavoriteFoods.payload);
-    }
+    const fetchFavouriteFood = async () => {
+      const { data } = await refetch();
+      if (data?.getFavoriteFoods?.payload) {
+        setFoods(data.getFavoriteFoods.payload);
+      }
+    };
+    fetchFavouriteFood();
   }, [data]);
 
   useEffect(() => {
@@ -88,18 +68,12 @@ function FavouriteFood() {
 
   return (
     <HeaderDashborad>
-      <Loader load={loading}></Loader>
       <StyleFoods className="foods">
         <Container maxWidth="xl">
-          <OrderSearch
-            setFoods={setFoods}
-            allFoods={allFoodsForSearch}
-            action="category"
-          />
+          <OrderSearch setFoods={setFoods} action="category" />
           <div className="foods-header">
             <div className="text">
               <h2>{t('favouriteFoodTitle')}</h2>
-              {/* <p>{t('favouriteDesc')}</p> */}
             </div>
             <div
               style={{ display: 'flex', alignItems: 'center', gap: 15 }}
@@ -110,8 +84,9 @@ function FavouriteFood() {
               {foods?.length ? (
                 foods?.map((foodItem) => (
                   <FavouriteCard
+                    checkElement="admin"
+                    setOpenToastForAddCard={setOpenToastForAddCard}
                     handleClickDeleteFood={handleClickDeleteFood}
-                    handleAddToCart={handleAddToCart}
                     key={foodItem._id}
                     food={foodItem}
                   />
@@ -134,22 +109,18 @@ function FavouriteFood() {
         />
       )}
 
+      <DeleteFoodModalAlert
+        onConfirm={handleClickDelete}
+        open={clickedDelete}
+        setOpen={setClickedDelete}
+      />
+
       <ToastExample
         status="success"
         title={t('addedNewCartFood')}
         open={openToastForAddCard}
         setOpen={setOpenToastForAddCard}
       ></ToastExample>
-      <DeleteFoodModalAlert
-        onConfirm={handleClickDelete}
-        open={clickedDelete}
-        setOpen={setClickedDelete}
-      />
-      <FoodQuontity
-        onConfirm={handleConfirmQuontity}
-        open={openQuontity}
-        setOpen={setOpenQuontity}
-      ></FoodQuontity>
     </HeaderDashborad>
   );
 }

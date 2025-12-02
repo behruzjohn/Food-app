@@ -251,6 +251,7 @@ function Foods() {
                     handleClickEditFood={handleClickEditFood}
                     handleClickDeleteFood={handleClickDeleteFood}
                     handleClickFavourite={handleClickFavourite}
+                    setOpenToastForAddCard={setOpenToastForAddCard}
                     key={food._id}
                     food={food}
                   />
@@ -282,7 +283,12 @@ function Foods() {
         open={openToast}
         setOpen={setOpenToast}
       />
-
+      <ToastExample
+        status="success"
+        title={t('addedNewCartFood')}
+        open={openToastForAddCard}
+        setOpen={setOpenToastForAddCard}
+      ></ToastExample>
       <AddFood
         open={open}
         foods={foods}

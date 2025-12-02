@@ -26,10 +26,8 @@ export const StyleOrder = styled.div`
   }
 
   .orders-list table {
-    border-collapse: separate;
-    border-spacing: 0 30px;
-    color: #fff;
     width: 100%;
+    border-collapse: collapse;
   }
 
   table {
@@ -39,13 +37,14 @@ export const StyleOrder = styled.div`
   }
 
   table thead {
-    background-color: #ffd900ff;
+    background-color: #ffd900;
+    color: #fff;
   }
 
   table thead th {
-    border-top: 2px solid;
-    border-bottom: 2px solid;
-    padding: 18px;
+    padding: 20px;
+    border-bottom: 2px solid #ddd;
+    text-align: left;
   }
 
   table thead th:first-child {
@@ -65,11 +64,10 @@ export const StyleOrder = styled.div`
     cursor: pointer;
     height: 48px !important;
     margin-top: 20px;
-    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: background-color 0.3s ease-in-out;
   }
   tbody tr:hover {
     background-color: #e3dddd;
-    transform: scale(1);
   }
 
   tbody td button {
@@ -78,11 +76,14 @@ export const StyleOrder = styled.div`
     height: 35px;
     width: 125px;
   }
-
-  tbody td {
-    padding: 20px;
+  .chip {
+    border-radius: 8px;
+    width: 100px;
   }
-
+  table tbody td {
+    padding: 20px;
+    vertical-align: middle;
+  }
   thead th {
     padding: 20px;
   }
@@ -104,7 +105,7 @@ export const StyleOrder = styled.div`
     object-fit: contain;
   }
 
-  @media screen and (max-width: 480px) {
+  @media screen and (max-width: 780px) {
     .order-header-text {
       font-size: 12px;
     }
@@ -122,6 +123,10 @@ export const StyleOrder = styled.div`
       height: 35px;
       padding: 2px;
     }
+    .chip {
+      border-radius: 8px;
+      width: 80px;
+    }
 
     .orders-nav {
       margin-right: 0;
@@ -130,9 +135,6 @@ export const StyleOrder = styled.div`
     .order-special {
       margin-right: 0px;
     }
-    .main-header {
-      flex-direction: column;
-    }
     .main-header button {
       width: 150px;
       height: 30px;
@@ -140,12 +142,17 @@ export const StyleOrder = styled.div`
     table {
       font-size: 10px;
     }
+    table tbody td {
+      padding: 16px;
+    }
+    table thead th {
+      padding: 16px;
+    }
   }
 `;
 
 export const PaginationWrapper = styled.div`
-  position: relative;
-  bottom: 10px;
+  margin-top: 20px;
   width: 100%;
   display: flex;
   justify-content: flex-end;
@@ -155,7 +162,6 @@ export const PaginationWrapper = styled.div`
 
   @media (max-width: 768px) {
     bottom: 0;
-    justify-content: center;
     padding-left: 0;
     padding: 5px 0;
   }

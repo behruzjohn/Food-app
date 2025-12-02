@@ -63,3 +63,19 @@ export const CREATE_CARD = gql`
     }
   }
 `;
+export const GET_USER_BY_ID = gql`
+  query GetUserById($userId: ID) {
+    getUserById(userId: $userId) {
+      payload {
+        _id
+        name
+        phone
+        role
+        photo
+        telegramId
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
