@@ -26,18 +26,13 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 function SignUp() {
   const { t } = useTranslation();
   const navigate = useNavigate('');
-  const [code, setCode] = useState(0);
-  const [open, setOpen] = useState(false);
   const [loaderr, setLoad] = useState(false);
   const [isHide, setIsHide] = useState(false);
   const [isHide2, setIsHide2] = useState(false);
   const [erorFetch, setErorFetch] = useState('');
   const [phoneNumber, setPhoneNumber] = useState(null);
 
-  const [confirmError, setConfirmError] = useState('');
-
-  const [fetch, { data }] = useMutation(SIGN_UP);
-  const [fetchConfirm] = useMutation(CONFIRM_SIGN_UP);
+  const [fetch] = useMutation(SIGN_UP);
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -81,31 +76,6 @@ function SignUp() {
       setLoad(false);
     }
   };
-
-  async function handleClickConfirm() {
-    try {
-      setLoad(true);
-      setConfirmError('');
-
-      const res = await fetchConfirm({
-        variables: {
-          code: String(code),
-          token: data?.signUp?.token,
-        },
-      });
-
-      if (res?.data?.confirmSignUp?.token) {
-        localStorage.setItem('token', res.data.confirmSignUp.token);
-        setOpen(false);
-        setLoad(false);
-        navigate('/sign-in');
-      }
-    } catch (err) {
-      setErorFetch(err.message);
-      setConfirmError(err.message);
-      setLoad(false);
-    }
-  }
 
   return (
     <>
