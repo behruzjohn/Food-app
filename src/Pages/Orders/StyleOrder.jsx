@@ -14,7 +14,7 @@ export const StyleOrder = styled.div`
   }
   .orders-list-scroll {
     padding-bottom: 50px;
-    overflow-x: auto;
+    overflow: auto;
     width: 100%;
   }
   .order-header-btns input {
@@ -34,6 +34,7 @@ export const StyleOrder = styled.div`
     border-collapse: separate;
     border-spacing: 0;
     width: 100%;
+    min-width: 900px;
   }
 
   table thead {

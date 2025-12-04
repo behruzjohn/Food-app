@@ -10,11 +10,16 @@ import OrderSearch from '../../../../Components/OrderSearch';
 import FoodCard from '../../../../Components/FoodCard/FoodCards';
 import HeaderDashborad from '../../../../Components/HeaderDashboard';
 import FavouriteCard from '../../../FavouritePage/pages/FavouriteCard';
+import { GET_USER_BY_ID } from '../../../FavouritePage/api';
 
 function OrderItem() {
   const { id } = useParams();
   const { t } = useTranslation();
+  const [userId, setUserId] = useState(null);
   const [location, setLocation] = useState(null);
+  const { data: userData } = useQuery(GET_USER_BY_ID, {
+    variables: { userId: userId },
+  });
 
   const { data, loading } = useQuery(GET_ORDER_ITEMS, {
     variables: {
@@ -70,6 +75,10 @@ function OrderItem() {
                       <strong>{t('location')}: </strong>
                       {location?.slice(0, -21)}.
                     </p>
+                    {/* <p style={{ fontFamily: 'sans-serif', marginTop: 5 }}>
+                      <span style={{ color: 'gray' }}>{t('customer')}: </span>
+                      {userData?.getUserById?.payload?.name}
+                    </p> */}
                   </div>
                   <h3 style={{ fontFamily: 'sans-serif', marginTop: 15 }}>
                     <strong>{t('totalPrice')}: </strong>
@@ -96,6 +105,7 @@ function OrderItem() {
                   </div>
                 ) : (
                   orderItems?.map((food) => {
+                    setUserId;
                     return (
                       <FavouriteCard
                         quantity={food?.quantity}

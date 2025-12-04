@@ -198,10 +198,7 @@ function OrdersPg() {
       ></AddOrder>
       <StyleOrder className="orders">
         <Container maxWidth="xl">
-          <div
-            style={{ position: 'relative', height: '91vh' }}
-            className="orders-nav"
-          >
+          <div style={{ position: 'relative' }} className="orders-nav">
             <OrderSearch action="category"></OrderSearch>
 
             <div className="main-header">
@@ -234,7 +231,7 @@ function OrdersPg() {
               <div className="orders-list-nav">
                 <div
                   className="orders-list-scroll"
-                  style={{ position: 'relative', overflowX: 'auto' }}
+                  style={{ position: 'relative' }}
                 >
                   {load || loading || loadUptade ? (
                     <div

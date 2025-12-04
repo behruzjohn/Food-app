@@ -44,6 +44,9 @@ export const StyleFoods = styled.div`
     max-width: 100%;
     height: auto;
   }
+  .addSpan {
+    display: flex;
+  }
   #def {
     width: 550px;
     height: 330px;
@@ -55,18 +58,30 @@ export const StyleFoods = styled.div`
   }
   @media screen and (max-width: 1080px) {
     .food-cards {
-      flex-direction: column;
+      flex-direction: row;
     }
   }
   @media screen and (max-width: 480px) {
+    .addSpan {
+      display: none;
+    }
+    #special button {
+      margin-top: 0;
+      width: 10px !important;
+      min-width: 47px;
+      height: 35px;
+      display: flex;
+    }
     .food-cards {
       flex-direction: column;
     }
     .foods-header {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      width: 100%;
       font-size: 14px;
-      gap: 0px;
+      justify-content: space-between;
+      max-width: 100%;
     }
     .foods-header p {
       margin-top: 10px;
@@ -81,7 +96,6 @@ export const StyleFoods = styled.div`
     #special {
       display: flex;
       align-items: center;
-      gap: 15px;
     }
     .defualtImage img {
       width: 100%;

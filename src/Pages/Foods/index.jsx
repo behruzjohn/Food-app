@@ -29,6 +29,8 @@ import {
 } from './api';
 import SliderImages from '../../Components/Slider';
 import { PaginationWrapper } from '../Orders/StyleOrder';
+import FoodTable from './components/FoodTable';
+import { OrderTable } from './components/FoodTable/StyleFoodTable';
 
 function Foods() {
   const { t } = useTranslation();
@@ -223,9 +225,9 @@ function Foods() {
                   onClick={() => setOpen(true)}
                   color="success"
                   variant="contained"
-                  startIcon={<AddIcon />}
+                  startIcon={<AddIcon style={{ marginLeft: 12 }} />}
                 >
-                  {t('newMenu')}
+                  <span className="addSpan">{t('newMenu')}</span>
                 </Button>
               </GuardComponent>
             </div>
@@ -245,17 +247,46 @@ function Foods() {
               </div>
             ) : (
               <div className="food-cards-nav">
-                {foods?.map((food) => (
-                  <FoodCard
-                    handleClickRemoveFav={handleClickRemoveFav}
-                    handleClickEditFood={handleClickEditFood}
-                    handleClickDeleteFood={handleClickDeleteFood}
-                    handleClickFavourite={handleClickFavourite}
-                    setOpenToastForAddCard={setOpenToastForAddCard}
-                    key={food._id}
-                    food={food}
-                  />
-                ))}
+                {role === 'user' ? (
+                  foods?.map((food) => (
+                    <FoodCard
+                      handleClickRemoveFav={handleClickRemoveFav}
+                      handleClickEditFood={handleClickEditFood}
+                      handleClickDeleteFood={handleClickDeleteFood}
+                      handleClickFavourite={handleClickFavourite}
+                      setOpenToastForAddCard={setOpenToastForAddCard}
+                      key={food._id}
+                      food={food}
+                    />
+                  ))
+                ) : (
+                  <OrderTable>
+                    <div className="orders-list-scroll">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Image</th>
+                            <th>Food name</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {foods?.map((food) => (
+                            <FoodTable
+                              handleClickDeleteFood={handleClickDeleteFood}
+                              handleClickEditFood={handleClickEditFood}
+                              key={food._id}
+                              food={food}
+                            />
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </OrderTable>
+                )}
               </div>
             )}
           </div>

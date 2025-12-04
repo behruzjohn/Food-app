@@ -74,6 +74,7 @@ function FavouriteFood() {
           <div className="foods-header">
             <div className="text">
               <h2>{t('favouriteFoodTitle')}</h2>
+              
             </div>
             <div
               style={{ display: 'flex', alignItems: 'center', gap: 15 }}
