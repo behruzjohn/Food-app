@@ -7,8 +7,7 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { Select } from '@mui/material';
+import { useState } from 'react';
 import { useLang } from '../../useLang';
 import { MuiTelInput } from 'mui-tel-input';
 import { StyleSignUp } from './StyleSign-up';
@@ -20,7 +19,6 @@ import Loader from '../../Components/Loader/index';
 import PersonIcon from '@mui/icons-material/Person';
 import { Controller, useForm } from 'react-hook-form';
 import { StyleContainer } from '../../../ContainerCss';
-import SentCode from '../../Components/SentCodeSignUp';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -29,7 +27,6 @@ function SignUp() {
   const { t } = useTranslation();
   const navigate = useNavigate('');
   const [code, setCode] = useState(0);
-  const { lang, setLang } = useLang();
   const [open, setOpen] = useState(false);
   const [loaderr, setLoad] = useState(false);
   const [isHide, setIsHide] = useState(false);
@@ -299,14 +296,6 @@ function SignUp() {
             </div>
           </div>
         </StyleContainer>
-        {open && (
-          <SentCode
-            setOpen={setOpen}
-            setCode={setCode}
-            handleClickConfirm={handleClickConfirm}
-            confirmError={confirmError}
-          />
-        )}
       </StyleSignUp>
     </>
   );

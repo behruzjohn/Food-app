@@ -56,7 +56,7 @@ export const StyleOrderConfirm = styled.div`
     height: 35px;
     max-width: 100%;
     padding: 10px;
-    font-size: 1rem;
+    font-size: 13px;
 
     @media screen and (max-width: 480px) {
       font-size: 0.9rem;
@@ -81,5 +81,8 @@ export const StyleOrderConfirm = styled.div`
     min-width: 100%;
     padding: 20px;
     border-radius: 10px;
+    button {
+      font-size: 12px;
+    }
   }
 `;

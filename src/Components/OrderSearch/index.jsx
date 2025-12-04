@@ -17,16 +17,17 @@ import { useEffect, useState } from 'react';
 import { Search } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useLazyQuery } from '@apollo/client/react';
+import { useLazyQuery, useQuery } from '@apollo/client/react';
 import GuardComponent from '../CheckRole/CheckRole';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PasswordIcon from '@mui/icons-material/Password';
 import { GET_ALL_FAVOURITE_FOODS, GET_FOODS_BY_SEARCH } from './api';
 import LocalGroceryStoreOutlinedIcon from '@mui/icons-material/LocalGroceryStoreOutlined';
+import { GET_CARD_FOOD } from '../../Pages/ShopCard/api';
 
 function OrderSearch({
   setLoadSearch,
-  quontityLen,
+
   setFoods,
   allFoodsForSearch,
   action,
@@ -37,15 +38,19 @@ function OrderSearch({
   const { lang, setLang } = useLang();
   const [role, setRole] = useState('');
   const [open, setopen] = useState(null);
+  const [qountity, setQountity] = useState(null);
   const [searchInput, setSearchInput] = useState('');
 
   const name = localStorage.getItem('userName') || '';
   const upperCaseName = name ? name[0]?.toUpperCase() : '';
 
   const [getSearchedFood, { data }] = useLazyQuery(GET_FOODS_BY_SEARCH);
-  const [getFavouriteLength, { data: FavouriteFood }] = useLazyQuery(
-    GET_ALL_FAVOURITE_FOODS
-  );
+
+  const { data: cartFood } = useQuery(GET_CARD_FOOD, { pollInterval: 1500 });
+
+  useEffect(() => {
+    setQountity(cartFood?.getCartItemsByUserId?.payload?.items?.length);
+  }, [cartFood]);
 
   const handleChange = (event) => {
     const newLang = event.target.value;
@@ -80,10 +85,6 @@ function OrderSearch({
       setLoadSearch(false);
     }, 300);
   };
-
-  useEffect(() => {
-    getFavouriteLength();
-  }, [FavouriteFood]);
 
   useEffect(() => {
     const stored = localStorage.getItem('authStore');
@@ -143,7 +144,7 @@ function OrderSearch({
               className="shop"
             >
               <LocalGroceryStoreOutlinedIcon />
-              {quontityLen > 0 && <span className="badge">{quontityLen}</span>}
+              {qountity > 0 && <span className="badge">{qountity}</span>}
             </div>
           </GuardComponent>
           <FormControl className="selectId">

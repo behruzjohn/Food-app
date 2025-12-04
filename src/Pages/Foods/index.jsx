@@ -31,6 +31,7 @@ import SliderImages from '../../Components/Slider';
 import { PaginationWrapper } from '../Orders/StyleOrder';
 import FoodTable from './components/FoodTable';
 import { OrderTable } from './components/FoodTable/StyleFoodTable';
+import { useNavigate } from 'react-router-dom';
 
 function Foods() {
   const { t } = useTranslation();
@@ -38,13 +39,12 @@ function Foods() {
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [foods, setFoods] = useState([]);
+  const navigate = useNavigate();
   const [isDeleted, setIsDeleted] = useState(false);
   const [openToast, setOpenToast] = useState(false);
   const [quontityLen, setQuontityLen] = useState(0);
   const [loadSearch, setLoadSearch] = useState(false);
-  const [selectedFood, setSelectedFood] = useState(null);
   const [editedFoodId, setEditedFoodId] = useState(null);
-  const [openQuontity, setOpenQuontity] = useState(false);
   const [deletedFoodId, setDeletedFoodId] = useState(null);
   const [clickedDelete, setClickedDelete] = useState(false);
   const [allFoodsForSearch, setAllFoodsForSearch] = useState([]);
@@ -83,6 +83,15 @@ function Foods() {
 
     fetchFoods();
   }, [page, refetch]);
+
+  useEffect(() => {
+    const authStore = JSON.parse(localStorage.getItem('authStore') || '{}');
+    const token = authStore?.state?.token;
+
+    if (!token) {
+      navigate('/sign-in');
+    }
+  }, []);
 
   useEffect(() => {
     if (page) {

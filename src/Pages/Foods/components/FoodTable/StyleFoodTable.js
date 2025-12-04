@@ -16,7 +16,7 @@ export const OrderTable = styled.div`
   }
 
   thead {
-    background-color: red;
+    background-color: #a20714;
     color: #fff;
   }
   .orders-list-scroll {

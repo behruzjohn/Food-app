@@ -21,6 +21,8 @@ function FavouriteCard({
   isShopCart,
   user,
 }) {
+  console.log(quantity);
+
   const [autoTimeout, setAutoTimeout] = useState(null);
   const { t } = useTranslation();
   const [openOption, setopenOption] = useState(null);
@@ -94,7 +96,7 @@ function FavouriteCard({
                 sx={{ gap: 1, px: 2 }}
               >
                 <DeleteIcon className="removeIcon" fontSize="small" />
-                {t('remove')}
+                <span id="removeText"> {t('remove')}</span>
               </MenuItem>
             ) : (
               <GuardComponent
@@ -135,21 +137,31 @@ function FavouriteCard({
               </GuardComponent>
             )}
           </div>
-          <p>{food?.description?.slice(0, 95) || 'lodnannsdasn'}</p>
-          {isOrderItem && (
-            <p style={{ fontFamily: 'sans-serif', marginTop: 5 }}>
-              <span style={{ color: 'gray' }}>{t('customer')}: </span>
-              {userData?.getUserById?.payload?.name}
-            </p>
-          )}
+          <p style={{ marginTop: 6 }}>
+            {food?.description?.slice(0, 95) ||
+              'Literature admiration frequently indulgence announcing are who you her. Was least quick after six. So it yourself repeated together cheerful. Neither it cordial so painful picture studied if. Sex him position doubtful resolved boy expenses. Her engrossed deficient'}
+          </p>
           <div
-            style={{ display: 'flex', justifyContent: 'space-between' }}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
             className="amaunt"
           >
-            <p style={{ fontFamily: 'sans-serif', marginTop: 5 }}>
-              <span style={{ color: 'gray' }}>{t('Quontity')}: </span>
-              {quantity}
-            </p>
+            {isOrderItem && (
+              <p style={{ fontFamily: 'sans-serif', marginTop: 5 }}>
+                <span style={{ color: 'gray' }}>{t('customer')}: </span>
+                {userData?.getUserById?.payload?.name}
+              </p>
+            )}
+            {/* {isShopCart && (
+              <p style={{ fontFamily: 'sans-serif', marginTop: 5 }}>
+                <span style={{ color: 'gray' }}>{t('Quontity')}: </span>
+                {quantity}
+              </p>
+            )} */}
+
             {isOrderItem && (
               <p style={{ fontFamily: 'sans-serif', marginTop: 12 }}>
                 {formatPrice(food?.price * quantity)}

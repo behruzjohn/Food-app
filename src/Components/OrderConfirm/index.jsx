@@ -6,12 +6,7 @@ import { StyleOrderConfirm } from './StyleConfrimOrder';
 function ConfirmOrder({ data, setOpen }) {
   const { t } = useTranslation();
 
-  const quantity = data?.getCartItemsByUserId?.payload?.items.reduce(
-    (total, item) => {
-      return (total += item?.quantity);
-    },
-    0
-  );
+  const itemLeng = data?.getCartItemsByUserId?.payload?.items;
 
   return (
     <StyleOrderConfirm>
@@ -19,7 +14,7 @@ function ConfirmOrder({ data, setOpen }) {
       <h4 style={{ marginTop: 28 }}>{t('yourOrders')}</h4>
       <div id="container-main">
         <p>
-          {t('products')} ({quantity}x)
+          {t('products')} ({itemLeng?.length}x)
         </p>
       </div>
       <h4 style={{ marginTop: 10 }}>{t('total')}:</h4>

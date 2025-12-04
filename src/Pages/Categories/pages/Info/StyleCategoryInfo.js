@@ -91,7 +91,7 @@ export const StyleCategoryInfo = styled.div`
       height: 200px;
     }
     .category-banner h2 {
-      font-size: 50px;
+      font-size: 40px;
     }
     .continer button {
       width: 115px;

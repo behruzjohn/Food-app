@@ -10,6 +10,7 @@ import ShopCart from '../Pages/ShopCard';
 import OrderItem from '../Pages/Orders/pages/OrderItem';
 import VerificationCode from '../Pages/Sign-up/pages/Verification-Code';
 import ChangePassword from '../Pages/ChangePassword';
+import ProtectedRoute from './ProtectRoute';
 
 export const routes = [
   {

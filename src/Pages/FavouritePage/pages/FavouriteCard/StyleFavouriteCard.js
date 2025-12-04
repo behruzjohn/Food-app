@@ -23,6 +23,9 @@ export const StyleFavouriteCard = styled.div`
     background-color: #fff;
     color: gray;
   }
+  #removeText {
+    display: flex;
+  }
   #delete-menu:hover {
     color: black;
     cursor: pointer;
@@ -126,12 +129,24 @@ export const StyleFavouriteCard = styled.div`
     gap: 7px;
   }
   @media screen and (max-width: 480px) {
+    #removeText {
+      display: none;
+    }
     .card-nav {
       width: 100%;
       justify-content: space-between;
     }
+    .card-box {
+      display: flex;
+      align-items: center;
+    }
     .texts p {
       font-size: 12px;
+    }
+    .texts {
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
     }
     .quontityAdd {
       margin-top: 10px;

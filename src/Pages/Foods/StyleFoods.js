@@ -18,6 +18,14 @@ export const StyleFoods = styled.div`
     gap: 20px;
     align-items: flex-start;
   }
+  .food-cards-navs {
+    justify-content: center;
+    display: flex;
+    margin-left: 0;
+    gap: 0px;
+    flex-wrap: wrap;
+    width: 100%;
+  }
   .noCart {
     display: flex;
     justify-content: center;

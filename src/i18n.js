@@ -158,6 +158,13 @@ i18n
           qountity: 'Quontity:',
           forgotPass: 'Forgot-Password',
           dontWontChange: `Don’t want to change your password?<a href="/foods"> Click here.</a>`,
+          verfyCode: 'Verification Code',
+          verfyDescription:
+            ' Enter the code sent to your mobile phone number ending in:',
+          dontWant: "Don't want verification?",
+          signIn: 'Sign in',
+          tryAgain: 'Try Again',
+          verify: 'Verify',
         },
       },
       uz: {
@@ -311,6 +318,13 @@ i18n
           qountity: 'Miqdor:',
           forgotPass: 'Parolni unutdingizmi?',
           dontWontChange: `Parolni o‘zgartirmoqchi emassizmi? <a href="/foods">Shu yerni bosing.</a>`,
+          verfyCode: 'Tasdiqlash kodi',
+          verfyDescription:
+            'Mobil telefon raqamingizga yuborilgan kodni kiriting, oxirgi raqamlar:',
+          dontWant: 'Tasdiqlashni xohlamaysizmi?',
+          signIn: 'Kirish',
+          tryAgain: 'Qayta urinib ko‘rish',
+          verify: 'Tasdiqlash',
         },
       },
       ru: {
@@ -462,6 +476,13 @@ i18n
           qountity: 'Количество:',
           forgotPass: 'Забыли пароль?',
           dontWontChange: `Не хотите менять пароль? <a href="/foods">Нажмите здесь.</a>`,
+          verfyCode: 'Код подтверждения',
+          verfyDescription:
+            'Введите код, отправленный на ваш номер телефона, заканчивающийся на:',
+          dontWant: 'Не хотите подтверждение?',
+          signIn: 'Войти',
+          tryAgain: 'Попробовать снова',
+          verify: 'Подтвердить',
         },
       },
     },

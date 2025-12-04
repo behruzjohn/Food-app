@@ -81,7 +81,7 @@ function FavouriteFood() {
             ></div>
           </div>
           <div className="food-cards">
-            <div className="food-cards-nav">
+            <div className="food-cards-navs">
               {foods?.length ? (
                 foods?.map((foodItem) => (
                   <FavouriteCard

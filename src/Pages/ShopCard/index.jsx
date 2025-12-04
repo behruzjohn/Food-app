@@ -68,13 +68,6 @@ function ShopCart() {
       .catch((err) => console.log(err.message));
   };
 
-  const quantity = data?.getCartItemsByUserId?.payload?.items.reduce(
-    (total, item) => {
-      return (total += item?.quantity);
-    },
-    0
-  );
-
   useEffect(() => {
     if (data?.getCartItemsByUserId?.payload?.items) {
       setFoods(
@@ -108,14 +101,14 @@ function ShopCart() {
               <h2 style={{ fontFamily: 'sans-serif' }}>
                 {t('cartFood')}
                 <span style={{ color: 'gray' }}>
-                  , {quantity} {t('product')}
+                  , {foods?.length} {t('product')}
                 </span>
               </h2>
               <p>{t('cartDescription')}</p>
             </div>
           </div>
           <div className="food-cards">
-            <div id="shopCart-nav" className="food-cards-nav">
+            <div id="shopCart-nav" className="food-cards-navs">
               {foods.length ? (
                 foods?.map((food) => (
                   <FavouriteCard

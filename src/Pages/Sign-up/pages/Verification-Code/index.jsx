@@ -5,11 +5,12 @@ import { StyleVerificationCode } from './StyleVerificationCode';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMutation } from '@apollo/client/react';
 import { CONFIRM_SIGN_UP } from '../../api';
+import { useTranslation } from 'react-i18next';
 
 function VerificationCode() {
   const [code, setCode] = useState('');
   const [confirmError, setConfirmError] = useState('');
-
+  const { t } = useTranslation();
   const [timer, setTimer] = useState(60);
   const navigate = useNavigate();
   const [fetchConfirm] = useMutation(CONFIRM_SIGN_UP);
@@ -56,14 +57,13 @@ function VerificationCode() {
     <StyleVerificationCode isHaveError={confirmError}>
       <div className="container">
         <div className="container-nav">
-          <h3>Verification Code</h3>
+          <h3>{t('verfyCode')}</h3>
           <p
             style={{
               fontFamily: 'sans-serif',
             }}
           >
-            Enter the code sent to your mobile phone number ending in:{' '}
-            <strong>{phone?.slice(-5)}</strong>
+            {t('verfyDescription')} <strong>{phone?.slice(-5)}</strong>
           </p>
 
           <MuiOtpInput
@@ -98,15 +98,15 @@ function VerificationCode() {
             onClick={handleClickConfirm}
             variant="contained"
           >
-            {confirmError ? 'Try Again' : 'Verify'}
+            {confirmError ? t('tryAgain') : t('verify')}
           </Button>
           <p>
-            Don't want verification?{' '}
+            {t('dontWant')}{' '}
             <a
               style={{ color: 'black', textDecoration: 'none' }}
               href="/sign-up"
             >
-              Sign in
+              {t('signIn')}
             </a>
           </p>
         </div>

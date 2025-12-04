@@ -81,7 +81,6 @@ function OrderItem() {
                     </p> */}
                   </div>
                   <h3 style={{ fontFamily: 'sans-serif', marginTop: 15 }}>
-                    <strong>{t('totalPrice')}: </strong>
                     <span style={{ color: 'green' }}>
                       {formatPrice(data?.getOrderById?.payload?.totalPrice)}
                     </span>
@@ -89,7 +88,7 @@ function OrderItem() {
                 </div>
               </header>
               <div
-                style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}
+                style={{ display: 'flex', flexWrap: 'wrap' }}
                 className="card"
               >
                 {loading ? (

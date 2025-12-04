@@ -82,13 +82,7 @@ function Customers() {
                               <Chip
                                 style={{ borderRadius: 8 }}
                                 label={u.role}
-                                color={
-                                  u.role === 'admin'
-                                    ? 'error'
-                                    : u.role === 'moderator'
-                                    ? 'warning'
-                                    : 'default'
-                                }
+                                color={u.role === 'admin' ? 'info' : 'default'}
                               />
                             </td>
                           </tr>
