@@ -1,14 +1,5 @@
-import {
-  Button,
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  TextField,
-} from '@mui/material';
+import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
 import { useState } from 'react';
-import { useLang } from '../../useLang';
 import { MuiTelInput } from 'mui-tel-input';
 import { StyleSignUp } from './StyleSign-up';
 import { useNavigate } from 'react-router-dom';

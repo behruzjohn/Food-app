@@ -3,8 +3,8 @@ import { setContext } from '@apollo/client/link/context';
 import { useNavigate } from 'react-router-dom';
 
 const httpLink = new HttpLink({
-  // uri: 'https://radiative-marlin-unplayed.ngrok-free.dev/api',
-  uri: 'http://localhost:8000/api',
+  uri: 'https://radiative-marlin-unplayed.ngrok-free.dev/api',
+  // uri: 'http://localhost:8000/api',
 });
 
 const authLink = setContext((_, { headers }) => {
