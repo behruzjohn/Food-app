@@ -97,34 +97,6 @@ function SignIn() {
     <>
       <Loader load={load}></Loader>
       <StyleSignIn className="signIn">
-        {/* <div className="lang">
-          <FormControl
-            variant="outlined"
-            style={{ backgroundColor: '#fff', borderRadius: 10 }}
-            className="selectId"
-          >
-            <InputLabel id="lang-select-label">{t('lang')}</InputLabel>
-
-            <Select
-              className="select"
-              defaultValue={'en'}
-              style={{ height: 40 }}
-              labelId="lang-select-label"
-              id="lang-select"
-              value={lang}
-              label="Lang"
-              onChange={handleChange}
-              MenuProps={{
-                disableScrollLock: true,
-                disableAutoFocusItem: true,
-              }}
-            >
-              <MenuItem value="en">English</MenuItem>
-              <MenuItem value="uz">Uzbekcha</MenuItem>
-              <MenuItem value="ru">Russian</MenuItem>
-            </Select>
-          </FormControl> */}
-        {/* </div> */}
         <StyleContainer>
           <div className="sign-in-nav">
             <div className="form">
@@ -138,7 +110,6 @@ function SignIn() {
                     <Controller
                       name="role"
                       control={control}
-                      defaultValue="user"
                       rules={{ required: t('roleIsReq') }}
                       render={({
                         fieldState: { error },
@@ -150,9 +121,8 @@ function SignIn() {
                         return (
                           <Autocomplete
                             options={options}
-                            defaultValue="user"
                             getOptionLabel={(option) => option}
-                            value={selectedOption || 'user'}
+                            value={selectedOption}
                             onChange={(item, newValue) =>
                               onChange(newValue || '')
                             }
