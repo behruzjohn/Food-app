@@ -101,7 +101,7 @@ function VerificationCode() {
           >
             {confirmError ? t('tryAgain') : t('verify')}
           </Button>
-          <p>
+          <p style={{ color: 'blue' }}>
             {t('dontWant')}{' '}
             <a
               style={{ color: 'black', textDecoration: 'none' }}
