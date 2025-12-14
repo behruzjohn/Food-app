@@ -243,7 +243,7 @@ function CategoryInfo() {
             ) : (
               <div style={{ marginTop: 15 }} className="error">
                 <div className="img-with">
-                  <img id="undefind" src={undefindImg} alt="Undefined Image" />
+                  <img id="undefind" src={undefindImg} alt="Behruz Restaurant no undefind image" />
                   {categoryCard.length > 0 ? (
                     <></>
                   ) : (

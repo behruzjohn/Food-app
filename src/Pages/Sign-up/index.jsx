@@ -75,6 +75,7 @@ function SignUp() {
     <>
       <Loader load={loaderr}></Loader>
       <StyleSignUp className="signUp">
+       
         <StyleContainer>
           <div className="sign-up-nav">
             <div className="form">

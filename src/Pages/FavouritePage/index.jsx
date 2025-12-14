@@ -74,7 +74,6 @@ function FavouriteFood() {
           <div className="foods-header">
             <div className="text">
               <h2>{t('favouriteFoodTitle')}</h2>
-              
             </div>
             <div
               style={{ display: 'flex', alignItems: 'center', gap: 15 }}
@@ -94,7 +93,10 @@ function FavouriteFood() {
                 ))
               ) : (
                 <div className="defualtImage">
-                  <img src={undefindImg} alt="Undefined Image" />
+                  <img
+                    src={undefindImg}
+                    alt="Behruz Restaurant no undefind image"
+                  />
                 </div>
               )}
             </div>

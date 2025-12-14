@@ -399,7 +399,7 @@ function OrdersPg() {
                     </table>
                   ) : (
                     <div className="defualtImage">
-                      <img src={noOrder} alt="No Order" />
+                      <img src={noOrder} alt="Behruz Restaurant no image" />
                     </div>
                   )}
                 </div>

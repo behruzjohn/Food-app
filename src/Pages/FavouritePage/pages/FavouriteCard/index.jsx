@@ -81,7 +81,7 @@ function FavouriteCard({
   return (
     <StyleFavouriteCard>
       <div className="card-box">
-        <img src={food?.image} alt={food?.name} />
+        <img src={food?.image} alt={'Behruz' + food?.name} />
         <div className="texts">
           <div className="card-nav">
             <h3>{food?.name} </h3>

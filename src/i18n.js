@@ -112,7 +112,8 @@ i18n
           placeInHolder: 'Proceed to Checkout',
           orderAdded: 'Order added successfully',
           signUp: 'SIGN UP',
-          signUpDesc: 'More than 15,000 recipes from around the world!',
+          signUpDesc:
+            'Behruzjon Restaurant is a modern restaurant founded by Behruz Baxtiyorov.',
           signUpName: 'Enter your name',
           signUpPhone: 'Enter your phone number',
           password: 'Password',
@@ -270,7 +271,7 @@ i18n
           orderAdded: 'Buyurtma muvaffaqiyatli qo‘shildi',
           signUp: 'Ro‘yxatdan o‘tish',
           signUpDesc:
-            'Dunyoning turli burchaklaridan 15 000 dan ortiq retseptlar!',
+            'Behruzjon Restaurant — Behruz Baxtiyorov tomonidan ochilgan zamonaviy restoran.',
           signUpName: 'Ismingizni kiriting',
           signUpPhone: 'Telefon raqamingizni kiriting',
           password: 'Parol',
@@ -429,7 +430,8 @@ i18n
           placeInHolder: 'Перейти к оформлению',
           orderAdded: 'Заказ успешно добавлен',
           signUp: 'Регистрация',
-          signUpDesc: 'Более 15 000 рецептов со всего мира!',
+          signUpDesc:
+            'Ресторан Behruzjon — современный ресторан, основанный Бехрузом Бахтиёровым.',
           signUpName: 'Введите ваше имя',
           signUpPhone: 'Введите ваш номер телефона',
           password: 'Пароль',

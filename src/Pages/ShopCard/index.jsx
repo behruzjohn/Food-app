@@ -122,7 +122,11 @@ function ShopCart() {
               ) : (
                 <div className="noCart">
                   <div className="defualtImage">
-                    <img id="def" src={undefindImg} alt="Undefined Image" />
+                    <img
+                      id="def"
+                      src={undefindImg}
+                      alt="Behruz Baxtiyorov Restaurant no food"
+                    />
                   </div>
                 </div>
               )}

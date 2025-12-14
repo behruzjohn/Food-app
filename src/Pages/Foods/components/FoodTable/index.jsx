@@ -19,7 +19,7 @@ function FoodTable({ food, handleClickDeleteFood, handleClickEditFood }) {
   return (
     <tr>
       <td>
-        <img className="food-img" src={food?.image} alt={food?.name} />
+        <img className="food-img" src={food?.image} alt={'Behruz'+food?.name} />
       </td>
       <td>{food?.name}</td>
       <td>{food?.description?.slice(0, 100)}</td>

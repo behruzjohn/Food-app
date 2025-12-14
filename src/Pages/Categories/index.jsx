@@ -160,7 +160,7 @@ function CategoriesPage() {
                     ))
                   ) : (
                     <div className="defualtImage">
-                      <img src={NoCategory} alt="No Category" />
+                      <img src={NoCategory} alt="Behruz no cateogry food restaurant image" />
                     </div>
                   )}
                 </div>
