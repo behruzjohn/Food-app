@@ -152,6 +152,9 @@ export const StyleFavouriteCard = styled.div`
       margin-top: 10px;
       width: 100px;
     }
+    .btn {
+      display: none;
+    }
     .btn button {
       margin-top: 10px;
       width: 159px;

@@ -30,7 +30,10 @@ function HeaderDashborad({ children }) {
   return (
     <StyledLayoutWrapper>
       <StyleHeaderDashboard>
-        <img src={logo} alt="Logo" />
+        <h1 style={{ position: 'absolute', left: -99999 }}>
+          Behruzjon Restaurant
+        </h1>
+        <img src={logo} alt="Behruz Baxtiyorov Restaurant logotipi" />
         <div className="header-nav">
           <ul>
             {SIDEBAR_LINKS?.map((item) => {

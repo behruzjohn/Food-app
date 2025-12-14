@@ -139,7 +139,7 @@ function FavouriteCard({
           </div>
           <p style={{ marginTop: 6 }}>
             {food?.description?.slice(0, 95) ||
-              'Literature admiration frequently indulgence announcing are who you her. Was least quick after six. So it yourself repeated together cheerful. Neither it cordial so painful picture studied if. Sex him position doubtful resolved boy expenses. Her engrossed deficient'}
+              'Literature admiration frequently indulgence announcing are who you.'}
           </p>
           <div
             style={{
@@ -155,12 +155,6 @@ function FavouriteCard({
                 {userData?.getUserById?.payload?.name}
               </p>
             )}
-            {/* {isShopCart && (
-              <p style={{ fontFamily: 'sans-serif', marginTop: 5 }}>
-                <span style={{ color: 'gray' }}>{t('Quontity')}: </span>
-                {quantity}
-              </p>
-            )} */}
 
             {isOrderItem && (
               <p style={{ fontFamily: 'sans-serif', marginTop: 12 }}>

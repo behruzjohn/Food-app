@@ -248,8 +248,10 @@ function Foods() {
                   display: 'flex',
                   justifyContent: 'center',
                   padding: 20,
-                  width: 100,
-                  marginTop: 150,
+                  width: '100%',
+                  alignItems: 'center',
+                  marginTop: 40,
+                  marginBottom: 40,
                 }}
               >
                 <CircularProgress style={{ marginTop: 40 }} size={50} />
@@ -299,15 +301,18 @@ function Foods() {
               </div>
             )}
           </div>
-          <PaginationWrapper style={{ marginTop: 35 }}>
-            <Pagination
-              page={page}
-              onChange={handleChange}
-              count={data?.getAllFoods?.totalPages}
-              color="primary"
-              shape="rounded"
-            />
-          </PaginationWrapper>
+          {loading ||
+            (loadSearch && (
+              <PaginationWrapper style={{ marginTop: 35 }}>
+                <Pagination
+                  page={page}
+                  onChange={handleChange}
+                  count={data?.getAllFoods?.totalPages}
+                  color="primary"
+                  shape="rounded"
+                />
+              </PaginationWrapper>
+            ))}
         </Container>
       </StyleFoods>
       <ToastExample
