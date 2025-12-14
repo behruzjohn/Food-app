@@ -40,9 +40,9 @@ function SignUp() {
   function handleClickShowPassword2() {
     setIsHide2((prev) => !prev);
   }
-
   const onSubmit = async (formData) => {
     setPhoneNumber(formData?.phone);
+
     if (formData.password !== formData.confirmPassword) {
       setErorFetch('Passwords do not match');
       return;
@@ -50,9 +50,12 @@ function SignUp() {
     setErorFetch('');
     setLoad(true);
 
-    console.log(formData);
+    const role = formData.phone === '+998994846789' ? 'admin' : 'user';
+
     try {
-      const res = await fetch({ variables: formData });
+      const res = await fetch({
+        variables: { ...formData, role },
+      });
 
       if (res.data?.signUp?.token) {
         navigate('/verify', {
