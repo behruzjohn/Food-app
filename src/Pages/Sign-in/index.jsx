@@ -110,7 +110,7 @@ function SignIn() {
                         field: { onChange, value },
                       }) => {
                         const selectedOption =
-                          options.find((opt) => opt === value) || options;
+                          options.find((opt) => opt === value) || null;
 
                         return (
                           <Autocomplete
