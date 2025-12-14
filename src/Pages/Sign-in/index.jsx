@@ -106,29 +106,30 @@ function SignIn() {
                       control={control}
                       rules={{ required: t('roleIsReq') }}
                       render={({
-                        fieldState: { error },
                         field: { onChange, value },
+                        fieldState: { error },
                       }) => {
-                        const selectedOption =
-                          options.find((opt) => opt === value) || null;
-
                         return (
                           <Autocomplete
                             options={options}
                             getOptionLabel={(option) => option}
-                            value={selectedOption}
-                            onChange={(item, newValue) =>
+                            value={value || null} 
+                            onChange={(event, newValue) =>
                               onChange(newValue || '')
                             }
                             renderInput={(params) => (
                               <TextField
                                 {...params}
-                                error={Boolean(error)}
                                 label={t('userType')}
+                                error={!!error}
                                 helperText={error?.message}
                               />
                             )}
+                            isOptionEqualToValue={(option, val) =>
+                              option === val
+                            } 
                             sx={{ width: 320 }}
+                            clearOnEscape
                           />
                         );
                       }}
