@@ -33,6 +33,11 @@ function HeaderDashborad({ children }) {
         <h1 style={{ position: 'absolute', left: -99999 }}>
           Behruzjon Restaurant
         </h1>
+        <p style={{ position: 'absolute', left: -99999 }}>
+          Behruzjon Restaurant — Behruz Baxtiyorov tomonidan ochilgan zamonaviy
+          restoran. Behruz Restaurant milliy va zamonaviy taomlari bilan
+          mashhur.
+        </p>
         <img src={logo} alt="Behruz Baxtiyorov Restaurant logotipi" />
         <div className="header-nav">
           <ul>

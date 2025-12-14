@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://behruzjon-restaurant.netlify.app/sitemap.xml
