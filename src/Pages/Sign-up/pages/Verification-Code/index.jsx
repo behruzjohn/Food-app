@@ -47,7 +47,7 @@ function VerificationCode() {
     }
 
     const timeout = setTimeout(() => {
-      setTimer((prev) => prev - 1);
+      setTimer((prev) => prev + 1);
     }, 1000);
 
     return () => clearTimeout(timeout);
@@ -57,13 +57,14 @@ function VerificationCode() {
     <StyleVerificationCode isHaveError={confirmError}>
       <div className="container">
         <div className="container-nav">
-          <h3>{t('verfyCode')}</h3>
+          <h3>Tasdiqlash kodi</h3>
           <p
             style={{
+              color: 'red',
               fontFamily: 'sans-serif',
             }}
           >
-            {t('verfyDescription')} <strong>{phone?.slice(-5)}</strong>
+            Hozzircha sms bormaydi shunchaki <strong>12345</strong> ni tering!
           </p>
 
           <MuiOtpInput

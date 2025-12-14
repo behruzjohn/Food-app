@@ -5,13 +5,12 @@ export const StyleVerificationCode = styled.div`
   background: linear-gradient(135deg, #f5f0ff, #e0d4f7);
   font-family: sans-serif;
   height: 100vh;
-
   display: flex;
   justify-content: center;
   align-items: center;
   .container {
     border-radius: 12px;
-    width: 300px;
+    width: 400px;
     background-color: #fff;
     padding: 20px;
     display: flex;
