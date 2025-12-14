@@ -81,6 +81,7 @@ function OrdersPg() {
         page: page,
         limit: 10,
       },
+      skip: role !== 'admin'
     }
   );
 
@@ -148,7 +149,7 @@ function OrdersPg() {
   };
 
   useEffect(() => {
-    if (role === 'admin') {
+    if (role === 'admin' || orderDataAdmin?.getOrders?.payload) {
       if (orderDataAdmin?.getOrders?.payload) {
         setOrders(orderDataAdmin.getOrders.payload);
       }
