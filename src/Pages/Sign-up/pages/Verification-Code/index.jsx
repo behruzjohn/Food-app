@@ -103,11 +103,8 @@ function VerificationCode() {
           </Button>
           <p>
             {t('dontWant')}{' '}
-            <a
-              style={{ color: '#1a73e8', textDecoration: 'none' }}
-              href="/sign-up"
-            >
-              {t('signIn')}
+            <a style={{ textDecoration: 'none' }} href="/sign-up">
+              {<span style={{ color: 'blue' }}>t('signIn')</span>}
             </a>
           </p>
         </div>
