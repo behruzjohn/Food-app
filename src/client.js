@@ -3,7 +3,7 @@ import { setContext } from '@apollo/client/link/context';
 import { useNavigate } from 'react-router-dom';
 
 const httpLink = new HttpLink({
-  url: 'https://food-backend-9r5x.onrender.com/',
+  url: 'https://food-backend-9r5x.onrender.com/api',
 });
 
 const authLink = setContext((_, { headers }) => {
