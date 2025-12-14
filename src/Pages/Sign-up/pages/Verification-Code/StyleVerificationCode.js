@@ -10,7 +10,7 @@ export const StyleVerificationCode = styled.div`
   align-items: center;
   .container {
     border-radius: 12px;
-    width: 350px;
+    width: 330px;
     background-color: #fff;
     padding: 20px;
     display: flex;

@@ -47,7 +47,7 @@ function VerificationCode() {
     }
 
     const timeout = setTimeout(() => {
-      setTimer((prev) => prev + 1);
+      setTimer((prev) => prev - 1);
     }, 1000);
 
     return () => clearTimeout(timeout);
