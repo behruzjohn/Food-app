@@ -104,7 +104,7 @@ function VerificationCode() {
           <p style={{ color: 'blue' }}>
             {t('dontWant')}{' '}
             <a
-              style={{ color: 'black', textDecoration: 'none' }}
+              style={{ color: 'blue', textDecoration: 'none' }}
               href="/sign-up"
             >
               {t('signIn')}
