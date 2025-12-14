@@ -31,7 +31,6 @@ const options = ['user', 'admin'];
 function SignIn() {
   const { t } = useTranslation();
   const navigate = useNavigate('');
-  const { lang, setLang } = useLang();
   const [load, setLoad] = useState(false);
   const [isHide, setHide] = useState(false);
   const [signInFetchEror, setSignInFetchEror] = useState('');
@@ -84,11 +83,6 @@ function SignIn() {
     }
   };
 
-  const handleChange = (event) => {
-    const newLang = event.target.value;
-    setLang(newLang);
-  };
-
   function handleClickShowPassword() {
     setHide((prev) => !prev);
   }
@@ -116,7 +110,7 @@ function SignIn() {
                         field: { onChange, value },
                       }) => {
                         const selectedOption =
-                          options.find((opt) => opt === value) || options[0];
+                          options.find((opt) => opt === value) || options;
 
                         return (
                           <Autocomplete
