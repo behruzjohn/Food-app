@@ -101,12 +101,9 @@ function VerificationCode() {
           >
             {confirmError ? t('tryAgain') : t('verify')}
           </Button>
-          <p style={{ color: 'blue' }}>
+          <p style={{ color: '#1a73e8' }}>
             {t('dontWant')}{' '}
-            <a
-              style={{ color: 'blue', textDecoration: 'none' }}
-              href="/sign-up"
-            >
+            <a style={{ textDecoration: 'none' }} href="/sign-up">
               {t('signIn')}
             </a>
           </p>
