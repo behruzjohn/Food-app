@@ -301,18 +301,17 @@ function Foods() {
               </div>
             )}
           </div>
-          {loading ||
-            (loadSearch && (
-              <PaginationWrapper style={{ marginTop: 35 }}>
-                <Pagination
-                  page={page}
-                  onChange={handleChange}
-                  count={data?.getAllFoods?.totalPages}
-                  color="primary"
-                  shape="rounded"
-                />
-              </PaginationWrapper>
-            ))}
+          {!loading && (
+            <PaginationWrapper style={{ marginTop: 35 }}>
+              <Pagination
+                page={page}
+                onChange={handleChange}
+                count={data?.getAllFoods?.totalPages}
+                color="primary"
+                shape="rounded"
+              />
+            </PaginationWrapper>
+          )}
         </Container>
       </StyleFoods>
       <ToastExample
