@@ -56,7 +56,6 @@ export const StyleHeaderDashboard = styled.div`
   img {
     cursor: pointer;
     margin-left: 38px;
-    margin-top: 22px;
     width: 150px;
     height: 150px;
     object-fit: cover;
@@ -128,6 +127,7 @@ export const StyleHeaderDashboard = styled.div`
       width: ${(props) => (props.$openHeaderDashboard ? '150px' : '65px')};
       height: ${(props) => (props.$openHeaderDashboard ? '150px' : '65px')};
       margin-left: ${(props) => (props.$openHeaderDashboard ? '35px' : '8px')};
+      margin-top: 30px;
     }
     button {
       width: ${(props) => (props.$openHeaderDashboard ? '220px' : '20px')};

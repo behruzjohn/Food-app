@@ -3,7 +3,7 @@ import {
   StyleHeaderDashboard,
 } from './StyleHeaderDashboard';
 import { Button } from '@mui/material';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo3.png';
 import { useEffect, useState } from 'react';
 import { SIDEBAR_LINKS } from './constants';
 import { useNavigate } from 'react-router-dom';
