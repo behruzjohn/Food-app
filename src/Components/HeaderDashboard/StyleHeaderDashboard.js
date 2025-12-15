@@ -55,7 +55,6 @@ export const StyleHeaderDashboard = styled.div`
   }
   img {
     cursor: pointer;
-    margin-left: 38px;
     width: 150px;
     height: 150px;
     object-fit: cover;

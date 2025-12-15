@@ -38,7 +38,9 @@ function HeaderDashborad({ children }) {
           restoran. Behruz Restaurant milliy va zamonaviy taomlari bilan
           mashhur.
         </p>
-        <img src={logo} alt="Behruz Baxtiyorov Restaurant logotipi" />
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <img src={logo} alt="Behruz Baxtiyorov Restaurant logotipi" />
+        </div>
         <div className="header-nav">
           <ul>
             {SIDEBAR_LINKS?.map((item) => {
