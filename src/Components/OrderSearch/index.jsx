@@ -117,18 +117,18 @@ function OrderSearch({
 
   return (
     <StyleOrders>
-      <div className="orders-search">
-        <div id="order-special">
+      <div className='orders-search'>
+        <div id='order-special'>
           {action !== 'category' && (
             <TextField
-              className="input"
+              className='input'
               onChange={(e) => changedInput(e)}
-              type="text"
+              type='text'
               placeholder={t('searchPlaceHolder')}
               style={{ backgroundColor: 'white' }}
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position="end">
+                  <InputAdornment position='end'>
                     <Search />
                   </InputAdornment>
                 ),
@@ -136,23 +136,23 @@ function OrderSearch({
             />
           )}
         </div>
-        <div className="profile">
-          <GuardComponent role={role} section="foodFavourite" action="icon">
+        <div className='profile'>
+          <GuardComponent role={role} section='foodFavourite' action='icon'>
             <div
               style={{ cursor: 'pointer' }}
               onClick={() => handleClickFavourite()}
-              className="shop"
+              className='shop'
             >
               <LocalGroceryStoreOutlinedIcon />
-              {qountity > 0 && <span className="badge">{qountity}</span>}
+              {qountity > 0 && <span className='badge'>{qountity}</span>}
             </div>
           </GuardComponent>
-          <FormControl className="selectId">
-            <InputLabel id="lang-select-label">{t('lang')}</InputLabel>
+          <FormControl className='selectId'>
+            <InputLabel id='lang-select-label'>{t('Til')}</InputLabel>
             <Select
-              className="select"
-              labelId="lang-select-label"
-              id="lang-select"
+              className='select'
+              labelId='lang-select-label'
+              id='lang-select'
               value={lang?.slice(0, 2)}
               label={t('lang')}
               onChange={handleChange}
@@ -162,9 +162,9 @@ function OrderSearch({
                 disableAutoFocusItem: true,
               }}
             >
-              <MenuItem value="en">English</MenuItem>
-              <MenuItem value="uz">Uzbekcha</MenuItem>
-              <MenuItem value="ru">Russian</MenuItem>
+              <MenuItem value='en'>English</MenuItem>
+              <MenuItem value='uz'>Uzbekcha</MenuItem>
+              <MenuItem value='ru'>Russian</MenuItem>
             </Select>
           </FormControl>
 
@@ -203,10 +203,10 @@ function OrderSearch({
               onClick={handleLogout}
             >
               <ListItemIcon>
-                <LogoutIcon color="error" />
+                <LogoutIcon color='error' />
               </ListItemIcon>
               <ListItemText>
-                <Typography color="error">{t('logOut')}</Typography>
+                <Typography color='error'>{t('logOut')}</Typography>
               </ListItemText>
             </MenuItem>
           </Menu>

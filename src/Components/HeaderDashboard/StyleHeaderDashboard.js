@@ -57,7 +57,7 @@ export const StyleHeaderDashboard = styled.div`
     cursor: pointer;
     width: 150px;
     height: 150px;
-    object-fit: cover;
+    object-fit: contain;
   }
   .header-nav ul {
     margin-top: 0px;

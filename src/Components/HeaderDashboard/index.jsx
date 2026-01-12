@@ -3,7 +3,7 @@ import {
   StyleHeaderDashboard,
 } from './StyleHeaderDashboard';
 import { Button } from '@mui/material';
-import logo from '../../assets/logo3.png';
+import logo from '../../../public/favicon.png';
 import { useEffect, useState } from 'react';
 import { SIDEBAR_LINKS } from './constants';
 import { useNavigate } from 'react-router-dom';
@@ -38,10 +38,12 @@ function HeaderDashborad({ children }) {
           restoran. Behruz Restaurant milliy va zamonaviy taomlari bilan
           mashhur.
         </p>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <img src={logo} alt="Behruz Baxtiyorov Restaurant logotipi" />
+        <div
+          style={{ display: 'flex', justifyContent: 'center', marginRight: 20 }}
+        >
+          <img src={logo} alt='Behruz Baxtiyorov Restaurant logotipi' />
         </div>
-        <div className="header-nav">
+        <div className='header-nav'>
           <ul>
             {SIDEBAR_LINKS?.map((item) => {
               const isActive = location.pathname === item.path;
@@ -76,17 +78,17 @@ function HeaderDashborad({ children }) {
           </ul>
         </div>
         <Button
-          id="logOut"
+          id='logOut'
           fullWidth
           onClick={() => handleClickLogOut()}
           startIcon={<LogoutOutlinedIcon />}
-          color="error"
-          variant="text"
+          color='error'
+          variant='text'
         >
-          <span id="span-title">{t('logOut')}</span>
+          <span id='span-title'>{t('logOut')}</span>
         </Button>
       </StyleHeaderDashboard>
-      <div className="content">{children}</div>
+      <div className='content'>{children}</div>
     </StyledLayoutWrapper>
   );
 }
