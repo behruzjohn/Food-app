@@ -2,36 +2,37 @@ import {
   useLazyQuery,
   useMutation,
   useQuery,
-} from '@apollo/client/react/compiled';
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import FoodCard from '../../../../Components/FoodCard/FoodCards';
-import { Button, Container } from '@mui/material';
-import HeaderDashborad from '../../../../Components/HeaderDashboard/index';
-import AddIcon from '@mui/icons-material/Add';
-import FastfoodOutlinedIcon from '@mui/icons-material/FastfoodOutlined';
-import undefindImg from '../../../../assets/noFound.png';
-import { useTranslation } from 'react-i18next';
+} from "@apollo/client/react/compiled";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import FoodCard from "../../../../Components/FoodCard/FoodCards";
+import { Button, Container } from "@mui/material";
+import HeaderDashborad from "../../../../Components/HeaderDashboard/index";
+import AddIcon from "@mui/icons-material/Add";
+import FastfoodOutlinedIcon from "@mui/icons-material/FastfoodOutlined";
+import undefindImg from "../../../../assets/noFound.png";
+import { useTranslation } from "react-i18next";
 
-import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
-import GuardComponent from '../../../../Components/CheckRole/CheckRole';
-import { StyleCategoryInfo } from './StyleCategoryInfo';
-import FoodQuontity from '../../../../Components/FoodQuontity';
-import ToastExample from '../../../../Components/Toast';
-import { ADD_FOODS, DELETE_FOOD, UPDATE_FOOD } from '../../../Foods/api';
-import AddFood from '../../../../Components/AddFood';
-import DeleteFoodModalAlert from '../../../../Components/ConfrimDeleteAlert';
+import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
+import GuardComponent from "../../../../Components/CheckRole/CheckRole";
+import { StyleCategoryInfo } from "./StyleCategoryInfo";
+import FoodQuontity from "../../../../Components/FoodQuontity";
+import ToastExample from "../../../../Components/Toast";
+import { ADD_FOODS, DELETE_FOOD, UPDATE_FOOD } from "../../../Foods/api";
+import AddFood from "../../../../Components/AddFood";
+import DeleteFoodModalAlert from "../../../../Components/ConfrimDeleteAlert";
 import {
   CREATE_CARD,
   GET_CATEOGRY_BY_ID,
   GET_FOODS_BY_CATEGORY,
-} from '../../api';
+} from "../../api";
+import ToastCompact from "../../../../Components/Toast";
 
 function CategoryInfo() {
   const { id } = useParams();
   const { t } = useTranslation();
-  const navigate = useNavigate('');
-  const [role, setRole] = useState('');
+  const navigate = useNavigate("");
+  const [role, setRole] = useState("");
   const [open, setOpen] = useState(false);
   const [openToast, setOpenToast] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
@@ -59,7 +60,7 @@ function CategoryInfo() {
   const [deleteFood, { data: deleteFoodData, error: deleteFoodErr }] =
     useMutation(DELETE_FOOD);
   const { data, refetch } = useQuery(GET_FOODS_BY_CATEGORY, {
-    fetchPolicy: 'network-only',
+    fetchPolicy: "network-only",
     variables: { categories: [id] },
   });
   const [createCard, { data: createCartData, error: createCartErr }] =
@@ -108,7 +109,7 @@ function CategoryInfo() {
 
   const handleAddFood = async (formData) => {
     try {
-      const token = localStorage.getItem('token') || '';
+      const token = localStorage.getItem("token") || "";
 
       if (editedFoodId) {
         const { ...rest } = formData;
@@ -161,8 +162,8 @@ function CategoryInfo() {
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem('authStore');
-    const a = JSON.parse(stored || '{}');
+    const stored = localStorage.getItem("authStore");
+    const a = JSON.parse(stored || "{}");
     setRole(a?.state?.role);
   }, []);
 
@@ -199,7 +200,7 @@ function CategoryInfo() {
 
   return (
     <HeaderDashborad>
-      <Container maxWidth="xl">
+      <Container maxWidth="xl" disableGutters>
         <StyleCategoryInfo>
           <div className="continer">
             <Button
@@ -212,7 +213,7 @@ function CategoryInfo() {
                 />
               }
             >
-              {t('gooBack')}
+              {t("gooBack")}
             </Button>
           </div>
           <div className="category-banner">
@@ -226,7 +227,7 @@ function CategoryInfo() {
           </div>
 
           <div
-            style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}
+            style={{ display: "flex", gap: 20, flexWrap: "wrap" }}
             className="card"
           >
             {categoryCard.length > 0 ? (
@@ -243,7 +244,11 @@ function CategoryInfo() {
             ) : (
               <div style={{ marginTop: 15 }} className="error">
                 <div className="img-with">
-                  <img id="undefind" src={undefindImg} alt="Behruz Restaurant no undefind image" />
+                  <img
+                    id="undefind"
+                    src={undefindImg}
+                    alt="Behruz Restaurant no undefind image"
+                  />
                   {categoryCard.length > 0 ? (
                     <></>
                   ) : (
@@ -258,7 +263,7 @@ function CategoryInfo() {
                         startIcon={<AddIcon />}
                         variant="contained"
                       >
-                        {t('createFood')}
+                        {t("createFood")}
                       </Button>
                     </GuardComponent>
                   )}
@@ -266,12 +271,12 @@ function CategoryInfo() {
               </div>
             )}
           </div>
-          <ToastExample
+          <ToastCompact
             status="success"
-            title={t('addedNewCartFood')}
+            title={t("addedNewCartFood")}
             open={openToastForAddCard}
             setOpen={setOpenToastForAddCard}
-          ></ToastExample>
+          ></ToastCompact>
           <FoodQuontity
             onConfirm={handleConfirmQuontity}
             open={openQuontity}
@@ -279,11 +284,11 @@ function CategoryInfo() {
           ></FoodQuontity>
         </StyleCategoryInfo>
         <AddFood open={open} setOpen={setOpen} onAdd={handleAddFood} />
-        <ToastExample
-          status={AddFoodErr ? 'error' : 'success'}
+        <ToastCompact
+          status={AddFoodErr ? "error" : "success"}
           title={
             AddFoodErr?.errors?.[0]?.message ||
-            (AddFoodData?.createFood?.payload ? t('addedNewFood') : '')
+            (AddFoodData?.createFood?.payload ? t("addedNewFood") : "")
           }
           open={openToast}
           setOpen={setOpenToast}
@@ -300,27 +305,27 @@ function CategoryInfo() {
           setIsDeleted={setIsDeleted}
         />
         <ToastExample
-          status={updateFoodData?.updateFoodById?.payload ? 'success' : 'error'}
+          status={updateFoodData?.updateFoodById?.payload ? "success" : "error"}
           title={
-            updateFoodData?.updateFoodById?.payload ? t('updatedFood') : ''
+            updateFoodData?.updateFoodById?.payload ? t("updatedFood") : ""
           }
           open={openToastForUpdateFood}
           setOpen={setOpenToastForUpdateFood}
         ></ToastExample>
         <ToastExample
-          status={deleteFoodData?.deleteFoodById?.payload ? 'success' : 'error'}
+          status={deleteFoodData?.deleteFoodById?.payload ? "success" : "error"}
           title={
-            deleteFoodErr?.message ? deleteFoodErr?.message : t('foodIsDeleted')
+            deleteFoodErr?.message ? deleteFoodErr?.message : t("foodIsDeleted")
           }
           open={openToastForDelete}
           setOpen={setOpenToastForDeleteFood}
         />
         <ToastExample
-          status={createCartData?.createCartItem?.payload ? 'success' : 'error'}
+          status={createCartData?.createCartItem?.payload ? "success" : "error"}
           title={
             createCartErr?.message
               ? createCartErr?.message
-              : t('addedNewCartFood')
+              : t("addedNewCartFood")
           }
           open={openToastForAddCart}
           setOpen={setOpenToastForAddCart}

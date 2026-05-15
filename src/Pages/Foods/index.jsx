@@ -1,132 +1,149 @@
-import { StyleFoods } from './StyleFoods';
-import { useEffect, useState } from 'react';
-import AddIcon from '@mui/icons-material/Add';
-import { useTranslation } from 'react-i18next';
-import ToastExample from '../../Components/Toast';
-import AddFood from '../../Components/AddFood/index';
-import FoodQuontity from '../../Components/FoodQuontity';
-import FoodCard from '../../Components/FoodCard/FoodCards';
-import OrderSearch from '../../Components/OrderSearch/index';
-import { useMutation, useQuery } from '@apollo/client/react';
-import GuardComponent from '../../Components/CheckRole/CheckRole';
-import {
-  Button,
-  CircularProgress,
-  Container,
-  Pagination,
-  Slider,
-} from '@mui/material';
-import HeaderDashborad from '../../Components/HeaderDashboard/index';
-import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
+import { StyleFoods } from "./StyleFoods";
+import { useEffect, useState, useCallback } from "react";
+import AddIcon from "@mui/icons-material/Add";
+import { useTranslation } from "react-i18next";
+import AddFood from "../../Components/AddFood/index";
+import FoodCard from "../../Components/FoodCard/FoodCards";
+import OrderSearch from "../../Components/OrderSearch/index";
+import { useMutation, useQuery } from "@apollo/client/react";
+import GuardComponent from "../../Components/CheckRole/CheckRole";
+import { Button, CircularProgress, Container, Pagination } from "@mui/material";
+import HeaderDashborad from "../../Components/HeaderDashboard/index";
+import DeleteFoodModalAlert from "../../Components/ConfrimDeleteAlert";
+import SliderImages from "../../Components/Slider";
+import FoodTable from "./components/FoodTable";
+import { OrderTable } from "./components/FoodTable/StyleFoodTable";
+import ToastCompact from "../../Components/Toast";
+import { useNavigate } from "react-router-dom";
 import {
   ADD_FOOD_FAVOURITES,
   ADD_FOODS,
-  CREATE_CARD,
   DELETE_FOOD,
   DELETE_FOOD_FROM_FAVOURITES,
   GET_ALL_FOODS,
   UPDATE_FOOD,
-} from './api';
-import SliderImages from '../../Components/Slider';
-import { PaginationWrapper } from '../Orders/StyleOrder';
-import FoodTable from './components/FoodTable';
-import { OrderTable } from './components/FoodTable/StyleFoodTable';
-import { useNavigate } from 'react-router-dom';
+} from "./api";
+
+const LIMIT = 12;
 
 function Foods() {
   const { t } = useTranslation();
-  const [role, setRole] = useState('');
-  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  // ── Auth ──
+  const [role, setRole] = useState("");
+
+  // ── UI state ──
   const [page, setPage] = useState(1);
   const [foods, setFoods] = useState([]);
-  const navigate = useNavigate();
-  const [isDeleted, setIsDeleted] = useState(false);
-  const [openToast, setOpenToast] = useState(false);
-  const [quontityLen, setQuontityLen] = useState(0);
+  const [allFoodsForSearch, setAllFoodsForSearch] = useState([]);
   const [loadSearch, setLoadSearch] = useState(false);
+
+  // ── Modal / action state ──
+  const [open, setOpen] = useState(false);
   const [editedFoodId, setEditedFoodId] = useState(null);
   const [deletedFoodId, setDeletedFoodId] = useState(null);
   const [clickedDelete, setClickedDelete] = useState(false);
-  const [allFoodsForSearch, setAllFoodsForSearch] = useState([]);
-  const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
-  const [openToastForDelete, setOpenToastForDeleteFood] = useState(false);
-  const [openToastForUpdateFood, setOpenToastForUpdateFood] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
 
-  const [addToFavourites, { data: favouriteData, error: favouriteError }] =
-    useMutation(ADD_FOOD_FAVOURITES);
-  const [deleteFoodById] = useMutation(DELETE_FOOD_FROM_FAVOURITES);
-  const [deleteFood, { data: deleteFoodData, error: deleteFoodErr }] =
-    useMutation(DELETE_FOOD);
-  const [createFood, { data: AddFoodData, error: AddFoodErr }] =
-    useMutation(ADD_FOODS);
-
-  const updatedIsComplated = () => {
-    setOpenToastForUpdateFood(true);
-  };
-
-  const [updateFood, { data: updateFoodData }] = useMutation(UPDATE_FOOD, {
-    onCompleted: updatedIsComplated,
+  // ── Toast state ──
+  const [toastFav, setToastFav] = useState({
+    open: false,
+    status: "success",
+    title: "",
   });
+  const [toastFood, setToastFood] = useState({
+    open: false,
+    status: "success",
+    title: "",
+  });
+  const [toastDelete, setToastDelete] = useState({
+    open: false,
+    status: "success",
+    title: "",
+  });
+  const [toastUpdate, setToastUpdate] = useState({
+    open: false,
+    status: "success",
+    title: "",
+  });
+  const [toastCart, setToastCart] = useState({
+    open: false,
+    status: "success",
+    title: "",
+  });
+
+  // ── Queries ──
   const { data, loading, refetch } = useQuery(GET_ALL_FOODS, {
-    fetchPolicy: 'network-only',
-    variables: { page: 1, limit: 12 },
+    variables: { page: 1, limit: LIMIT },
   });
 
-  useEffect(() => {
-    const fetchFoods = async () => {
-      const { data } = await refetch({ page });
-      if (data?.getAllFoods?.payload) {
-        setFoods(data.getAllFoods.payload);
-        setAllFoodsForSearch(data.getAllFoods.payload);
-      }
-    };
+  // ── Mutations ──
+  const [addToFavourites] = useMutation(ADD_FOOD_FAVOURITES);
+  const [removeFavourite] = useMutation(DELETE_FOOD_FROM_FAVOURITES);
+  const [deleteFood] = useMutation(DELETE_FOOD);
+  const [createFood] = useMutation(ADD_FOODS);
+  const [updateFood] = useMutation(UPDATE_FOOD);
 
-    fetchFoods();
-  }, [page, refetch]);
-
-  useEffect(() => {
-    const authStore = JSON.parse(localStorage.getItem('authStore') || '{}');
-    const token = authStore?.state?.token;
-
-    if (!token) {
-      navigate('/sign-in');
-    }
-  }, []);
-
-  useEffect(() => {
-    if (page) {
-      refetch({ page });
+  // ── Helpers ──
+  const refetchAndSet = useCallback(async () => {
+    const { data } = await refetch({ page });
+    if (data?.getAllFoods?.payload) {
+      setFoods(data.getAllFoods.payload);
+      setAllFoodsForSearch(data.getAllFoods.payload);
     }
   }, [page, refetch]);
 
-  useEffect(() => {
-    const stored = localStorage.getItem('authStore');
-    const a = JSON.parse(stored || '{}');
-    setRole(a?.state?.role);
-  }, []);
+  const showToast = (setter, status, title) =>
+    setter({ open: true, status, title });
 
-  const handleClickFavourite = (clickedFoodId) => {
-    setOpenToast(true);
+  // ── Effects ──
+  useEffect(() => {
+    const authStore = JSON.parse(localStorage.getItem("authStore") || "{}");
+    if (!authStore?.state?.token) navigate("/sign-in");
+    setRole(authStore?.state?.role || "");
+  }, [navigate]);
+
+  useEffect(() => {
+    refetchAndSet();
+  }, [page]);
+
+  useEffect(() => {
+    if (!isDeleted || !deletedFoodId) return;
+
+    deleteFood({ variables: { foodId: deletedFoodId } })
+      .then(() => {
+        refetchAndSet();
+        showToast(setToastDelete, "success", t("foodIsDeleted"));
+      })
+      .catch((err) => showToast(setToastDelete, "error", err.message))
+      .finally(() => {
+        setIsDeleted(false);
+        setClickedDelete(false);
+        setDeletedFoodId(null);
+      });
+  }, [isDeleted]);
+
+  // ── Handlers ──
+  const handleClickFavourite = (foodId) => {
     addToFavourites({
-      variables: { foodId: clickedFoodId },
+      variables: { foodId },
       onCompleted: () => {
-        setFoods((prevFoods) =>
-          prevFoods.map((food) =>
-            food._id === clickedFoodId ? { ...food, isFavorite: true } : food
-          )
+        setFoods((prev) =>
+          prev.map((f) => (f._id === foodId ? { ...f, isFavorite: true } : f)),
         );
+        showToast(setToastFav, "success", t("addedToFavourite"));
       },
+      onError: (err) => showToast(setToastFav, "error", err.message),
     });
   };
 
-  const handleClickRemoveFav = (clickedFoodId) => {
-    deleteFoodById({
-      variables: { foodId: clickedFoodId },
+  const handleClickRemoveFav = (foodId) => {
+    removeFavourite({
+      variables: { foodId },
       onCompleted: () => {
-        setFoods((prevFoods) =>
-          prevFoods.map((food) =>
-            food._id === clickedFoodId ? { ...food, isFavorite: false } : food
-          )
+        setFoods((prev) =>
+          prev.map((f) => (f._id === foodId ? { ...f, isFavorite: false } : f)),
         );
       },
     });
@@ -137,202 +154,173 @@ function Foods() {
     setOpen(true);
   };
 
-  const handleAddFood = async (formData) => {
-    try {
-      if (editedFoodId) {
-        const { ...rest } = formData;
-
-        await updateFood({
-          variables: {
-            foodId: editedFoodId,
-            food: {
-              ...rest,
-              price: formData.price ? Number(formData.price) : 0,
-              discount: formData.discount ? Number(formData.discount) : 0,
-            },
-          },
-        });
-
-        refetch();
-
-        setOpen(false);
-        setEditedFoodId(null);
-        setOpenToast(true);
-        return;
-      }
-
-      await createFood({
-        variables: {
-          food: {
-            name: formData.name,
-            shortName: formData.name.slice(0, 10),
-            description: formData.description,
-            price: Number(formData.price),
-            discount: formData.discount ? Number(formData.discount) : 0,
-            category: formData.category,
-          },
-          image: formData.image,
-        },
-      });
-
-      setOpen(false);
-      refetch();
-      setOpenToast(true);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleChange = (event, value) => {
-    setPage(value);
-  };
-
   const handleClickDeleteFood = (foodId) => {
     setDeletedFoodId(foodId);
     setClickedDelete(true);
   };
 
   const handleCloseFoodModal = () => {
-    setOpen((prev) => !prev);
+    setOpen(false);
     setEditedFoodId(null);
   };
 
-  useEffect(() => {
-    if (isDeleted && deletedFoodId) {
-      deleteFood({ variables: { foodId: deletedFoodId } })
-        .then(() => refetch())
-        .finally(() => {
-          setIsDeleted(false);
-          setClickedDelete(false);
-          setDeletedFoodId(null);
+  const handleAddFood = async (formData) => {
+    try {
+      if (editedFoodId) {
+        await updateFood({
+          variables: {
+            foodId: editedFoodId,
+            food: {
+              name: formData.name,
+              shortName: formData.name.slice(0, 10),
+              description: formData.description,
+              price: Number(formData.price) || 0,
+              discount: Number(formData.discount) || 0,
+              category: formData.category,
+            },
+          },
         });
-      setOpenToastForDeleteFood(true);
-    }
-  }, [isDeleted]);
+        showToast(setToastUpdate, "success", t("updatedFood"));
+      } else {
+        await createFood({
+          variables: {
+            food: {
+              name: formData.name,
+              shortName: formData.name.slice(0, 10),
+              description: formData.description,
+              price: Number(formData.price),
+              discount: Number(formData.discount) || 0,
+              category: formData.category,
+            },
+            image: formData.image,
+          },
+        });
+        showToast(setToastFood, "success", t("addedNewFood"));
+      }
 
+      await refetchAndSet();
+      setOpen(false);
+      setEditedFoodId(null);
+    } catch (err) {
+      showToast(setToastFood, "error", err.message);
+    }
+  };
+
+  // ── Render ──
   return (
     <HeaderDashborad>
       <StyleFoods className="foods">
-        <Container maxWidth="xl">
+        <Container maxWidth="xl" disableGutters>
           <OrderSearch
             setLoadSearch={setLoadSearch}
             loadSearch={loadSearch}
-            quontityLen={quontityLen}
             refetchItem={refetch}
             setFoods={setFoods}
             allFoods={allFoodsForSearch}
             action="foods"
           />
+
           <SliderImages />
+
+          {/* Header */}
           <div className="foods-header">
-            <div>
-              <h2>{t('foodsName')}</h2>
-            </div>
+            <h2>{t("foodsName")}</h2>
             <div id="special">
               <GuardComponent role={role} section="newMenu" action="create">
                 <Button
                   onClick={() => setOpen(true)}
                   color="success"
                   variant="contained"
-                  startIcon={<AddIcon style={{ marginLeft: 12 }} />}
+                  startIcon={<AddIcon />}
                 >
-                  <span className="addSpan">{t('newMenu')}</span>
+                  <span className="addSpan">{t("newMenu")}</span>
                 </Button>
               </GuardComponent>
             </div>
           </div>
-          <div className="food-cards">
-            {loading || loadSearch ? (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  padding: 20,
-                  width: '100%',
-                  alignItems: 'center',
-                  marginTop: 40,
-                  marginBottom: 40,
-                }}
-              >
-                <CircularProgress style={{ marginTop: 40 }} size={50} />
-              </div>
-            ) : (
-              <div className="food-cards-nav">
-                {role === 'user' ? (
-                  foods?.map((food) => (
-                    <FoodCard
-                      handleClickRemoveFav={handleClickRemoveFav}
-                      handleClickEditFood={handleClickEditFood}
-                      handleClickDeleteFood={handleClickDeleteFood}
-                      handleClickFavourite={handleClickFavourite}
-                      setOpenToastForAddCard={setOpenToastForAddCard}
-                      key={food._id}
-                      food={food}
-                    />
-                  ))
-                ) : (
+
+          {/* Stats */}
+          <div className="foods-stats">
+            <div className="stat-pill">
+              <span className="stat-dot" />
+              {t("all")}: <strong>{foods.length}</strong> {t("product")}
+            </div>
+            <div className="stat-pill">
+              <span className="stat-dot" />
+              {t("data")}: <strong>{page}</strong> /{" "}
+              <strong>{data?.getAllFoods?.totalPages || 1}</strong>
+            </div>
+          </div>
+
+          {/* Content */}
+          {loading || loadSearch ? (
+            <div className="loading-wrap">
+              <CircularProgress size={40} />
+            </div>
+          ) : (
+            <div className="food-cards-nav">
+              {role === "user" ? (
+                foods.map((food) => (
+                  <FoodCard
+                    key={food._id}
+                    food={food}
+                    handleClickRemoveFav={handleClickRemoveFav}
+                    handleClickEditFood={handleClickEditFood}
+                    handleClickDeleteFood={handleClickDeleteFood}
+                    handleClickFavourite={handleClickFavourite}
+                    setOpenToastForAddCard={(v) =>
+                      showToast(setToastCart, "success", t("addedNewCartFood"))
+                    }
+                  />
+                ))
+              ) : (
+                <div className="table-card">
                   <OrderTable>
                     <div className="orders-list-scroll">
                       <table>
                         <thead>
                           <tr>
-                            <th>Image</th>
-                            <th>Food name</th>
-                            <th>Description</th>
-                            <th>Category</th>
-                            <th>Price</th>
-                            <th></th>
+                            <th>{t("foodImgUrl")}</th>
+                            <th>{t("foodName")}</th>
+                            <th>{t("foodDescription")}</th>
+                            <th>{t("categories")}</th>
+                            <th>{t("price")}</th>
+                            <th />
                           </tr>
                         </thead>
                         <tbody>
-                          {foods?.map((food) => (
+                          {foods.map((food) => (
                             <FoodTable
-                              handleClickDeleteFood={handleClickDeleteFood}
-                              handleClickEditFood={handleClickEditFood}
                               key={food._id}
                               food={food}
+                              handleClickDeleteFood={handleClickDeleteFood}
+                              handleClickEditFood={handleClickEditFood}
                             />
                           ))}
                         </tbody>
                       </table>
                     </div>
                   </OrderTable>
-                )}
-              </div>
-            )}
-          </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Pagination */}
           {!loading && (
-            <PaginationWrapper style={{ marginTop: 35 }}>
+            <div className="pagination-wrap">
               <Pagination
                 page={page}
-                onChange={handleChange}
+                onChange={(_, val) => setPage(val)}
                 count={data?.getAllFoods?.totalPages}
-                color="primary"
                 shape="rounded"
               />
-            </PaginationWrapper>
+            </div>
           )}
         </Container>
       </StyleFoods>
-      <ToastExample
-        status={favouriteError || AddFoodErr ? 'error' : 'success'}
-        title={
-          favouriteError?.errors?.[0]?.message ||
-          AddFoodErr?.errors?.[0]?.message ||
-          (AddFoodData?.createFood?.payload ? t('addedNewFood') : '') ||
-          (favouriteData?.addFoodToFavorites?.payload
-            ? t('addedToFavourite')
-            : '')
-        }
-        open={openToast}
-        setOpen={setOpenToast}
-      />
-      <ToastExample
-        status="success"
-        title={t('addedNewCartFood')}
-        open={openToastForAddCard}
-        setOpen={setOpenToastForAddCard}
-      ></ToastExample>
+
+      {/* Modals */}
       <AddFood
         open={open}
         foods={foods}
@@ -346,25 +334,26 @@ function Foods() {
         setIsDeleted={setIsDeleted}
       />
 
-      <ToastExample
-        status="success"
-        title={t('addedNewCartFood')}
-        open={openToastForAddCard}
-        setOpen={setOpenToastForAddCard}
-      ></ToastExample>
-      <ToastExample
-        status={updateFoodData?.updateFoodById?.payload ? 'success' : 'error'}
-        title={updateFoodData?.updateFoodById?.payload ? t('updatedFood') : ''}
-        open={openToastForUpdateFood}
-        setOpen={setOpenToastForUpdateFood}
-      ></ToastExample>
-      <ToastExample
-        status={deleteFoodData?.deleteFoodById?.payload ? 'success' : 'error'}
-        title={
-          deleteFoodErr?.message ? deleteFoodErr?.message : t('foodIsDeleted')
-        }
-        open={openToastForDelete}
-        setOpen={setOpenToastForDeleteFood}
+      {/* Toasts */}
+      <ToastCompact
+        {...toastFav}
+        setOpen={(v) => setToastFav((p) => ({ ...p, open: v }))}
+      />
+      <ToastCompact
+        {...toastFood}
+        setOpen={(v) => setToastFood((p) => ({ ...p, open: v }))}
+      />
+      <ToastCompact
+        {...toastDelete}
+        setOpen={(v) => setToastDelete((p) => ({ ...p, open: v }))}
+      />
+      <ToastCompact
+        {...toastUpdate}
+        setOpen={(v) => setToastUpdate((p) => ({ ...p, open: v }))}
+      />
+      <ToastCompact
+        {...toastCart}
+        setOpen={(v) => setToastCart((p) => ({ ...p, open: v }))}
       />
     </HeaderDashborad>
   );

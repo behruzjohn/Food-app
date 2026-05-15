@@ -1,166 +1,243 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const StyleOrders = styled.div`
   width: 100%;
 
   .orders-search {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    width: 100%;
-    box-sizing: border-box;
+    align-items: center;
     justify-content: space-between;
-  }
-  .input {
-    width: 100%;
-    max-width: 100%;
-  }
-  #order-special {
-    min-width: 0;
-    flex: 1;
-  }
-  .input input {
-    width: 100%;
-    height: 45px;
-    padding: 10px 12px;
-    box-sizing: border-box;
-    border-radius: 8px;
-  }
-
-  #activeA span {
-    color: #fff;
-  }
-
-  .card {
-    display: flex;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 0.5px solid #f0e8e0;
     flex-wrap: wrap;
   }
-  .shop {
-    position: relative;
-    display: inline-block;
+
+  /* ── Search input ── */
+  #order-special {
+    flex: 1;
+    min-width: 0;
+    max-width: 400px;
+
+    .input {
+      width: 100%;
+
+      .MuiOutlinedInput-root {
+        border-radius: 8px;
+        font-size: 13px;
+        background: #fff;
+        height: 38px;
+
+        fieldset {
+          border-color: #f0e8e0;
+          border-width: 0.5px;
+        }
+        &:hover fieldset {
+          border-color: rgba(249, 115, 22, 0.4);
+        }
+        &.Mui-focused fieldset {
+          border-color: #f97316;
+          border-width: 1px;
+        }
+
+        input {
+          font-size: 13px;
+          color: #1a1916;
+          padding: 8px 14px;
+          &::placeholder {
+            color: #c8c4bc;
+          }
+        }
+
+        svg {
+          font-size: 18px;
+          color: #c8a898;
+        }
+      }
+    }
   }
-  .img-with {
-    height: auto;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-  .img-with img {
-    width: 450px;
-    height: 450px;
-  }
-  .shop .badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: red;
-    color: white;
-    font-size: 10px;
-    padding: 2px 5px;
-    border-radius: 50%;
-  }
+
+  /* ── Profile row ── */
   .profile {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
   }
-  .main-header {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-      Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
-      sans-serif;
+
+  /* ── Cart icon ── */
+  .shop {
+    position: relative;
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: #fff3ea;
+    border: 0.5px solid rgba(249, 115, 22, 0.25);
     display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-  .order-header-btns input {
-    height: 15px;
-  }
+    align-items: center;
+    justify-content: center;
+    transition:
+      background 0.15s,
+      border-color 0.15s;
+    flex-shrink: 0;
 
-  .orders-list {
-    width: 100%;
-  }
-  .orders-list table {
-    border-collapse: separate;
-    border-spacing: 0 30px;
-    color: #fff;
-    width: 100%;
-  }
-  table {
-    border-collapse: separate;
-    border-spacing: 0;
-    width: 100%;
-  }
-  table thead {
-    background-color: #ffd900ff;
-  }
-  table thead th {
-    border-top: 2px solid;
-    border-bottom: 2px solid;
-    padding: 18px;
-  }
-  table thead th:first-child {
-    border-top-left-radius: 12px;
-  }
+    &:hover {
+      background: rgba(249, 115, 22, 0.15);
+      border-color: rgba(249, 115, 22, 0.5);
+    }
 
-  table thead th:last-child {
-    border-top-right-radius: 12px;
-  }
-  table tbody {
-    color: #000;
-    background-color: #fff;
-  }
-  tbody tr {
-    margin-top: 20px;
-    margin-left: 20px;
-  }
-  tbody td button {
-    background-color: #fff1ee;
-    color: #ff6d4c;
-    height: 35px;
-    width: 125px;
-  }
-  tbody td {
-    padding: 20px;
-  }
-  thead th {
-    padding: 20px;
-  }
-  .order-special {
-    width: 100%;
-    margin-right: 12px;
-  }
-  @media screen and (max-width: 480px) {
-    .main-header {
+    svg {
+      font-size: 20px;
+      color: #f97316;
+      display: block;
+    }
+
+    .badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
+      background: #f97316;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 100px;
+      border: 2px solid #fff8f3;
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      z-index: 1;
     }
-    .order-header-text {
-      font-size: 12px;
+  }
+
+  /* ── Lang select ── */
+  .selectId {
+    margin: 0 !important;
+
+    .MuiOutlinedInput-root {
+      border-radius: 8px;
+      font-size: 13px;
+      height: 38px;
+
+      fieldset {
+        border-color: #f0e8e0;
+        border-width: 0.5px;
+      }
+      &:hover fieldset {
+        border-color: rgba(249, 115, 22, 0.4);
+      }
+      &.Mui-focused fieldset {
+        border-color: #f97316;
+        border-width: 1px;
+      }
     }
-    .order-header-btns button {
-      font-size: 12px;
-      margin-top: 10px;
-      width: 150px;
-      height: 35px;
-      padding: 2px;
+
+    .MuiInputLabel-root {
+      font-size: 13px;
+      color: #9e9890;
+      &.Mui-focused {
+        color: #f97316;
+      }
     }
-    .orders-nav {
-      margin-right: 0;
+
+    .select {
+      min-width: 100px;
     }
-    .order-special {
-      margin-right: 0px;
+  }
+
+  /* ── Greeting ── */
+  .profile > p {
+    font-size: 13px;
+    color: #6b6860;
+    margin: 0;
+    white-space: nowrap;
+
+    strong {
+      color: #1a1916;
+      font-weight: 500;
     }
+  }
+
+  /* ── Avatar ── */
+  .MuiAvatar-root {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    background: linear-gradient(135deg, #f97316, #fb923c) !important;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  /* ── Dropdown menu ── */
+  .MuiMenu-paper {
+    border-radius: 10px !important;
+    border: 0.5px solid rgba(249, 115, 22, 0.15) !important;
+    box-shadow: 0 4px 16px rgba(26, 25, 22, 0.08) !important;
+    min-width: 180px !important;
+    overflow: hidden !important;
+
+    .MuiMenuItem-root {
+      font-size: 13px !important;
+      padding: 10px 14px !important;
+      transition: background 0.15s !important;
+      background: #fff !important;
+
+      &:hover {
+        background: #fff3ea !important;
+      }
+
+      .MuiListItemIcon-root {
+        min-width: 32px !important;
+        svg {
+          font-size: 18px !important;
+        }
+      }
+
+      .MuiTypography-root {
+        font-size: 13px !important;
+      }
+    }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
     .orders-search {
-      flex-direction: column;
       gap: 10px;
+      padding: 10px 0;
     }
-    .input {
+
+    #order-special {
+      max-width: 100%;
       width: 100%;
-      min-width: 0;
+      order: 2;
     }
+
     .profile {
-      margin-top: 20px;
+      width: 100%;
+      order: 1;
+      justify-content: flex-end;
+      gap: 8px;
+
+      > p {
+        display: none;
+      }
+    }
+
+    .shop {
+      width: 34px;
+      height: 34px;
+      svg {
+        font-size: 18px;
+      }
     }
   }
 `;

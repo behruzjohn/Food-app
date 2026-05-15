@@ -1,111 +1,128 @@
-import { Button } from '@mui/material';
-import { MuiOtpInput } from 'mui-one-time-password-input';
-import { useEffect, useState } from 'react';
-import { StyleVerificationCode } from './StyleVerificationCode';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useMutation } from '@apollo/client/react';
-import { CONFIRM_SIGN_UP } from '../../api';
-import { useTranslation } from 'react-i18next';
+import { Button } from "@mui/material";
+import { MuiOtpInput } from "mui-one-time-password-input";
+import { useEffect, useState } from "react";
+import { StyleVerificationCode } from "./StyleVerificationCode";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useMutation } from "@apollo/client/react";
+import { CONFIRM_SIGN_UP } from "../../api";
+import { useTranslation } from "react-i18next";
+import PhonelinkLockIcon from "@mui/icons-material/PhonelinkLock";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+
+const TOTAL_TIME = 60;
 
 function VerificationCode() {
-  const [code, setCode] = useState('');
-  const [confirmError, setConfirmError] = useState('');
   const { t } = useTranslation();
-  const [timer, setTimer] = useState(60);
   const navigate = useNavigate();
-  const [fetchConfirm] = useMutation(CONFIRM_SIGN_UP);
   const location = useLocation();
   const { phone, token } = location.state || {};
 
-  async function handleClickConfirm() {
-    try {
-      setConfirmError('');
+  const [code, setCode] = useState("");
+  const [confirmError, setConfirmError] = useState("");
+  const [timer, setTimer] = useState(TOTAL_TIME);
 
-      const res = await fetchConfirm({
-        variables: { code, token },
-      });
-
-      if (res?.data?.confirmSignUp?.token) {
-        localStorage.setItem('token', res.data.confirmSignUp.token);
-        navigate('/sign-in');
-      }
-    } catch (err) {
-      setConfirmError(err.message);
-    }
-  }
+  const [fetchConfirm] = useMutation(CONFIRM_SIGN_UP);
 
   const formatTime = (time) => {
     const min = Math.floor(time / 60);
     const sec = time % 60;
-    return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    return `${String(min).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
   };
 
   useEffect(() => {
     if (timer === 0) {
-      navigate('/sign-up');
+      navigate("/sign-up");
       return;
     }
-
-    const timeout = setTimeout(() => {
-      setTimer((prev) => prev - 1);
-    }, 1000);
-
+    const timeout = setTimeout(() => setTimer((p) => p - 1), 1000);
     return () => clearTimeout(timeout);
   }, [timer, navigate]);
 
+  const handleConfirm = async () => {
+    try {
+      setConfirmError("");
+      const res = await fetchConfirm({ variables: { code, token } });
+      if (res?.data?.confirmSignUp?.token) {
+        localStorage.setItem("token", res.data.confirmSignUp.token);
+        navigate("/sign-in");
+      }
+    } catch (err) {
+      setConfirmError(err.message);
+    }
+  };
+
+  const isExpiring = timer <= 15;
+  const barWidth = `${(timer / TOTAL_TIME) * 100}%`;
+
   return (
-    <StyleVerificationCode isHaveError={confirmError}>
+    <StyleVerificationCode>
       <div className="container">
+        {/* Header */}
         <div className="container-nav">
-          <h3>Tasdiqlash kodi</h3>
-          <p
-            style={{
-              color: 'red',
-              fontFamily: 'sans-serif',
-            }}
-          >
-            Hozzircha sms bormaydi shunchaki <strong>12345</strong> ni tering!
+          <div className="form-header">
+            <div className="form-icon">
+              <PhonelinkLockIcon />
+            </div>
+            <div className="form-header-text">
+              <h1>Tasdiqlash kodi</h1>
+              <p>{phone || "Telefon raqamingizga kod yuborildi"}</p>
+            </div>
+          </div>
+
+          <p className="otp-hint">
+            Hozircha SMS kelmaydi — shunchaki <strong>12345</strong> ni kiriting
           </p>
 
+          {/* OTP input */}
           <MuiOtpInput
             length={5}
             value={code}
-            onChange={setCode}
-            sx={{
-              marginTop: '30px',
-              '& input': {
-                color: confirmError ? 'red' : 'inherit',
-                borderColor: confirmError ? 'red' : 'gray',
-              },
+            onChange={(val) => {
+              setCode(val);
+              if (confirmError) setConfirmError("");
+            }}
+            sx={{ marginTop: "24px", gap: "10px" }}
+            TextFieldsProps={{
+              className: confirmError ? "error" : "",
             }}
           />
         </div>
-        <p id="timer">{formatTime(timer)}</p>
+
+        {/* Timer */}
+        <div className="timer-row">
+          <span className="timer-label">Vaqt qoldi</span>
+          <span className={`timer-value ${isExpiring ? "expiring" : ""}`}>
+            {formatTime(timer)}
+          </span>
+        </div>
+        <div className="timer-bar-track">
+          <div
+            className={`timer-bar-fill ${isExpiring ? "expiring" : ""}`}
+            style={{ width: barWidth }}
+          />
+        </div>
+
+        {/* Error */}
         {confirmError && (
-          <p
-            style={{
-              color: 'red',
-              marginTop: '10px',
-              fontSize: '13px',
-              fontWeight: 'bold',
-            }}
-          >
+          <p className="error-msg">
+            <ErrorOutlineIcon />
             {confirmError}
           </p>
         )}
+
+        {/* Actions */}
         <div className="resultContainer">
           <Button
-            disabled={code.length < 5}
-            onClick={handleClickConfirm}
+            className="submit-btn"
             variant="contained"
+            disabled={code.length < 5}
+            onClick={handleConfirm}
           >
-            {confirmError ? t('tryAgain') : t('verify')}
+            {confirmError ? t("tryAgain") : t("verify")}
           </Button>
-          <p>
-            {t('dontWant')}{' '}
-            <a style={{ textDecoration: 'none' }} href="/sign-up">
-              {<span style={{ color: 'blue' }}>t('signIn')</span>}
-            </a>
+
+          <p className="back-link">
+            {t("dontWant")} <a href="/sign-up">{t("signIn")}</a>
           </p>
         </div>
       </div>

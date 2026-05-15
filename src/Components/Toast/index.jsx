@@ -1,46 +1,37 @@
-import React from 'react';
-import { Snackbar, Alert } from '@mui/material';
+import { Snackbar, Alert } from "@mui/material";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { StyledAlert } from "./StyleToast";
 
-function ToastCompact({ status = 'success', title = '', open, setOpen }) {
-  
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') return;
+const iconMap = {
+  success: <CheckCircleOutlineIcon />,
+  error: <ErrorOutlineIcon />,
+  info: <InfoOutlinedIcon />,
+};
+
+function ToastCompact({ status = "success", title = "", open, setOpen }) {
+  const handleClose = (_, reason) => {
+    if (reason === "clickaway") return;
     setOpen(false);
   };
-
-  const bgColor =
-    status === 'success'
-      ? 'linear-gradient(90deg, #56ab2f, #a8e063)'
-      : status === 'error'
-      ? 'linear-gradient(90deg, #e52d27, #b31217)'
-      : 'linear-gradient(90deg, #2193b0, #6dd5ed)';
 
   return (
     <Snackbar
       open={open}
-      autoHideDuration={2000}
+      autoHideDuration={2500}
       onClose={handleClose}
-      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      sx={{ top: "20px !important" }}
     >
-      <Alert
+      <StyledAlert
         onClose={handleClose}
-        sx={{
-          width: 'auto',
-          minWidth: 200,
-          maxWidth: 350,
-          fontSize: 13,
-          fontWeight: 500,
-          borderRadius: 12,
-          background: bgColor,
-          color: '#fff',
-          textAlign: 'center',
-          boxShadow: '0px 3px 10px rgba(0,0,0,0.15)',
-          py: 0.5,
-          px: 2,
-        }}
+        icon={iconMap[status] ?? iconMap.info}
+        className={`toast-${status}`}
+        severity={status === "info" ? "info" : status}
       >
         {title}
-      </Alert>
+      </StyledAlert>
     </Snackbar>
   );
 }

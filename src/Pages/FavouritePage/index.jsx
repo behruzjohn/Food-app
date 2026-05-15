@@ -1,27 +1,26 @@
-import { Container } from '@mui/material';
-import { useEffect, useState } from 'react';
-import Loader from '../../Components/Loader';
-import { useTranslation } from 'react-i18next';
-import { StyleFoods } from '../Foods/StyleFoods';
-import ToastExample from '../../Components/Toast';
-import undefindImg from '../../assets/noFound.png';
-import OrderSearch from '../../Components/OrderSearch';
-import FoodQuontity from '../../Components/FoodQuontity';
-import FoodCard from '../../Components/FoodCard/FoodCards';
-import { useMutation, useQuery } from '@apollo/client/react';
-import HeaderDashborad from '../../Components/HeaderDashboard';
-import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert/index';
+import { CircularProgress, Container } from "@mui/material";
+import { useEffect, useState } from "react";
+import Loader from "../../Components/Loader";
+import { useTranslation } from "react-i18next";
+import { StyleFoods } from "../Foods/StyleFoods";
+import ToastExample from "../../Components/Toast";
+import undefindImg from "../../assets/noFound.png";
+import OrderSearch from "../../Components/OrderSearch";
+import FoodQuontity from "../../Components/FoodQuontity";
+import FoodCard from "../../Components/FoodCard/FoodCards";
+import { useMutation, useQuery } from "@apollo/client/react";
+import HeaderDashborad from "../../Components/HeaderDashboard";
+import DeleteFoodModalAlert from "../../Components/ConfrimDeleteAlert/index";
 import {
   CREATE_CARD,
   DELETE_FOOD_FROM_FAVOURITES,
   GET_ALL_FAVOURITE_FOODS,
-} from './api';
-import FavouriteCard from './pages/FavouriteCard';
+} from "./api";
+import FavouriteCard from "./pages/FavouriteCard";
 
 function FavouriteFood() {
   const { t } = useTranslation();
   const [foods, setFoods] = useState([]);
-  const [openQuontity, setOpenQuontity] = useState(false);
   const [clickedDelete, setClickedDelete] = useState(false);
   const [openToastForAddCard, setOpenToastForAddCard] = useState(false);
   const [openToast, setOpenToast] = useState(false);
@@ -29,8 +28,8 @@ function FavouriteFood() {
     useMutation(DELETE_FOOD_FROM_FAVOURITES);
   const [deletedFoodId, setId] = useState(null);
 
-  const { data, refetch } = useQuery(GET_ALL_FAVOURITE_FOODS, {
-    fetchPolicy: 'network-only',
+  const { data, refetch, loading } = useQuery(GET_ALL_FAVOURITE_FOODS, {
+    fetchPolicy: "network-only",
   });
 
   const handleClickDeleteFood = (clickedFoodId) => {
@@ -46,18 +45,14 @@ function FavouriteFood() {
       setOpenToast(true);
       refetch();
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
   useEffect(() => {
-    const fetchFavouriteFood = async () => {
-      const { data } = await refetch();
-      if (data?.getFavoriteFoods?.payload) {
-        setFoods(data.getFavoriteFoods.payload);
-      }
-    };
-    fetchFavouriteFood();
+    if (data?.getFavoriteFoods?.payload) {
+      setFoods(data.getFavoriteFoods.payload);
+    }
   }, [data]);
 
   useEffect(() => {
@@ -69,20 +64,32 @@ function FavouriteFood() {
   return (
     <HeaderDashborad>
       <StyleFoods className="foods">
-        <Container maxWidth="xl">
+        <Container maxWidth="xl" disableGutters>
           <OrderSearch setFoods={setFoods} action="category" />
           <div className="foods-header">
             <div className="text">
-              <h2>{t('favouriteFoodTitle')}</h2>
+              <h2>{t("favouriteFoodTitle")}</h2>
             </div>
             <div
-              style={{ display: 'flex', alignItems: 'center', gap: 15 }}
+              style={{ display: "flex", alignItems: "center", gap: 15 }}
             ></div>
           </div>
           <div className="food-cards">
             <div className="food-cards-navs">
-              {foods?.length ? (
-                foods?.map((foodItem) => (
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: 40,
+                  }}
+                >
+                  <CircularProgress />
+                </div>
+              ) : foods?.length ? (
+                foods.map((foodItem) => (
                   <FavouriteCard
                     checkElement="admin"
                     setOpenToastForAddCard={setOpenToastForAddCard}
@@ -93,10 +100,7 @@ function FavouriteFood() {
                 ))
               ) : (
                 <div className="defualtImage">
-                  <img
-                    src={undefindImg}
-                    alt="Behruz Restaurant no undefind image"
-                  />
+                  <img src={undefindImg} alt="no data" />
                 </div>
               )}
             </div>
@@ -120,7 +124,7 @@ function FavouriteFood() {
 
       <ToastExample
         status="success"
-        title={t('addedNewCartFood')}
+        title={t("addedNewCartFood")}
         open={openToastForAddCard}
         setOpen={setOpenToastForAddCard}
       ></ToastExample>

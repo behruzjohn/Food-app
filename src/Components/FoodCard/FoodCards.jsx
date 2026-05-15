@@ -1,20 +1,21 @@
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { StyleFoodCard } from './StyleFoodCard';
-import defulatFoodImg from '../../assets/23.png';
-import DeleteIcon from '@mui/icons-material/Delete';
-import GuardComponent from '../CheckRole/CheckRole';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import { Box, Button, Grid, Menu, MenuItem, Snackbar } from '@mui/material';
-import EditSquareIcon from '@mui/icons-material/EditSquare';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import { formatPrice } from '/src/helpers/formatters.js';
-import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
-import { MoreHoriz } from '@mui/icons-material';
-import ToastExample from '../../Components/Toast/index';
-import { useMutation } from '@apollo/client/react';
-import { CREATE_CARD } from '../../Pages/Foods/api';
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { StyleFoodCard } from "./StyleFoodCard";
+import defulatFoodImg from "../../assets/23.png";
+import DeleteIcon from "@mui/icons-material/Delete";
+import GuardComponent from "../CheckRole/CheckRole";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { Box, Button, Grid, Menu, MenuItem, Snackbar } from "@mui/material";
+import EditSquareIcon from "@mui/icons-material/EditSquare";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import { formatPrice } from "/src/helpers/formatters.js";
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import { MoreHoriz } from "@mui/icons-material";
+import ToastExample from "../../Components/Toast/index";
+import { useMutation } from "@apollo/client/react";
+import { CREATE_CARD } from "../../Pages/Foods/api";
+import { GET_CARD_FOOD } from "../../Pages/ShopCard/api";
 
 function FoodCard({
   isFoodCard,
@@ -29,14 +30,17 @@ function FoodCard({
   setOpenToastForAddCard,
 }) {
   const { t } = useTranslation();
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState("");
   const [isLiked, setLiked] = useState(food?.isFavorite || false);
   const [openOption, setopenOption] = useState(null);
   const open = Boolean(openOption);
   const [countQuontity, setQountityCount] = useState(1);
   const [openQuontity, setOpenQuontity] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
-  const [createCard, { data: addToCardData }] = useMutation(CREATE_CARD);
+  const [createCard, { data: addToCardData }] = useMutation(CREATE_CARD, {
+    refetchQueries: [{ query: GET_CARD_FOOD }],
+    awaitRefetchQueries: true,
+  });
   const [autoTimeout, setAutoTimeout] = useState(null);
 
   const handleClose = () => {
@@ -85,8 +89,8 @@ function FoodCard({
   }, [food?.isFavorite]);
 
   useEffect(() => {
-    const stored = localStorage.getItem('authStore');
-    const a = JSON.parse(stored || '{}');
+    const stored = localStorage.getItem("authStore");
+    const a = JSON.parse(stored || "{}");
     setRole(a?.state?.role);
   }, []);
 
@@ -114,13 +118,13 @@ function FoodCard({
                 onClose={handleClose}
                 PaperProps={{
                   elevation: 3,
-                  sx: { mt: 1, borderRadius: '12px', minWidth: 120, p: 0 },
+                  sx: { mt: 1, borderRadius: "12px", minWidth: 120, p: 0 },
                 }}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+                transformOrigin={{ horizontal: "right", vertical: "top" }}
+                anchorOrigin={{ horizontal: "right", vertical: "top" }}
               >
                 <MenuItem
-                  style={{ backgroundColor: 'white' }}
+                  style={{ backgroundColor: "white" }}
                   onClick={() => {
                     handleClickDeleteFood(food?._id);
                     handleClose();
@@ -128,7 +132,7 @@ function FoodCard({
                   sx={{ gap: 1, px: 2 }}
                 >
                   <DeleteIcon fontSize="small" color="error" />
-                  {t('delete')}
+                  {t("delete")}
                 </MenuItem>
               </Menu>
             </GuardComponent>
@@ -167,11 +171,11 @@ function FoodCard({
 
           <h2>{food?.name}</h2>
           <p style={{ marginLeft: 25 }}>
-            {food?.description?.slice(0, 50) + '.'}
+            {food?.description?.slice(0, 50) + "."}
           </p>
-          <p style={{ fontFamily: 'sans-serif', marginTop: 15 }}>
-            <strong>{t('price')} </strong>
-            {formatPrice(food?.price)}{' '}
+          <p style={{ fontFamily: "sans-serif", marginTop: 15 }}>
+            <strong>{t("price")} </strong>
+            {formatPrice(food?.price)}{" "}
             {food?.discount > 0 ? `(${food.discount}%)` : null}
           </p>
           {!buttonsStatus && (
@@ -186,7 +190,7 @@ function FoodCard({
                     variant="contained"
                     color="success"
                   >
-                    {t('edit')}
+                    {t("edit")}
                   </Button>
                 </div>
               </GuardComponent>
@@ -200,7 +204,7 @@ function FoodCard({
                   >
                     <DeleteIcon fontSize="small" />
                   </Button>
-                  <p>{t('delete')}</p>
+                  <p>{t("delete")}</p>
                 </div>
               )}
 
@@ -239,7 +243,7 @@ function FoodCard({
                     >
                       <span id="btn-span">
                         <ShoppingBagOutlinedIcon fontSize="small" />
-                        {t('addToSavat')}
+                        {t("addToSavat")}
                       </span>
                     </Button>
                   </div>

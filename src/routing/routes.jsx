@@ -1,16 +1,15 @@
-import CategoriesPage from '../Pages/Categories';
-import Customers from '../Pages/Customers';
-import Foods from '../Pages/Foods';
-import OrdersPg from '../Pages/Orders';
-import SignIn from '../Pages/Sign-in';
-import SignUp from '../Pages/Sign-up';
-import { ROUTE_PATHS } from './path';
-import FavouriteFood from '../Pages/FavouritePage';
-import ShopCart from '../Pages/ShopCard';
-import OrderItem from '../Pages/Orders/pages/OrderItem';
-import VerificationCode from '../Pages/Sign-up/pages/Verification-Code';
-import ChangePassword from '../Pages/ChangePassword';
-import ProtectedRoute from './ProtectRoute';
+import CategoriesPage from "../Pages/Categories";
+import Customers from "../Pages/Customers";
+import Foods from "../Pages/Foods";
+import OrdersPg from "../Pages/Orders";
+import SignIn from "../Pages/Sign-in";
+import SignUp from "../Pages/Sign-up";
+import { ROUTE_PATHS } from "./path";
+import FavouriteFood from "../Pages/FavouritePage";
+import OrderItem from "../Pages/Orders/pages/OrderItem";
+import VerificationCode from "../Pages/Sign-up/pages/Verification-Code";
+import ChangePassword from "../Pages/ChangePassword";
+import ShopCart from "../Pages/ShopCard";
 
 export const routes = [
   {
@@ -57,5 +56,8 @@ export const routes = [
     path: `${ROUTE_PATHS.orderItems}/:id`,
     component: <OrderItem />,
   },
-  { path: `${ROUTE_PATHS.verification}`, component: <VerificationCode /> },
+  {
+    path: ROUTE_PATHS.verification,
+    component: <VerificationCode />,
+  },
 ];

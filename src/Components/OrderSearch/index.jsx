@@ -10,20 +10,20 @@ import {
   Select,
   TextField,
   Typography,
-} from '@mui/material';
-import { useLang } from '../../useLang';
-import { StyleOrders } from './StyleOrders';
-import { useEffect, useState } from 'react';
-import { Search } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useLazyQuery, useQuery } from '@apollo/client/react';
-import GuardComponent from '../CheckRole/CheckRole';
-import LogoutIcon from '@mui/icons-material/Logout';
-import PasswordIcon from '@mui/icons-material/Password';
-import { GET_ALL_FAVOURITE_FOODS, GET_FOODS_BY_SEARCH } from './api';
-import LocalGroceryStoreOutlinedIcon from '@mui/icons-material/LocalGroceryStoreOutlined';
-import { GET_CARD_FOOD } from '../../Pages/ShopCard/api';
+} from "@mui/material";
+import { useLang } from "../../useLang";
+import { StyleOrders } from "./StyleOrders";
+import { useEffect, useState } from "react";
+import { Search } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useLazyQuery, useQuery } from "@apollo/client/react";
+import GuardComponent from "../CheckRole/CheckRole";
+import LogoutIcon from "@mui/icons-material/Logout";
+import PasswordIcon from "@mui/icons-material/Password";
+import { GET_ALL_FAVOURITE_FOODS, GET_FOODS_BY_SEARCH } from "./api";
+import LocalGroceryStoreOutlinedIcon from "@mui/icons-material/LocalGroceryStoreOutlined";
+import { GET_CARD_FOOD } from "../../Pages/ShopCard/api";
 
 function OrderSearch({
   setLoadSearch,
@@ -34,23 +34,18 @@ function OrderSearch({
   refetchItem,
 }) {
   const { t } = useTranslation();
-  const naivagte = useNavigate('');
+  const naivagte = useNavigate("");
   const { lang, setLang } = useLang();
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState("");
   const [open, setopen] = useState(null);
-  const [qountity, setQountity] = useState(null);
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState("");
 
-  const name = localStorage.getItem('userName') || '';
-  const upperCaseName = name ? name[0]?.toUpperCase() : '';
+  const name = localStorage.getItem("userName") || "";
+  const upperCaseName = name ? name[0]?.toUpperCase() : "";
 
   const [getSearchedFood, { data }] = useLazyQuery(GET_FOODS_BY_SEARCH);
 
-  const { data: cartFood } = useQuery(GET_CARD_FOOD, { pollInterval: 1500 });
-
-  useEffect(() => {
-    setQountity(cartFood?.getCartItemsByUserId?.payload?.items?.length);
-  }, [cartFood]);
+  const { data: cartFood } = useQuery(GET_CARD_FOOD);
 
   const handleChange = (event) => {
     const newLang = event.target.value;
@@ -65,17 +60,17 @@ function OrderSearch({
   };
   const handleLogout = () => {
     localStorage.clear();
-    naivagte('/sign-in');
+    naivagte("/sign-in");
     handleClose();
   };
 
   const handleChangePassword = () => {
-    naivagte('/forgotPass');
+    naivagte("/forgotPass");
     handleClose();
   };
 
   const handleClickFavourite = () => {
-    naivagte('/food-cart');
+    naivagte("/food-cart");
   };
 
   const changedInput = (e) => {
@@ -87,8 +82,8 @@ function OrderSearch({
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem('authStore');
-    const a = JSON.parse(stored || '{}');
+    const stored = localStorage.getItem("authStore");
+    const a = JSON.parse(stored || "{}");
     setRole(a?.state?.role);
   }, []);
 
@@ -99,9 +94,9 @@ function OrderSearch({
   }, [data, setFoods]);
 
   useEffect(() => {
-    if (action === 'foods') {
+    if (action === "foods") {
       if (
-        searchInput === '' ||
+        searchInput === "" ||
         searchInput === null ||
         searchInput === undefined
       ) {
@@ -113,22 +108,23 @@ function OrderSearch({
     }
   }, [searchInput, action]);
 
-  console.log(lang);
+  const qountityVal =
+    cartFood?.getCartItemsByUserId?.payload?.items?.length || 0;
 
   return (
     <StyleOrders>
-      <div className='orders-search'>
-        <div id='order-special'>
-          {action !== 'category' && (
+      <div className="orders-search">
+        <div id="order-special">
+          {action !== "category" && (
             <TextField
-              className='input'
+              className="input"
               onChange={(e) => changedInput(e)}
-              type='text'
-              placeholder={t('searchPlaceHolder')}
-              style={{ backgroundColor: 'white' }}
+              type="text"
+              placeholder={t("searchPlaceHolder")}
+              style={{ backgroundColor: "white" }}
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position='end'>
+                  <InputAdornment position="end">
                     <Search />
                   </InputAdornment>
                 ),
@@ -136,25 +132,25 @@ function OrderSearch({
             />
           )}
         </div>
-        <div className='profile'>
-          <GuardComponent role={role} section='foodFavourite' action='icon'>
+        <div className="profile">
+          <GuardComponent role={role} section="foodFavourite" action="icon">
             <div
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: "pointer" }}
               onClick={() => handleClickFavourite()}
-              className='shop'
+              className="shop"
             >
               <LocalGroceryStoreOutlinedIcon />
-              {qountity > 0 && <span className='badge'>{qountity}</span>}
+              {qountityVal > 0 && <span className="badge">{qountityVal}</span>}
             </div>
           </GuardComponent>
-          <FormControl className='selectId'>
-            <InputLabel id='lang-select-label'>{t('Til')}</InputLabel>
+          <FormControl className="selectId">
+            <InputLabel id="lang-select-label">{t("Til")}</InputLabel>
             <Select
-              className='select'
-              labelId='lang-select-label'
-              id='lang-select'
+              className="select"
+              labelId="lang-select-label"
+              id="lang-select"
               value={lang?.slice(0, 2)}
-              label={t('lang')}
+              label={t("lang")}
               onChange={handleChange}
               style={{ height: 40 }}
               MenuProps={{
@@ -162,16 +158,16 @@ function OrderSearch({
                 disableAutoFocusItem: true,
               }}
             >
-              <MenuItem value='en'>English</MenuItem>
-              <MenuItem value='uz'>Uzbekcha</MenuItem>
-              <MenuItem value='ru'>Russian</MenuItem>
+              <MenuItem value="en">English</MenuItem>
+              <MenuItem value="uz">Uzbekcha</MenuItem>
+              <MenuItem value="ru">Russian</MenuItem>
             </Select>
           </FormControl>
 
           <p>
-            {t('greeting')} <strong>{name}</strong>
+            {t("greeting")} <strong>{name}</strong>
           </p>
-          <Avatar onClick={handleAvatarClick} style={{ cursor: 'pointer' }}>
+          <Avatar onClick={handleAvatarClick} style={{ cursor: "pointer" }}>
             {upperCaseName}
           </Avatar>
           <Menu
@@ -179,34 +175,34 @@ function OrderSearch({
             open={Boolean(open)}
             onClose={handleClose}
             anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
+              vertical: "bottom",
+              horizontal: "right",
             }}
             transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+              vertical: "top",
+              horizontal: "right",
             }}
           >
             <MenuItem
-              style={{ backgroundColor: 'white' }}
+              style={{ backgroundColor: "white" }}
               onClick={handleChangePassword}
             >
               <ListItemIcon>
                 <PasswordIcon />
               </ListItemIcon>
               <ListItemText>
-                <Typography>{t('changePass')}</Typography>
+                <Typography>{t("changePass")}</Typography>
               </ListItemText>
             </MenuItem>
             <MenuItem
-              style={{ backgroundColor: 'white' }}
+              style={{ backgroundColor: "white" }}
               onClick={handleLogout}
             >
               <ListItemIcon>
-                <LogoutIcon color='error' />
+                <LogoutIcon color="error" />
               </ListItemIcon>
               <ListItemText>
-                <Typography color='error'>{t('logOut')}</Typography>
+                <Typography color="error">{t("logOut")}</Typography>
               </ListItemText>
             </MenuItem>
           </Menu>

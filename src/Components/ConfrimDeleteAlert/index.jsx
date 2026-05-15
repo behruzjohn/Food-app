@@ -1,7 +1,9 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Modal from '@mui/material/Modal';
-import { useTranslation } from 'react-i18next';
+import Modal from "@mui/material/Modal";
+import Button from "@mui/material/Button";
+import { useTranslation } from "react-i18next";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
+import { StyleDeleteModal } from "./StyleConfirmDeleteAlert";
 
 export default function DeleteFoodModalAlert({
   open,
@@ -10,75 +12,48 @@ export default function DeleteFoodModalAlert({
   onConfirm,
 }) {
   const { t } = useTranslation();
+
   const handleClose = () => setOpen(false);
 
-  function handleConfirm() {
-    if (onConfirm) {
-      onConfirm();
-    }
+  const handleConfirm = () => {
+    if (onConfirm) onConfirm();
     setIsDeleted(true);
     setOpen(false);
-  }
+  };
 
   return (
-    <div>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box
-          className="box"
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            width: '90%',
-            maxWidth: 400,
-            p: 4,
-            boxSizing: 'border-box',
-            borderRadius: '12px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 20,
-              alignItems: 'center',
-              width: '100%',
-            }}
-            className="nav"
-          >
-            <h2>{t('areYouSure')}</h2>
-            <p>
-              {t('areYouDescription')}
-              {t('areYouDescription2')}
-            </p>
-            <div style={{ display: 'flex', gap: 15 }} className="btns">
-              <Button
-                onClick={() => setOpen(false)}
-                style={{ width: 140, height: 40 }}
-                variant="outlined"
-              >
-                {t('cancel')}
-              </Button>
-              <Button
-                onClick={() => handleConfirm()}
-                style={{ width: 140, height: 40 }}
-                color="error"
-                variant="contained"
-              >
-                {t('delete')}
-              </Button>
-            </div>
+    <Modal open={open} onClose={handleClose}>
+      <StyleDeleteModal>
+        <div className="modal-top">
+          <div className="warning-icon-wrap">
+            <WarningAmberOutlinedIcon />
           </div>
-        </Box>
-      </Modal>
-    </div>
+          <div className="modal-texts">
+            <p className="modal-title">{t("areYouSure")}</p>
+            <p className="modal-desc">
+              {t("areYouDescription")} {t("areYouDescription2")}
+            </p>
+          </div>
+        </div>
+
+        <div className="modal-actions">
+          <Button
+            className="btn-cancel"
+            variant="outlined"
+            onClick={handleClose}
+          >
+            {t("cancel")}
+          </Button>
+          <Button
+            className="btn-delete"
+            variant="contained"
+            startIcon={<DeleteOutlineIcon />}
+            onClick={handleConfirm}
+          >
+            {t("delete")}
+          </Button>
+        </div>
+      </StyleDeleteModal>
+    </Modal>
   );
 }

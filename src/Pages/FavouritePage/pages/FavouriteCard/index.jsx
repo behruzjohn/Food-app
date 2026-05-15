@@ -1,15 +1,15 @@
-import { Button, Menu, MenuItem } from '@mui/material';
-import { StyleFavouriteCard } from './StyleFavouriteCard';
-import { useTranslation } from 'react-i18next';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
-import { useEffect, useState } from 'react';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { formatPrice } from '../../../../helpers/formatters';
-import { useLazyQuery, useMutation } from '@apollo/client/react';
-import { CREATE_CARD, GET_USER_BY_ID } from '../../api';
-import ToastExample from '../../../../Components/Toast/index';
-import GuardComponent from '../../../../Components/CheckRole/CheckRole';
+import { Button, Menu, MenuItem } from "@mui/material";
+import { StyleFavouriteCard } from "./StyleFavouriteCard";
+import { useTranslation } from "react-i18next";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useEffect, useState } from "react";
+import { formatPrice } from "../../../../helpers/formatters";
+import { useLazyQuery, useMutation } from "@apollo/client/react";
+import { CREATE_CARD, GET_USER_BY_ID } from "../../api";
+import ToastExample from "../../../../Components/Toast/index";
+import GuardComponent from "../../../../Components/CheckRole/CheckRole";
 
 function FavouriteCard({
   food,
@@ -21,83 +21,96 @@ function FavouriteCard({
   isShopCart,
   user,
 }) {
-  console.log(quantity);
-
-  const [autoTimeout, setAutoTimeout] = useState(null);
   const { t } = useTranslation();
-  const [openOption, setopenOption] = useState(null);
-  const open = Boolean(openOption);
-  const [countQuontity, setQountityCount] = useState(1);
+  const [autoTimeout, setAutoTimeout] = useState(null);
+  const [openOption, setOpenOption] = useState(null);
+  const [countQuantity, setCountQuantity] = useState(quantity || 1);
   const [selectedFood, setSelectedFood] = useState(null);
-  const [openQuontity, setOpenQuontity] = useState(false);
+  const [openQuantity, setOpenQuantity] = useState(false);
+
+  const open = Boolean(openOption);
+
   const [createCard] = useMutation(CREATE_CARD, {
     onCompleted: () => {
       setOpenToastForAddCard(true);
-      setOpenQuontity(false);
-      setQountityCount(1);
+      setOpenQuantity(false);
+      setCountQuantity(1);
     },
   });
+
   const [getUserById, { data: userData }] = useLazyQuery(GET_USER_BY_ID);
+
   useEffect(() => {
-    if (isOrderItem) {
+    if (isOrderItem && user) {
       getUserById({ variables: { userId: user } });
     }
-  }, []);
+  }, [isOrderItem, user]);
 
-  const handleClick = (event) => {
-    setopenOption(event.currentTarget);
-  };
-  const handleClose = () => {
-    setopenOption(null);
-  };
+  useEffect(() => {
+    if (quantity) setCountQuantity(quantity);
+  }, [quantity]);
 
-  const handleAddToCart = (food) => {
-    setSelectedFood(food);
-    setOpenQuontity(true);
-    startAutoAdd(food, countQuontity);
-  };
+  const handleMenuOpen = (e) => setOpenOption(e.currentTarget);
+  const handleMenuClose = () => setOpenOption(null);
 
-  const startAutoAdd = (food, quantity) => {
-    if (!food) return;
-
+  const startAutoAdd = (foodId, qty) => {
+    if (!foodId) return;
     if (autoTimeout) clearTimeout(autoTimeout);
-
     const timeout = setTimeout(() => {
-      createCard({
-        variables: {
-          data: {
-            food: food,
-            quantity: quantity,
-          },
-        },
-      });
-
+      createCard({ variables: { data: { food: foodId, quantity: qty } } });
       setAutoTimeout(null);
     }, 2000);
-
     setAutoTimeout(timeout);
   };
+
+  const handleAddToCart = (foodId) => {
+    setSelectedFood(foodId);
+    setOpenQuantity(true);
+    startAutoAdd(foodId, countQuantity);
+  };
+
+  const handleDecrease = () => {
+    startAutoAdd(selectedFood, countQuantity);
+    if (countQuantity > 1) setCountQuantity((prev) => prev - 1);
+  };
+
+  const handleIncrease = () => {
+    startAutoAdd(selectedFood, countQuantity);
+    setCountQuantity((prev) => prev + 1);
+  };
+
+  const truncatedDesc =
+    food?.description?.slice(0, 95) ||
+    "Delicious food prepared with fresh ingredients.";
+
+  const customerName = userData?.getUserById?.payload?.name;
 
   return (
     <StyleFavouriteCard>
       <div className="card-box">
-        <img src={food?.image} alt={'Behruz' + food?.name} />
-        <div className="texts">
-          <div className="card-nav">
-            <h3>{food?.name} </h3>
+        {/* Food image */}
+        <div className="img-wrapper">
+          <img src={food?.image} alt={food?.name || "Food"} />
+        </div>
+
+        {/* Content */}
+        <div className="card-content">
+          {/* Header row: name + actions */}
+          <div className="card-header">
+            <h3 className="food-name">
+              {food?.name}{" "}
+              <span className="price-value">{countQuantity}ta</span>
+            </h3>
+
             {isShopCart ? (
-              <MenuItem
-                id="delete-menu"
-                style={{ backgroundColor: 'white' }}
-                onClick={() => {
-                  handleClickDeleteFood(food._id);
-                  handleClose();
-                }}
-                sx={{ gap: 1, px: 2 }}
+              <button
+                className="remove-btn"
+                onClick={() => handleClickDeleteFood(food._id)}
+                aria-label={t("remove")}
               >
-                <DeleteIcon className="removeIcon" fontSize="small" />
-                <span id="removeText"> {t('remove')}</span>
-              </MenuItem>
+                <DeleteIcon fontSize="small" />
+                <span className="remove-label">{t("remove")}</span>
+              </button>
             ) : (
               <GuardComponent
                 role={checkElement}
@@ -105,100 +118,92 @@ function FavouriteCard({
                 action="menu"
               >
                 <>
-                  <MoreVertIcon
-                    onClick={handleClick}
-                    style={{ cursor: 'pointer' }}
-                    className="optionsMenuIcon"
-                  />
+                  <button
+                    className="menu-trigger"
+                    onClick={handleMenuOpen}
+                    aria-label="Options"
+                  >
+                    <MoreVertIcon fontSize="small" />
+                  </button>
                   <Menu
                     anchorEl={openOption}
                     open={open}
-                    onClose={handleClose}
+                    onClose={handleMenuClose}
                     PaperProps={{
-                      elevation: 3,
-                      sx: { mt: 1, borderRadius: '12px', minWidth: 120, p: 0 },
+                      elevation: 2,
+                      sx: { mt: 1, borderRadius: "10px", minWidth: 130, p: 0 },
                     }}
-                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                    transformOrigin={{ horizontal: "right", vertical: "top" }}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
                     <MenuItem
-                      style={{ backgroundColor: 'white' }}
                       onClick={() => {
                         handleClickDeleteFood(food._id);
-                        handleClose();
+                        handleMenuClose();
                       }}
-                      sx={{ gap: 1, px: 2 }}
+                      sx={{ gap: 1, px: 2, fontSize: 13, color: "#DC2626" }}
                     >
                       <DeleteIcon fontSize="small" color="error" />
-                      {t('remove')}
+                      {t("remove")}
                     </MenuItem>
                   </Menu>
                 </>
               </GuardComponent>
             )}
           </div>
-          <p style={{ marginTop: 6 }}>
-            {food?.description?.slice(0, 95) ||
-              'Literature admiration frequently indulgence announcing are who you.'}
-          </p>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-            className="amaunt"
-          >
-            {isOrderItem && (
-              <p style={{ fontFamily: 'sans-serif', marginTop: 5 }}>
-                <span style={{ color: 'gray' }}>{t('customer')}: </span>
-                {userData?.getUserById?.payload?.name}
-              </p>
-            )}
 
+          <p className="food-desc">{truncatedDesc}</p>
+          <span className="status">
             {isOrderItem && (
-              <p style={{ fontFamily: 'sans-serif', marginTop: 12 }}>
-                {formatPrice(food?.price * quantity)}
-              </p>
+              <div className="order-meta">
+                {customerName && (
+                  <span className="meta-chip customer-chip">
+                    👤 {customerName}
+                  </span>
+                )}
+                {food?.price && quantity && (
+                  <span className="meta-chip price-chip">
+                    {formatPrice(food.price * quantity)}
+                  </span>
+                )}
+              </div>
             )}
-          </div>
+          </span>
 
+          {/* Price */}
           <GuardComponent
             role={checkElement}
             section="favouriteCard"
             action="price"
           >
-            <p style={{ fontFamily: 'sans-serif', marginTop: 5 }}>
-              <span style={{ color: 'gray' }}>{t('price')}</span>
-              {formatPrice(food?.price)}
-            </p>
+            <div className="price-row">
+              <span className="price-label">{t("price")}</span>
+              <span className="price-value">
+                {formatPrice(food?.price * food?.quantity)}
+              </span>
+            </div>
           </GuardComponent>
 
-          <div className="buttons">
-            <div className="box-container">
-              {openQuontity ? (
-                <div className="quontityAdd">
-                  <div
-                    onClick={() => {
-                      startAutoAdd(selectedFood, countQuontity);
-                      countQuontity > 1 && setQountityCount((prev) => prev - 1);
-                    }}
-                    className="minus"
+          {/* Cart controls */}
+          <div className="card-footer">
+            <div className="controls-wrap">
+              {openQuantity ? (
+                <div className="qty-control" role="group" aria-label="Quantity">
+                  <button
+                    className="qty-btn"
+                    onClick={handleDecrease}
+                    aria-label="Decrease quantity"
                   >
-                    <p>-</p>
-                  </div>
-
-                  <p>{countQuontity}</p>
-
-                  <div
-                    onClick={() => {
-                      startAutoAdd(selectedFood, countQuontity);
-                      setQountityCount((prev) => prev + 1);
-                    }}
-                    className="plus"
+                    −
+                  </button>
+                  <span className="qty-num">{countQuantity}</span>
+                  <button
+                    className="qty-btn"
+                    onClick={handleIncrease}
+                    aria-label="Increase quantity"
                   >
-                    <p>+</p>
-                  </div>
+                    +
+                  </button>
                 </div>
               ) : (
                 <GuardComponent
@@ -206,23 +211,13 @@ function FavouriteCard({
                   section="favouriteCard"
                   action="addToCart"
                 >
-                  <div className="btn">
-                    <Button
-                      fullWidth
-                      onClick={() => handleAddToCart(food?._id)}
-                      id="save"
-                      variant="contained"
-                      color="success"
-                    >
-                      <span id="span-btn">
-                        <ShoppingBagOutlinedIcon
-                          className="icon"
-                          fontSize="small"
-                        />
-                        {t('addToSavat')}
-                      </span>
-                    </Button>
-                  </div>
+                  <button
+                    className="add-btn"
+                    onClick={() => handleAddToCart(food?._id)}
+                  >
+                    <ShoppingBagOutlinedIcon style={{ fontSize: 16 }} />
+                    {t("addToSavat")}
+                  </button>
                 </GuardComponent>
               )}
             </div>
@@ -232,4 +227,5 @@ function FavouriteCard({
     </StyleFavouriteCard>
   );
 }
+
 export default FavouriteCard;

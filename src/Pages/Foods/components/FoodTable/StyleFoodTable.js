@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const OrderTable = styled.div`
   width: 100%;
@@ -9,15 +9,17 @@ export const OrderTable = styled.div`
   overflow: hidden;
 
   table {
-    border-collapse: separate;
-    border-spacing: 0;
+    background: #fff;
     width: 100%;
     min-width: 900px;
+    border-collapse: separate;
+    border-spacing: 0;
   }
 
   thead {
-    background-color: #a20714;
+    background-color: #f97316   ;
     color: #fff;
+    border-bottom: 0.5px solid rgba(249, 115, 22, 0.15);
   }
   .orders-list-scroll {
     overflow: auto;
@@ -26,8 +28,13 @@ export const OrderTable = styled.div`
 
   thead th {
     padding: 20px;
-    border-bottom: 2px solid #ddd;
     text-align: left;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+    white-space: nowrap;
   }
 
   table thead th:first-child {

@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { Menu, MenuItem } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { MoreHoriz } from '@mui/icons-material';
-import GuardComponent from '../CheckRole/CheckRole';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { StyleCategoryCardS } from './StyleCategory';
-import { useTranslation } from 'react-i18next';
-import EditIcon from '@mui/icons-material/Edit';
+import { useEffect, useState } from "react";
+import { Menu, MenuItem } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { MoreHoriz } from "@mui/icons-material";
+import GuardComponent from "../CheckRole/CheckRole";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { StyleCategoryCardS } from "./StyleCategory";
+import { useTranslation } from "react-i18next";
+import EditIcon from "@mui/icons-material/Edit";
 
 function CategoryCard({
   category,
@@ -17,7 +17,7 @@ function CategoryCard({
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState("");
   const [openOption, setopenOption] = useState(null);
   const open = Boolean(openOption);
 
@@ -35,11 +35,9 @@ function CategoryCard({
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem('authStore');
+    const stored = localStorage.getItem("authStore");
 
-    const a = JSON.parse(stored || '{}');
-
-    console.log(a?.state?.role);
+    const a = JSON.parse(stored || "{}");
 
     setRole(a?.state?.role);
   }, []);
@@ -56,34 +54,34 @@ function CategoryCard({
       </div>
 
       <GuardComponent role={role} section="category" action="delete">
-        <MoreHoriz onClick={handleClick} style={{ cursor: 'pointer' }} />
+        <MoreHoriz onClick={handleClick} style={{ cursor: "pointer" }} />
         <Menu
           anchorEl={openOption}
           open={open}
           onClose={handleClose}
           PaperProps={{
             elevation: 3,
-            sx: { borderRadius: '14px', minWidth: 120 },
+            sx: { borderRadius: "14px", minWidth: 120 },
           }}
         >
           <MenuItem
-            style={{ backgroundColor: 'white' }}
+            style={{ backgroundColor: "white" }}
             onClick={() => {
-              handleClickEdit(category?._id), handleClose();
+              (handleClickEdit(category?._id), handleClose());
             }}
           >
-            <EditIcon sx={{ color: 'green', mr: 1 }} />
-            {t('edit')}
+            <EditIcon sx={{ color: "green", mr: 1 }} />
+            {t("edit")}
           </MenuItem>
           <MenuItem
-            style={{ backgroundColor: 'white' }}
+            style={{ backgroundColor: "white" }}
             onClick={() => {
               handleClickDelete(category?._id);
               handleClose();
             }}
           >
-            <DeleteIcon sx={{ color: 'red', mr: 1 }} />
-            {t('delete')}
+            <DeleteIcon sx={{ color: "red", mr: 1 }} />
+            {t("delete")}
           </MenuItem>
         </Menu>
       </GuardComponent>

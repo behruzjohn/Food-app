@@ -1,268 +1,235 @@
-import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
-import { useState } from 'react';
-import { MuiTelInput } from 'mui-tel-input';
-import { StyleSignUp } from './StyleSign-up';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { CONFIRM_SIGN_UP, SIGN_UP } from './api';
-import { useMutation } from '@apollo/client/react';
-import Loader from '../../Components/Loader/index';
-import PersonIcon from '@mui/icons-material/Person';
-import { Controller, useForm } from 'react-hook-form';
-import { StyleContainer } from '../../../ContainerCss';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { Button, IconButton, InputAdornment, TextField } from "@mui/material";
+import { useState } from "react";
+import { MuiTelInput } from "mui-tel-input";
+import { StyleSignUp } from "./StyleSign-up";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { SIGN_UP } from "./api";
+import { useMutation } from "@apollo/client/react";
+import Loader from "../../Components/Loader/index";
+import PersonIcon from "@mui/icons-material/Person";
+import { Controller, useForm } from "react-hook-form";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 function SignUp() {
   const { t } = useTranslation();
-  const navigate = useNavigate('');
-  const [loaderr, setLoad] = useState(false);
-  const [isHide, setIsHide] = useState(false);
-  const [isHide2, setIsHide2] = useState(false);
-  const [erorFetch, setErorFetch] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState(null);
+  const navigate = useNavigate();
+  const [load, setLoad] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [fetchError, setFetchError] = useState("");
 
   const [fetch] = useMutation(SIGN_UP);
 
-  const { control, handleSubmit } = useForm({
-    defaultValues: {
-      name: '',
-      phone: '',
-      password: '',
-      confirmPassword: '',
-    },
+  const { control, handleSubmit, watch } = useForm({
+    defaultValues: { name: "", phone: "", password: "", confirmPassword: "" },
   });
 
-  function handleClickShowPassword() {
-    setIsHide((prev) => !prev);
-  }
-  function handleClickShowPassword2() {
-    setIsHide2((prev) => !prev);
-  }
-  const onSubmit = async (formData) => {
-    setPhoneNumber(formData?.phone);
+  const password = watch("password");
 
+  const onSubmit = async (formData) => {
     if (formData.password !== formData.confirmPassword) {
-      setErorFetch('Passwords do not match');
+      setFetchError(t("passwordReq"));
       return;
     }
-    setErorFetch('');
+    setFetchError("");
     setLoad(true);
-
-    const role = formData.phone === '+998994846789' ? 'admin' : 'user';
-
+    const role = formData.phone === "+998994846789" ? "admin" : "user";
     try {
-      const res = await fetch({
-        variables: { ...formData, role },
-      });
-
+      const res = await fetch({ variables: { ...formData, role } });
       if (res.data?.signUp?.token) {
-        navigate('/verify', {
-          state: {
-            phone: phoneNumber,
-            token: res.data?.signUp?.token,
-          },
+        navigate("/verify", {
+          state: { phone: formData.phone, token: res.data.signUp.token },
         });
       }
     } catch (err) {
-      setErorFetch(err.message || 'Something went wrong');
+      setFetchError(err.message || t("signUp"));
+    } finally {
       setLoad(false);
     }
   };
 
   return (
     <>
-      <Loader load={loaderr}></Loader>
-      <StyleSignUp className="signUp">
-       
-        <StyleContainer>
-          <div className="sign-up-nav">
-            <div className="form">
-              <div
-                style={{ position: 'relative', bottom: 12 }}
-                className="form-nav"
-              >
-                <div className="texts">
-                  <h1>{t('signUp')}</h1>
-                  <p>{t('signUpDesc')}</p>
-                </div>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="inputs">
-                    <Controller
-                      name="name"
-                      control={control}
-                      rules={{
-                        required: {
-                          value: true,
-                          message: t('nameIsReq'),
-                        },
-                      }}
-                      render={({ field, fieldState: { error } }) => (
-                        <TextField
-                          {...field}
-                          type="text"
-                          error={Boolean(error)}
-                          id="outlined-controlled"
-                          helperText={error?.message}
-                          placeholder={t('namePlaceHolder')}
-                          slotProps={{
-                            input: {
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  <PersonIcon />
-                                </InputAdornment>
-                              ),
-                            },
-                          }}
-                        />
-                      )}
-                    />
-                    <Controller
-                      name="phone"
-                      control={control}
-                      rules={{
-                        required: {
-                          value: true,
-                          message: t('phoneReq'),
-                        },
-                      }}
-                      render={({ field, fieldState: { error } }) => (
-                        <MuiTelInput
-                          defaultCountry="UZ"
-                          {...field}
-                          error={Boolean(error)}
-                          helperText={error?.message}
-                          placeholder={t('phonePlaceHolder')}
-                        ></MuiTelInput>
-                      )}
-                    />
-                    <Controller
-                      name="password"
-                      control={control}
-                      rules={{
-                        required: t('rule'),
-                        minLength: {
-                          value: 8,
-                          message: `Min 8 ${t('characters')} `,
-                        },
-                        maxLength: {
-                          value: 16,
-                          message: `Max 16 ${t('characters')}`,
-                        },
-                      }}
-                      render={({ field, fieldState: { error } }) => (
-                        <TextField
-                          {...field}
-                          type={!isHide ? 'password' : 'text'}
-                          error={Boolean(error)}
-                          id="outlined-controlled"
-                          helperText={error?.message}
-                          placeholder={t('password')}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <LockOpenIcon />
-                              </InputAdornment>
-                            ),
-                            endAdornment: (
-                              <InputAdornment
-                                style={{ cursor: 'pointer' }}
-                                position="end"
-                              >
-                                <IconButton
-                                  onClick={handleClickShowPassword}
-                                  edge="end"
-                                >
-                                  {isHide ? (
-                                    <VisibilityOffIcon />
-                                  ) : (
-                                    <VisibilityIcon />
-                                  )}
-                                </IconButton>
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                      )}
-                    ></Controller>
-
-                    <Controller
-                      name="confirmPassword"
-                      control={control}
-                      rules={{
-                        required: t('rule'),
-                        minLength: {
-                          value: 8,
-                          message: `Min 8'${t('characters')} `,
-                        },
-                        maxLength: {
-                          value: 16,
-                          message: `Max 16 ${t('characters')} `,
-                        },
-                      }}
-                      render={({ field, fieldState: { error } }) => (
-                        <TextField
-                          {...field}
-                          type={!isHide2 ? 'password' : 'text'}
-                          error={Boolean(error)}
-                          id="outlined-controlled"
-                          helperText={error?.message}
-                          placeholder={t('confirmPassword')}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <LockOpenIcon />
-                              </InputAdornment>
-                            ),
-                            endAdornment: (
-                              <InputAdornment
-                                style={{ cursor: 'pointer' }}
-                                position="end"
-                              >
-                                <IconButton
-                                  onClick={handleClickShowPassword2}
-                                  edge="end"
-                                >
-                                  {isHide2 ? (
-                                    <VisibilityOffIcon />
-                                  ) : (
-                                    <VisibilityIcon />
-                                  )}
-                                </IconButton>
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                      )}
-                    ></Controller>
-
-                    <p>
-                      <a href="/sign-in">{t('youHaveAccaunt')}</a>
-                    </p>
-                    <Button type="submit" color="warning" variant="contained">
-                      {t('signUp')}
-                    </Button>
-                  </div>
-                </form>
-                {erorFetch && (
-                  <p
-                    style={{
-                      color: 'red',
-                      marginTop: '10px',
-                      marginLeft: '0px',
-                      fontSize: '14px',
-                    }}
-                  >
-                    {erorFetch} !
-                  </p>
-                )}
+      <Loader load={load} />
+      <StyleSignUp>
+        <div className="sign-up-nav">
+          <div className="form">
+            {/* Header */}
+            <div className="form-header">
+              <div className="form-icon">
+                <PersonAddIcon />
+              </div>
+              <div className="form-header-text">
+                <h1>{t("signUp")}</h1>
+                <p>{t("signUpDesc")}</p>
               </div>
             </div>
+
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="inputs">
+                {/* Name */}
+                <Controller
+                  name="name"
+                  control={control}
+                  rules={{ required: { value: true, message: t("nameIsReq") } }}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      type="text"
+                      error={Boolean(error)}
+                      helperText={error?.message}
+                      placeholder={t("namePlaceHolder")}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <PersonIcon />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+
+                {/* Phone */}
+                <Controller
+                  name="phone"
+                  control={control}
+                  rules={{ required: { value: true, message: t("phoneReq") } }}
+                  render={({ field, fieldState: { error } }) => (
+                    <MuiTelInput
+                      {...field}
+                      defaultCountry="UZ"
+                      error={Boolean(error)}
+                      helperText={error?.message}
+                      placeholder={t("phonePlaceHolder")}
+                    />
+                  )}
+                />
+
+                {/* Password */}
+                <Controller
+                  name="password"
+                  control={control}
+                  rules={{
+                    required: t("rule"),
+                    minLength: {
+                      value: 8,
+                      message: `Min 8 ${t("characters")}`,
+                    },
+                    maxLength: {
+                      value: 16,
+                      message: `Max 16 ${t("characters")}`,
+                    },
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      type={showPassword ? "text" : "password"}
+                      error={Boolean(error)}
+                      helperText={error?.message}
+                      placeholder={t("password")}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LockOpenIcon />
+                          </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowPassword((p) => !p)}
+                              edge="end"
+                              size="small"
+                            >
+                              {showPassword ? (
+                                <VisibilityOffIcon />
+                              ) : (
+                                <VisibilityIcon />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+
+                {/* Confirm password */}
+                <Controller
+                  name="confirmPassword"
+                  control={control}
+                  rules={{
+                    required: t("rule"),
+                    minLength: {
+                      value: 8,
+                      message: `Min 8 ${t("characters")}`,
+                    },
+                    maxLength: {
+                      value: 16,
+                      message: `Max 16 ${t("characters")}`,
+                    },
+                    validate: (v) => v === password || "Parollar mos kelmadi",
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      type={showConfirm ? "text" : "password"}
+                      error={Boolean(error)}
+                      helperText={error?.message}
+                      placeholder={t("confirmPassword")}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LockOpenIcon />
+                          </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowConfirm((p) => !p)}
+                              edge="end"
+                              size="small"
+                            >
+                              {showConfirm ? (
+                                <VisibilityOffIcon />
+                              ) : (
+                                <VisibilityIcon />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+
+                <a href="/sign-in" className="form-link">
+                  {t("youHaveAccaunt")}
+                </a>
+
+                <Button
+                  type="submit"
+                  className="submit-btn"
+                  variant="contained"
+                >
+                  {t("signUp")}
+                </Button>
+              </div>
+            </form>
+
+            {fetchError && <p className="error-msg">{fetchError}</p>}
           </div>
-        </StyleContainer>
+        </div>
       </StyleSignUp>
     </>
   );
 }
+
 export default SignUp;

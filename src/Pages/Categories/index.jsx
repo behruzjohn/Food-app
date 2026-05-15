@@ -1,34 +1,33 @@
-import { t } from 'i18next';
-import { useEffect, useState } from 'react';
-import { Button, Container } from '@mui/material';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-
-import ToastExample from '../../Components/Toast';
-import NoCategory from '../../assets/no category.png';
-import CheckToken from '../../Components/CheckToken';
-import { StyleCategories } from './Categories.style';
-import OrderSearch from '../../Components/OrderSearch/index';
-import AddCatagories from '../../Components/AddCatagories/index';
-import GuardComponent from '../../Components/CheckRole/CheckRole';
-import HeaderDashborad from '../../Components/HeaderDashboard/index';
-import DeleteFoodModalAlert from '../../Components/ConfrimDeleteAlert';
-import CategoryCard from '../../Components/CategegoryCard/CategoryCard';
+import { t } from "i18next";
+import { useEffect, useState } from "react";
+import { Button, Container } from "@mui/material";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client/react";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import ToastExample from "../../Components/Toast";
+import NoCategory from "../../assets/no category.png";
+import CheckToken from "../../Components/CheckToken";
+import { StyleCategories } from "./Categories.style";
+import OrderSearch from "../../Components/OrderSearch/index";
+import AddCatagories from "../../Components/AddCatagories/index";
+import GuardComponent from "../../Components/CheckRole/CheckRole";
+import HeaderDashborad from "../../Components/HeaderDashboard/index";
+import DeleteFoodModalAlert from "../../Components/ConfrimDeleteAlert";
+import CategoryCard from "../../Components/CategegoryCard/CategoryCard";
 import {
   GET_ALL_CATEGORIES,
   CREATE_CATEGORIES,
   DELETE_CATEGORY,
   EDIT_CATEGORY,
   GET_CATEOGRY_BY_ID,
-} from './api';
+} from "./api";
 
 function CategoriesPage() {
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState("");
   const [openToastC, setOpenToastC] = useState(false);
   const [clickedDelete, setClickedDelete] = useState(false);
   const [openCategories, setOpenCategories] = useState(false);
   const [openToastDelete, setOpenToastDelete] = useState(false);
-  const [deletedCategoryId, setDeletedCategoryId] = useState('');
+  const [deletedCategoryId, setDeletedCategoryId] = useState("");
   const [editCategoryId, setEditCategoryId] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editedCategory, setEditedCategory] = useState([]);
@@ -38,17 +37,30 @@ function CategoriesPage() {
     useLazyQuery(GET_CATEOGRY_BY_ID);
   const { data, refetch } = useQuery(GET_ALL_CATEGORIES);
 
-  const handleDeleteCompleted = () => {
-    refetch();
-    setDeletedCategoryId(null);
-    setIsDeleteModalOpen(false);
-  };
-
   const [deleteCategory] = useMutation(DELETE_CATEGORY, {
-    onCompleted: handleDeleteCompleted,
+    onCompleted: () => {
+      refetch();
+      setDeletedCategoryId(null);
+      setIsDeleteModalOpen(false);
+    },
   });
 
   const [editCategory, { data: editCategoryData }] = useMutation(EDIT_CATEGORY);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("authStore");
+    const a = JSON.parse(stored || "{}");
+    setRole(a?.state?.role);
+  }, []);
+
+  CheckToken();
+
+  useEffect(() => {
+    if (isDeleteModalOpen && deletedCategoryId) {
+      setOpenToastDelete(true);
+      deleteCategory({ variables: { categoryId: deletedCategoryId } });
+    }
+  }, [isDeleteModalOpen]);
 
   const handleAddCategory = async (formData) => {
     try {
@@ -56,31 +68,21 @@ function CategoriesPage() {
         await editCategory({
           variables: {
             categoryId: editCategoryId,
-            category: {
-              name: formData.name,
-              image: formData.image,
-            },
+            category: { name: formData.name, image: formData.image },
           },
         });
-
         refetch();
         setEditedCategory(null);
-        setClickedDelete(false);
-        setOpenToastC(true);
       } else {
         await createCategory({
-          variables: {
-            name: formData.name,
-            image: formData.image,
-          },
+          variables: { name: formData.name, image: formData.image },
         });
-
         refetch();
-        setClickedDelete(false);
-        setOpenToastC(true);
       }
+      setClickedDelete(false);
+      setOpenToastC(true);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
@@ -93,27 +95,6 @@ function CategoriesPage() {
     }
   };
 
-  const handleDeleteCategory = () => {
-    if (isDeleteModalOpen && deletedCategoryId) {
-      setOpenToastDelete(true);
-      deleteCategory({
-        variables: { categoryId: deletedCategoryId },
-      });
-    }
-  };
-
-  useEffect(() => {
-    const stored = localStorage.getItem('authStore');
-    const a = JSON.parse(stored || '{}');
-    setRole(a?.state?.role);
-  }, []);
-
-  CheckToken();
-
-  useEffect(() => {
-    handleDeleteCategory();
-  }, [isDeleteModalOpen]);
-
   const categories = data?.getAllCategories?.payload || [];
 
   return (
@@ -122,45 +103,56 @@ function CategoriesPage() {
         <Container maxWidth="xl">
           <div className="categories">
             <div className="categories-nav">
-              <OrderSearch action="category"></OrderSearch>
+              <OrderSearch action="category" />
+
               <div className="category-nav">
+                {/* Header */}
                 <header>
-                  <div>
-                    <h2>{t('categoryPg')}</h2>
-                  </div>
+                  <h2>{t("categoryPg")}</h2>
                   <GuardComponent
                     role={role}
                     section="category"
                     action="addCategory"
                   >
                     <Button
-                      style={{ height: 36 }}
                       onClick={() => setOpenCategories(true)}
                       color="success"
                       variant="contained"
                       startIcon={<AddCircleOutlineIcon />}
                     >
-                      {t('addCategory')}
+                      {t("addCategory")}
                     </Button>
                   </GuardComponent>
                 </header>
 
+                {/* Stats */}
+                {categories.length > 0 && (
+                  <div className="categories-stats">
+                    <div className="stat-pill">
+                      <span className="stat-dot" />
+                      {t("all")}: <strong>{categories.length}</strong>{" "}
+                      {t("categories")}
+                    </div>
+                  </div>
+                )}
+
+                {/* Cards */}
                 <div className="card">
-                  {categories && categories.length > 0 ? (
+                  {categories.length > 0 ? (
                     categories.map((category) => (
                       <CategoryCard
-                      
-                        handleClickEdit={handleClickEdit}
                         key={category.id}
+                        category={category}
+                        handleClickEdit={handleClickEdit}
                         setClickedDelete={setClickedDelete}
                         setOpenToast={setOpenToastDelete}
-                        category={category}
                         setDeletedCategoryId={setDeletedCategoryId}
                       />
                     ))
                   ) : (
                     <div className="defualtImage">
-                      <img src={NoCategory} alt="Behruz no cateogry food restaurant image" />
+                      <img src={NoCategory} alt="no category" />
+                      <p>Hali kategoriyalar yo'q</p>
                     </div>
                   )}
                 </div>
@@ -169,6 +161,7 @@ function CategoriesPage() {
           </div>
         </Container>
       </StyleCategories>
+
       <AddCatagories
         editedCategory={editedCategory}
         setEditedCategory={setEditedCategory}
@@ -177,17 +170,17 @@ function CategoriesPage() {
         onAdd={handleAddCategory}
       />
       <ToastExample
-        title={t('categoryIsDeleted')}
+        title={t("categoryIsDeleted")}
         open={openToastDelete}
         setOpen={setOpenToastDelete}
-      ></ToastExample>
+      />
       <ToastExample
         title={
-          editCategoryData ? t('categoryEdited') : t('categoryAddSuccessfull')
+          editCategoryData ? t("categoryEdited") : t("categoryAddSuccessfull")
         }
         open={openToastC}
         setOpen={setOpenToastC}
-      ></ToastExample>
+      />
       <DeleteFoodModalAlert
         open={clickedDelete}
         setOpen={setClickedDelete}
@@ -196,4 +189,5 @@ function CategoriesPage() {
     </HeaderDashborad>
   );
 }
+
 export default CategoriesPage;
